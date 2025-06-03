@@ -1,0 +1,69 @@
+2025-06-03 01:51:04,114 - INFO - Starting backup of C:/Dat/@Scripts/@TRUCONTEXT-DEMO
+2025-06-03 01:51:04,114 - INFO - Excluded directories: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/.next, C:/Dat/@Scripts/@TRUCONTEXT-DEMO/node_modules, C:/Dat/@Scripts/TRUCONTEXT-DEMO/.git
+2025-06-03 01:51:04,115 - INFO - Excluded files: *~, *.zip
+2025-06-03 01:51:04,119 - INFO - Creating backup file: C:/Dat/@Scripts/@OLD/@TRUCONTEXT-DEMO_2025-06-03_01-51-04_ADDLAYOUT.zip
+2025-06-03 01:51:04,120 - INFO - Excluding directory: C:/Dat/@Scripts/@TRUCONTEXT-DEMO\.next (matches exclusion rule: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/.next)
+2025-06-03 01:51:04,120 - INFO - Excluding directory: C:/Dat/@Scripts/@TRUCONTEXT-DEMO\node_modules (matches exclusion rule: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/node_modules)
+2025-06-03 01:51:04,124 - INFO - Excluding directory: C:/Dat/@Scripts/@TRUCONTEXT-DEMO\.next (matches exclusion rule: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/.next)
+2025-06-03 01:51:04,125 - INFO - Excluding directory: C:/Dat/@Scripts/@TRUCONTEXT-DEMO\node_modules (matches exclusion rule: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/node_modules)
+2025-06-03 01:51:04,125 - INFO - [1.7%] Adding: .env
+2025-06-03 01:51:04,128 - INFO - [3.4%] Adding: .env.local
+2025-06-03 01:51:04,129 - INFO - [5.2%] Adding: .gitignore
+2025-06-03 01:51:04,129 - INFO - [6.9%] Adding: backup.bat
+2025-06-03 01:51:04,130 - INFO - [8.6%] Adding: dataset-upload-guide.md
+2025-06-03 01:51:04,130 - INFO - [10.3%] Adding: DEPLOYMENT.md
+2025-06-03 01:51:04,131 - INFO - [12.1%] Adding: next-env.d.ts
+2025-06-03 01:51:04,131 - INFO - [13.8%] Adding: next.config.js
+2025-06-03 01:51:04,132 - INFO - [15.5%] Adding: package-lock.json
+2025-06-03 01:51:04,138 - INFO - [17.2%] Adding: package.json
+2025-06-03 01:51:04,139 - INFO - [19.0%] Adding: README.md
+2025-06-03 01:51:04,140 - INFO - [20.7%] Adding: sample-dataset.json
+2025-06-03 01:51:04,149 - INFO - [22.4%] Adding: setup.js
+2025-06-03 01:51:04,151 - INFO - [24.1%] Adding: tsconfig.json
+2025-06-03 01:51:04,152 - INFO - [25.9%] Adding: vercel.json
+2025-06-03 01:51:04,154 - INFO - [27.6%] Adding: .git\config
+2025-06-03 01:51:04,155 - INFO - [29.3%] Adding: .git\description
+2025-06-03 01:51:04,156 - INFO - [31.0%] Adding: .git\HEAD
+2025-06-03 01:51:04,157 - INFO - [32.8%] Adding: .git\hooks\applypatch-msg.sample
+2025-06-03 01:51:04,157 - INFO - [34.5%] Adding: .git\hooks\commit-msg.sample
+2025-06-03 01:51:04,158 - INFO - [36.2%] Adding: .git\hooks\fsmonitor-watchman.sample
+2025-06-03 01:51:04,159 - INFO - [37.9%] Adding: .git\hooks\post-update.sample
+2025-06-03 01:51:04,161 - INFO - [39.7%] Adding: .git\hooks\pre-applypatch.sample
+2025-06-03 01:51:04,162 - INFO - [41.4%] Adding: .git\hooks\pre-commit.sample
+2025-06-03 01:51:04,183 - INFO - [43.1%] Adding: .git\hooks\pre-merge-commit.sample
+2025-06-03 01:51:04,224 - INFO - [44.8%] Adding: .git\hooks\pre-push.sample
+2025-06-03 01:51:04,228 - INFO - [46.6%] Adding: .git\hooks\pre-rebase.sample
+2025-06-03 01:51:04,230 - INFO - [48.3%] Adding: .git\hooks\pre-receive.sample
+2025-06-03 01:51:04,232 - INFO - [50.0%] Adding: .git\hooks\prepare-commit-msg.sample
+2025-06-03 01:51:04,232 - INFO - [51.7%] Adding: .git\hooks\push-to-checkout.sample
+2025-06-03 01:51:04,233 - INFO - [53.4%] Adding: .git\hooks\sendemail-validate.sample
+2025-06-03 01:51:04,236 - INFO - [55.2%] Adding: .git\hooks\update.sample
+2025-06-03 01:51:04,238 - INFO - [56.9%] Adding: .git\info\exclude
+2025-06-03 01:51:04,243 - INFO - [58.6%] Adding: components\FileUpload.tsx
+2025-06-03 01:51:04,245 - INFO - [60.3%] Adding: components\GraphVisualization.tsx
+2025-06-03 01:51:04,247 - INFO - [62.1%] Adding: components\Header.tsx
+2025-06-03 01:51:04,251 - INFO - [63.8%] Adding: lib\neo4j.ts
+2025-06-03 01:51:04,252 - INFO - [65.5%] Adding: lib\theme.ts
+2025-06-03 01:51:04,255 - INFO - [67.2%] Adding: logs\backup_2025-06-03_01-51-04.log
+2025-06-03 01:51:04,257 - INFO - [69.0%] Adding: pages\index.tsx
+2025-06-03 01:51:04,258 - INFO - [70.7%] Adding: pages\_app.tsx
+2025-06-03 01:51:04,259 - INFO - [72.4%] Adding: pages\_document.tsx
+2025-06-03 01:51:04,263 - INFO - [74.1%] Adding: pages\api\graph.ts
+2025-06-03 01:51:04,264 - INFO - [75.9%] Adding: pages\api\upload.ts
+2025-06-03 01:51:04,265 - INFO - [77.6%] Adding: public\favicon.ico
+2025-06-03 01:51:04,266 - INFO - [79.3%] Adding: public\icons\application.png
+2025-06-03 01:51:04,268 - INFO - [81.0%] Adding: public\icons\client.png
+2025-06-03 01:51:04,269 - INFO - [82.8%] Adding: public\icons\database.png
+2025-06-03 01:51:04,271 - INFO - [84.5%] Adding: public\icons\entity.png
+2025-06-03 01:51:04,273 - INFO - [86.2%] Adding: public\icons\firewall.png
+2025-06-03 01:51:04,323 - INFO - [87.9%] Adding: public\icons\router.png
+2025-06-03 01:51:04,325 - INFO - [89.7%] Adding: public\icons\server.png
+2025-06-03 01:51:04,326 - INFO - [91.4%] Adding: public\icons\switch.png
+2025-06-03 01:51:04,327 - INFO - [93.1%] Adding: public\icons\threatactor.png
+2025-06-03 01:51:04,327 - INFO - [94.8%] Adding: public\icons\unknown.png
+2025-06-03 01:51:04,331 - INFO - [96.6%] Adding: public\icons\user.png
+2025-06-03 01:51:04,332 - INFO - [98.3%] Adding: public\icons\workstation.png
+2025-06-03 01:51:04,334 - INFO - [100.0%] Adding: public\images\logo.png
+2025-06-03 01:51:04,336 - INFO - Backup completed successfully: C:/Dat/@Scripts/@OLD/@TRUCONTEXT-DEMO_2025-06-03_01-51-04_ADDLAYOUT.zip
+2025-06-03 01:51:04,337 - INFO - Total files processed: 58
+2025-06-03 01:51:04,338 - INFO - Log file created at: logs\backup_2025-06-03_01-51-04.log
