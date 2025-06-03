@@ -483,7 +483,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
           name: currentLayout,
           fit: true,
           padding: 30
-        }
+        } as any
       })
 
       // Enhanced event handlers for robust selection
