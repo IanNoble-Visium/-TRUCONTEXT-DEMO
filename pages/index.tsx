@@ -11,7 +11,6 @@ import {
   Divider,
   useBreakpointValue,
   Flex,
-  Collapse,
   IconButton,
   Drawer,
   DrawerOverlay,
@@ -26,13 +25,17 @@ import {
   AccordionPanel,
   AccordionIcon,
   Button,
-  Spacer
+  Spacer,
+  chakra
 } from '@chakra-ui/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronUpIcon, ChevronDownIcon, HamburgerIcon, InfoIcon, AttachmentIcon } from '@chakra-ui/icons'
 import Head from 'next/head'
 import Header from '../components/Header'
 import FileUpload from '../components/FileUpload'
 import GraphVisualization from '../components/GraphVisualization'
+
+const MotionBox = motion(chakra.div)
 
 const HomePage: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
@@ -60,9 +63,20 @@ const HomePage: React.FC = () => {
 
       <Box height="100dvh" bg="gray.50" overflow="hidden">
         {/* Collapsible Header */}
-        <Collapse in={showHeader} animateOpacity>
-          <Header />
-        </Collapse>
+        <AnimatePresence initial={false}>
+          {showHeader && (
+            <MotionBox
+              key="header"
+              overflow="hidden"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Header />
+            </MotionBox>
+          )}
+        </AnimatePresence>
 
         {/* Main Layout */}
         <Flex direction="column" height={showHeader ? "calc(100dvh - 80px)" : "100dvh"}>
@@ -123,13 +137,22 @@ const HomePage: React.FC = () => {
         {/* Upload Drawer */}
         <Drawer isOpen={isUploadOpen} placement="left" onClose={onUploadClose} size="md">
           <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader bg="visium.500" color="white">
-              Dataset Upload
-            </DrawerHeader>
-            <DrawerBody>
-              <VStack spacing={6} align="stretch" py={4}>
+          <AnimatePresence initial={false}>
+            {isUploadOpen && (
+              <MotionBox
+                as={DrawerContent}
+                key="upload-drawer"
+                initial={{ x: -40, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: -40, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <DrawerCloseButton />
+                <DrawerHeader bg="visium.500" color="white">
+                  Dataset Upload
+                </DrawerHeader>
+                <DrawerBody>
+                  <VStack spacing={6} align="stretch" py={4}>
                 <Box>
                   <Text fontSize="sm" color="gray.600" mb={4}>
                     Upload a JSON file containing nodes, edges, and stored queries to visualize your network topology.
@@ -193,18 +216,29 @@ const HomePage: React.FC = () => {
                 </Accordion>
               </VStack>
             </DrawerBody>
-          </DrawerContent>
+              </MotionBox>
+            )}
+          </AnimatePresence>
         </Drawer>
 
         {/* Info Drawer */}
         <Drawer isOpen={isInfoOpen} placement="right" onClose={onInfoClose} size="md">
           <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader bg="visium.500" color="white">
-              Platform Guide
-            </DrawerHeader>
-            <DrawerBody>
+          <AnimatePresence initial={false}>
+            {isInfoOpen && (
+              <MotionBox
+                as={DrawerContent}
+                key="info-drawer"
+                initial={{ x: 40, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 40, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <DrawerCloseButton />
+                <DrawerHeader bg="visium.500" color="white">
+                  Platform Guide
+                </DrawerHeader>
+                <DrawerBody>
               <VStack spacing={6} align="stretch" py={4}>
                 <Accordion allowToggle defaultIndex={0}>
                   <AccordionItem>
@@ -331,7 +365,9 @@ const HomePage: React.FC = () => {
                 </Accordion>
               </VStack>
             </DrawerBody>
-          </DrawerContent>
+              </MotionBox>
+            )}
+          </AnimatePresence>
         </Drawer>
       </Box>
     </>
