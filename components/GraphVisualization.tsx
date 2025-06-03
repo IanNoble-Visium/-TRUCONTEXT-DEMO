@@ -5,7 +5,7 @@ import {
   ModalCloseButton, ModalBody, ModalFooter, Input, FormControl, 
   FormLabel, useToast, Collapse, IconButton, Wrap, WrapItem,
   Badge, Menu, MenuButton, MenuList, MenuItem, Divider,
-  Tooltip, useDisclosure
+  Tooltip, useDisclosure, useColorModeValue
 } from '@chakra-ui/react'
 import { ChevronDownIcon, ChevronUpIcon, SettingsIcon } from '@chakra-ui/icons'
 import cytoscape, { Core, NodeSingular, Collection } from 'cytoscape'
@@ -36,25 +36,32 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   const { isOpen: isGroupModalOpen, onOpen: onGroupModalOpen, onClose: onGroupModalClose } = useDisclosure()
   const toast = useToast()
 
-  // Helper function to get node icon path with fallback
+  // Color mode values
+  const bgColor = useColorModeValue("white", "gray.800")
+  const borderColor = useColorModeValue("gray.200", "gray.600")
+  const textColor = useColorModeValue("gray.600", "gray.300")
+  const controlsBg = useColorModeValue("white", "gray.700")
+  const hoverBg = useColorModeValue("gray.50", "gray.600")
+
+  // Helper function to get node icon path with fallback (now using SVG)
   const getNodeIconPath = (nodeType: string) => {
-    if (!nodeType) return '/icons/unknown.png'
+    if (!nodeType) return '/icons-svg/unknown.svg'
     
     // Convert type to lowercase for filename matching
     const filename = nodeType.toLowerCase()
     
-    // List of available icons (only includes icons that actually exist in public/icons)
+    // List of available icons (now SVG format)
     const availableIcons = [
       'server', 'application', 'database', 'user', 'threatactor', 
       'firewall', 'router', 'switch', 'workstation', 'client', 'entity'
     ]
     
     if (availableIcons.includes(filename)) {
-      return `/icons/${filename}.png`
+      return `/icons-svg/${filename}.svg`
     }
     
-    // Fallback to unknown.png for any missing icons (like 'vulnerability')
-    return '/icons/unknown.png'
+    // Fallback to unknown.svg for any missing icons
+    return '/icons-svg/unknown.svg'
   }
 
   const initializeCytoscape = (processedNodes: any[], processedEdges: any[]) => {
@@ -128,12 +135,22 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
               'text-wrap': 'wrap',
               'text-max-width': '80px',
               'text-margin-y': 8,
-              'text-background-color': 'rgba(255, 255, 255, 0.8)',
+              'text-background-color': 'rgba(255, 255, 255, 0.9)',
               'text-background-opacity': 1,
-              'text-background-padding': '2px',
+              'text-background-padding': '3px',
               'text-border-width': 1,
               'text-border-color': '#cccccc',
-              'text-border-opacity': 0.8
+              'text-border-opacity': 0.8,
+              'transition-property': 'border-width, border-color, background-color',
+              'transition-duration': 200
+            }
+          },
+          {
+            selector: 'node:hover',
+            style: {
+              'border-width': 3,
+              'border-color': '#ff6600',
+              'background-color': 'rgba(255, 102, 0, 0.1)'
             }
           },
           {
@@ -151,6 +168,16 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
             }
           },
           {
+            selector: 'node[type="Group"]',
+            style: {
+              'border-style': 'dashed',
+              'border-width': 3,
+              'background-opacity': 0.7,
+              'font-size': '12px',
+              'font-weight': 'bold'
+            }
+          },
+          {
             selector: 'edge',
             style: {
               'width': 2,
@@ -162,7 +189,17 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
               'font-size': '8px',
               'text-rotation': 'autorotate',
               'text-margin-y': -10,
-              'color': '#666666'
+              'color': '#666666',
+              'transition-property': 'line-color, target-arrow-color, width',
+              'transition-duration': 200
+            }
+          },
+          {
+            selector: 'edge:hover',
+            style: {
+              'width': 3,
+              'line-color': '#ff9900',
+              'target-arrow-color': '#ff9900'
             }
           },
           {
@@ -574,7 +611,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   return (
     <Box height="100%">
       {/* Graph Controls */}
-      <Box bg="white" borderBottom="1px solid" borderColor="gray.200" p={3}>
+      <Box bg={controlsBg} borderBottom="1px solid" borderColor={borderColor} p={3}>
         <HStack justify="space-between" align="center">
           <HStack spacing={3}>
             <Select 
@@ -655,7 +692,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
             
             {nodeTypes.length > 0 && (
               <Box mt={2}>
-                <Text fontSize="xs" color="gray.600" mb={1}>Available Types:</Text>
+                <Text fontSize="xs" color={textColor} mb={1}>Available Types:</Text>
                 <Wrap spacing={1}>
                   {nodeTypes.map(type => (
                     <WrapItem key={type}>
@@ -674,7 +711,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         ref={containerRef}
         height="calc(100% - 80px)"
         width="100%"
-        bg="white"
+        bg={bgColor}
         position="relative"
       >
         {nodeCount === 0 && edgeCount === 0 && (
@@ -684,7 +721,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
             left="50%"
             transform="translate(-50%, -50%)"
             textAlign="center"
-            color="gray.500"
+            color={textColor}
           >
             <Text fontSize="lg" fontWeight="medium">No Data to Display</Text>
             <Text fontSize="sm">Upload a JSON dataset to see the graph visualization</Text>
@@ -695,14 +732,14 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
             position="absolute"
             top={2}
             right={2}
-            bg="white"
+            bg={controlsBg}
             px={3}
             py={1}
             borderRadius="md"
             border="1px solid"
-            borderColor="gray.200"
+            borderColor={borderColor}
             fontSize="xs"
-            color="gray.600"
+            color={textColor}
             zIndex={10}
           >
             {nodeCount} nodes, {edgeCount} edges
@@ -721,7 +758,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing={4} align="stretch">
-              <Text fontSize="sm" color="gray.600">
+              <Text fontSize="sm" color={textColor}>
                 Creating a group with {selectedNodes.length} selected nodes
               </Text>
               <FormControl>
