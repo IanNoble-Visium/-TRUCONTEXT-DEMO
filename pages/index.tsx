@@ -58,14 +58,14 @@ const HomePage: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Box height="100vh" bg="gray.50" overflow="hidden">
+      <Box height="100dvh" bg="gray.50" overflow="hidden">
         {/* Collapsible Header */}
         <Collapse in={showHeader} animateOpacity>
           <Header />
         </Collapse>
 
         {/* Main Layout */}
-        <Flex direction="column" height={showHeader ? "calc(100vh - 80px)" : "100vh"}>
+        <Flex direction="column" height={showHeader ? "calc(100dvh - 80px)" : "100dvh"}>
           {/* Top Toolbar */}
           <Box bg="white" borderBottom="1px solid" borderColor="gray.200" px={4} py={2}>
             <Flex align="center">
