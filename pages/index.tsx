@@ -48,6 +48,7 @@ const HomePage: React.FC = () => {
   const gridColumns = useBreakpointValue({ base: 1, xl: 2 })
   const containerPadding = useBreakpointValue({ base: 4, md: 6 })
   const isLargeScreen = useBreakpointValue({ base: false, xl: true })
+  const drawerSize = useBreakpointValue({ base: 'full', md: 'md', lg: 'lg' })
 
   return (
     <>
@@ -121,7 +122,7 @@ const HomePage: React.FC = () => {
         </Flex>
 
         {/* Upload Drawer */}
-        <Drawer isOpen={isUploadOpen} placement="left" onClose={onUploadClose} size="md">
+        <Drawer isOpen={isUploadOpen} placement="left" onClose={onUploadClose} size={drawerSize}>
           <DrawerOverlay />
           <DrawerContent>
             <DrawerCloseButton />
@@ -197,7 +198,7 @@ const HomePage: React.FC = () => {
         </Drawer>
 
         {/* Info Drawer */}
-        <Drawer isOpen={isInfoOpen} placement="right" onClose={onInfoClose} size="md">
+        <Drawer isOpen={isInfoOpen} placement="right" onClose={onInfoClose} size={drawerSize}>
           <DrawerOverlay />
           <DrawerContent>
             <DrawerCloseButton />
