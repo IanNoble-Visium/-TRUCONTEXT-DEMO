@@ -1,16 +1,18 @@
 import React from 'react'
-import { Box, Flex, Heading, Text, Image } from '@chakra-ui/react'
+import { Box, Flex, Heading, Text, Image as ChakraImage } from '@chakra-ui/react'
+import Image from 'next/image'
 
 const Header: React.FC = () => {
   return (
     <Box bg="visium.500" color="white" py={4} px={6} boxShadow="lg">
       <Flex align="center" justify="space-between" maxW="1400px" mx="auto">
         <Flex align="center">
-          <Image 
-            src="/images/logo.png" 
-            alt="Visium Technologies" 
-            height="40px" 
-            width="auto" 
+          <ChakraImage
+            as={Image}
+            src="/images/logo.png"
+            alt="Visium Technologies"
+            width={103}
+            height={40}
             mr={4}
           />
           <Box>
@@ -30,4 +32,4 @@ const Header: React.FC = () => {
   )
 }
 
-export default Header 
+export default Header
