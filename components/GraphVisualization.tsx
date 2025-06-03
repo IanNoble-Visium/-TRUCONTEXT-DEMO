@@ -283,8 +283,14 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       console.log('Processed edges:', processedEdges)
 
       // Extract unique node types for dynamic grouping
-      const types = Array.from(new Set(processedNodes.map((node: any) => node.data.type as string)))
-        .filter((type: string) => type !== 'Group') as string[]
+      const types: string[] = []
+      const typeSet = new Set<string>()
+      processedNodes.forEach((node: any) => {
+        if (node.data.type && node.data.type !== 'Group') {
+          typeSet.add(node.data.type)
+        }
+      })
+      types.push(...Array.from(typeSet))
       setNodeTypes(types)
 
       setNodeCount(processedNodes.length)
@@ -373,7 +379,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     })
 
     setGroups(newGroups)
-    cyRef.current.layout({ name: currentLayout, avoidOverlap: true }).run()
+    runLayout()
 
     toast({
       title: 'Grouped by Type',
@@ -413,7 +419,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     setGroupName('')
     onGroupModalClose()
     
-    cyRef.current.layout({ name: currentLayout, avoidOverlap: true }).run()
+    runLayout()
 
     toast({
       title: 'Custom Group Created',
@@ -457,7 +463,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     })
 
     setSelectedNodes([])
-    cyRef.current.layout({ name: currentLayout, avoidOverlap: true }).run()
+    runLayout()
 
     if (ungroupedCount > 0) {
       toast({
@@ -491,7 +497,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
 
     setGroups({})
     setSelectedNodes([])
-    cyRef.current.layout({ name: currentLayout, avoidOverlap: true }).run()
+    runLayout()
 
     toast({
       title: 'Groups Reset',
