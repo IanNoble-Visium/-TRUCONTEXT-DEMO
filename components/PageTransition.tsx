@@ -4,7 +4,7 @@ import { Box } from '@chakra-ui/react'
 
 interface PageTransitionProps {
   children: React.ReactNode
-  key?: string
+  animationKey?: string
   direction?: 'left' | 'right' | 'up' | 'down'
   duration?: number
   delay?: number
@@ -12,7 +12,7 @@ interface PageTransitionProps {
 
 const PageTransition: React.FC<PageTransitionProps> = ({
   children,
-  key = 'page',
+  animationKey = 'page',
   direction = 'up',
   duration = 0.5,
   delay = 0
@@ -54,7 +54,7 @@ const PageTransition: React.FC<PageTransitionProps> = ({
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={key}
+        key={animationKey}
         initial="initial"
         animate="animate"
         exit="exit"

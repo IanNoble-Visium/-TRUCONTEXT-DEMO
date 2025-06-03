@@ -146,7 +146,7 @@ const HomePage: React.FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <PageTransition key="home" direction="up" duration={0.5}>
+      <PageTransition animationKey="home" direction="up" duration={0.5}>
         <Box height="100dvh" bg={bgColor} overflow="hidden">
           {/* Animated Header */}
           <MotionBox variants={headerVariants}>
@@ -226,13 +226,12 @@ const HomePage: React.FC = () => {
               <MotionBox 
                 bg={cardBg} 
                 borderRadius="lg" 
-                shadow="lg" 
+                shadow="md" 
                 height="100%" 
                 overflow="hidden"
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                whileHover={{ shadow: "xl" }}
               >
                 <Box p={4} borderBottom="1px solid" borderColor={borderColor}>
                   <motion.div
