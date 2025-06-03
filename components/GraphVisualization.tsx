@@ -175,10 +175,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
           }
         ],
         layout: {
-          name: currentLayout,
-          fit: true,
-          padding: 50,
-          avoidOverlap: true
+          name: currentLayout
         }
       })
 
@@ -203,7 +200,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
             }
           })
 
-          cy.layout({ name: currentLayout, fit: true, padding: 50 }).run()
+          runLayout()
         } else {
           // Handle node selection for grouping
           if (selectedNodes.includes(nodeId)) {
@@ -302,38 +299,33 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     }
   }
 
+  const runLayout = () => {
+    if (cyRef.current) {
+      try {
+        const layout = cyRef.current.layout({ name: currentLayout })
+        layout.run()
+        // Use cy.fit() separately after layout
+        setTimeout(() => {
+          cyRef.current?.fit()
+        }, 100)
+      } catch (err) {
+        console.error('Layout error:', err)
+      }
+    }
+  }
+
   const changeLayout = (layoutName: string) => {
     setCurrentLayout(layoutName)
     if (cyRef.current) {
-      let layoutOptions: any = {
-        name: layoutName,
-        avoidOverlap: true
+      try {
+        const layout = cyRef.current.layout({ name: layoutName })
+        layout.run()
+        setTimeout(() => {
+          cyRef.current?.fit()
+        }, 100)
+      } catch (err) {
+        console.error('Layout error:', err)
       }
-
-      // Add specific options for different layouts
-      if (layoutName === 'cola') {
-        layoutOptions = {
-          name: 'cola',
-          animate: true,
-          randomize: false,
-          maxSimulationTime: 4000,
-          avoidOverlap: true
-        }
-      } else if (layoutName === 'concentric') {
-        layoutOptions = {
-          name: 'concentric',
-          concentric: (node: any) => node.degree(),
-          levelWidth: () => 2,
-          avoidOverlap: true
-        }
-      } else {
-        layoutOptions = {
-          name: layoutName,
-          avoidOverlap: true
-        }
-      }
-
-      cyRef.current.layout(layoutOptions).run()
     }
   }
 
