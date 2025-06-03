@@ -1,0 +1,127 @@
+2025-06-03 02:28:25,535 - INFO - Starting backup of C:/Dat/@Scripts/@TRUCONTEXT-DEMO
+2025-06-03 02:28:25,536 - INFO - Excluded directories: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/.next, C:/Dat/@Scripts/@TRUCONTEXT-DEMO/node_modules, C:/Dat/@Scripts/TRUCONTEXT-DEMO/.git
+2025-06-03 02:28:25,537 - INFO - Excluded files: *~, *.zip
+2025-06-03 02:28:25,540 - INFO - Creating backup file: C:/Dat/@Scripts/@OLD/@TRUCONTEXT-DEMO_2025-06-03_02-28-25_ADDGROUPING.zip
+2025-06-03 02:28:25,541 - INFO - Excluding directory: C:/Dat/@Scripts/@TRUCONTEXT-DEMO\.next (matches exclusion rule: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/.next)
+2025-06-03 02:28:25,544 - INFO - Excluding directory: C:/Dat/@Scripts/@TRUCONTEXT-DEMO\node_modules (matches exclusion rule: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/node_modules)
+2025-06-03 02:28:25,568 - INFO - Excluding directory: C:/Dat/@Scripts/@TRUCONTEXT-DEMO\.next (matches exclusion rule: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/.next)
+2025-06-03 02:28:25,569 - INFO - Excluding directory: C:/Dat/@Scripts/@TRUCONTEXT-DEMO\node_modules (matches exclusion rule: C:/Dat/@Scripts/@TRUCONTEXT-DEMO/node_modules)
+2025-06-03 02:28:25,570 - INFO - [0.9%] Adding: .env
+2025-06-03 02:28:25,579 - INFO - [1.7%] Adding: .env.local
+2025-06-03 02:28:25,583 - INFO - [2.6%] Adding: .gitignore
+2025-06-03 02:28:25,588 - INFO - [3.4%] Adding: backup.bat
+2025-06-03 02:28:25,589 - INFO - [4.3%] Adding: dataset-upload-guide.md
+2025-06-03 02:28:25,590 - INFO - [5.2%] Adding: DEPLOYMENT.md
+2025-06-03 02:28:25,592 - INFO - [6.0%] Adding: next-env.d.ts
+2025-06-03 02:28:25,594 - INFO - [6.9%] Adding: next.config.js
+2025-06-03 02:28:25,595 - INFO - [7.8%] Adding: package-lock.json
+2025-06-03 02:28:25,603 - INFO - [8.6%] Adding: package.json
+2025-06-03 02:28:25,606 - INFO - [9.5%] Adding: README.md
+2025-06-03 02:28:25,612 - INFO - [10.3%] Adding: sample-dataset.json
+2025-06-03 02:28:25,614 - INFO - [11.2%] Adding: setup.js
+2025-06-03 02:28:25,616 - INFO - [12.1%] Adding: tsconfig.json
+2025-06-03 02:28:25,618 - INFO - [12.9%] Adding: vercel.json
+2025-06-03 02:28:25,631 - INFO - [13.8%] Adding: .git\COMMIT_EDITMSG
+2025-06-03 02:28:25,632 - INFO - [14.7%] Adding: .git\config
+2025-06-03 02:28:25,633 - INFO - [15.5%] Adding: .git\description
+2025-06-03 02:28:25,635 - INFO - [16.4%] Adding: .git\FETCH_HEAD
+2025-06-03 02:28:25,636 - INFO - [17.2%] Adding: .git\HEAD
+2025-06-03 02:28:25,641 - INFO - [18.1%] Adding: .git\index
+2025-06-03 02:28:25,646 - INFO - [19.0%] Adding: .git\hooks\applypatch-msg.sample
+2025-06-03 02:28:25,647 - INFO - [19.8%] Adding: .git\hooks\commit-msg.sample
+2025-06-03 02:28:25,648 - INFO - [20.7%] Adding: .git\hooks\fsmonitor-watchman.sample
+2025-06-03 02:28:25,650 - INFO - [21.6%] Adding: .git\hooks\post-update.sample
+2025-06-03 02:28:25,651 - INFO - [22.4%] Adding: .git\hooks\pre-applypatch.sample
+2025-06-03 02:28:25,661 - INFO - [23.3%] Adding: .git\hooks\pre-commit.sample
+2025-06-03 02:28:25,662 - INFO - [24.1%] Adding: .git\hooks\pre-merge-commit.sample
+2025-06-03 02:28:25,664 - INFO - [25.0%] Adding: .git\hooks\pre-push.sample
+2025-06-03 02:28:25,665 - INFO - [25.9%] Adding: .git\hooks\pre-rebase.sample
+2025-06-03 02:28:25,666 - INFO - [26.7%] Adding: .git\hooks\pre-receive.sample
+2025-06-03 02:28:25,669 - INFO - [27.6%] Adding: .git\hooks\prepare-commit-msg.sample
+2025-06-03 02:28:25,671 - INFO - [28.4%] Adding: .git\hooks\push-to-checkout.sample
+2025-06-03 02:28:25,678 - INFO - [29.3%] Adding: .git\hooks\sendemail-validate.sample
+2025-06-03 02:28:25,680 - INFO - [30.2%] Adding: .git\hooks\update.sample
+2025-06-03 02:28:25,683 - INFO - [31.0%] Adding: .git\info\exclude
+2025-06-03 02:28:25,684 - INFO - [31.9%] Adding: .git\logs\HEAD
+2025-06-03 02:28:25,687 - INFO - [32.8%] Adding: .git\logs\refs\heads\main
+2025-06-03 02:28:25,688 - INFO - [33.6%] Adding: .git\logs\refs\remotes\origin\HEAD
+2025-06-03 02:28:25,698 - INFO - [34.5%] Adding: .git\logs\refs\remotes\origin\main
+2025-06-03 02:28:25,705 - INFO - [35.3%] Adding: .git\objects\05\19ecba6ea913e21689ec692e81e9e4973fbf73
+2025-06-03 02:28:25,707 - INFO - [36.2%] Adding: .git\objects\0b\bb69b5b42d891423da55b5685d15ca5f10b594
+2025-06-03 02:28:25,713 - INFO - [37.1%] Adding: .git\objects\12\23198b143bfb52ddfd3d9d2e410430f9291c82
+2025-06-03 02:28:25,714 - INFO - [37.9%] Adding: .git\objects\15\f1d07be35fb4c3d835e5562c415b2fd49636cc
+2025-06-03 02:28:25,715 - INFO - [38.8%] Adding: .git\objects\21\aae4763ad4766b8b71cc41d9f955813bb371e4
+2025-06-03 02:28:25,717 - INFO - [39.7%] Adding: .git\objects\24\1c894a09f8353c0ebff59f6a164bf691001c8d
+2025-06-03 02:28:25,795 - INFO - [40.5%] Adding: .git\objects\26\b039a0b3c47f30dac0e061ebffa725b8af0260
+2025-06-03 02:28:25,797 - INFO - [41.4%] Adding: .git\objects\27\1388564793039ad53a3842e3098eab2f8adcd1
+2025-06-03 02:28:25,798 - INFO - [42.2%] Adding: .git\objects\32\82864b8827c9d11df39731ed9f7fb77b1962a7
+2025-06-03 02:28:25,801 - INFO - [43.1%] Adding: .git\objects\33\e33aa6e8fa9e3a9fd72c044028ffba669321a8
+2025-06-03 02:28:25,803 - INFO - [44.0%] Adding: .git\objects\37\07c947f5d062024e3696827c1c3262b7446375
+2025-06-03 02:28:25,804 - INFO - [44.8%] Adding: .git\objects\38\d31b61fbb0482ce267838d4e2adb45c8cb9dac
+2025-06-03 02:28:25,805 - INFO - [45.7%] Adding: .git\objects\3e\235d3e90294cb48be7b62cad90bc80f8b4b02e
+2025-06-03 02:28:25,806 - INFO - [46.6%] Adding: .git\objects\3e\a7383e5a24f6d26904f51b6f6df2d0bcda1f77
+2025-06-03 02:28:25,808 - INFO - [47.4%] Adding: .git\objects\48\5f267acad6656c714730ca50687f89bd5dd892
+2025-06-03 02:28:25,812 - INFO - [48.3%] Adding: .git\objects\54\5ba296e43c49123d255a7c0ed779fe4e8a9a68
+2025-06-03 02:28:25,813 - INFO - [49.1%] Adding: .git\objects\56\8e5486037164b470426b880ebd720e84a0a6b2
+2025-06-03 02:28:25,814 - INFO - [50.0%] Adding: .git\objects\56\94fac12956d635e4530f7360e568231fceb6e0
+2025-06-03 02:28:25,816 - INFO - [50.9%] Adding: .git\objects\57\4cb23a37012f2b6f322578db51bc3a3f6165df
+2025-06-03 02:28:25,820 - INFO - [51.7%] Adding: .git\objects\59\52ea31339fc66499639d7476608e8157914a51
+2025-06-03 02:28:25,833 - INFO - [52.6%] Adding: .git\objects\61\3754cfaf74a7a2d86984231479d5671731f18a
+2025-06-03 02:28:25,835 - INFO - [53.4%] Adding: .git\objects\65\384ad868c44775a4401704b65cf4f4c1a3f2f3
+2025-06-03 02:28:25,837 - INFO - [54.3%] Adding: .git\objects\6f\57051f94dc97356d82b86ec42f1ca7263f63b8
+2025-06-03 02:28:25,838 - INFO - [55.2%] Adding: .git\objects\77\9145132d8352fb7d607014be1d9c0cd60979c1
+2025-06-03 02:28:25,840 - INFO - [56.0%] Adding: .git\objects\7a\e65ea81cccc397b479608f2a320c143133fe66
+2025-06-03 02:28:25,841 - INFO - [56.9%] Adding: .git\objects\7b\ba4262fa2ee2ecd4bb81be7113b06962895347
+2025-06-03 02:28:25,844 - INFO - [57.8%] Adding: .git\objects\7e\b98fcb0e6ed759578530533e4bcdf86e6b065e
+2025-06-03 02:28:25,846 - INFO - [58.6%] Adding: .git\objects\7f\66f2c86868ce80f6c18c6ff3ec8fff2f87c7d7
+2025-06-03 02:28:25,849 - INFO - [59.5%] Adding: .git\objects\82\efba8a8f0e94ad5e29d86e03fbe173ce99abd1
+2025-06-03 02:28:25,851 - INFO - [60.3%] Adding: .git\objects\8d\edf854179699720fe2b185ebad5bd109d1d8e4
+2025-06-03 02:28:25,852 - INFO - [61.2%] Adding: .git\objects\8f\3c4e173b89fd25b522d2971e044b9361b7f4a0
+2025-06-03 02:28:25,856 - INFO - [62.1%] Adding: .git\objects\a8\00aabe96c2dde2dd286afb277047a1c5e2bc37
+2025-06-03 02:28:25,865 - INFO - [62.9%] Adding: .git\objects\ac\f674d0277d0580120c6bec66a139058f0acf5f
+2025-06-03 02:28:25,866 - INFO - [63.8%] Adding: .git\objects\b3\051f7893d0bb0ac39a0ec85b8892d712e74387
+2025-06-03 02:28:25,868 - INFO - [64.7%] Adding: .git\objects\b5\21e3ec5fa4306d24784b88b6a8a758f0e5db27
+2025-06-03 02:28:25,878 - INFO - [65.5%] Adding: .git\objects\b6\271aabdf5bdb434cdab1c8a5c36f3e347a6f93
+2025-06-03 02:28:25,880 - INFO - [66.4%] Adding: .git\objects\c4\7481677400c2abf79ac189f9686cdfda103b86
+2025-06-03 02:28:25,881 - INFO - [67.2%] Adding: .git\objects\d8\d542a355217d83294c7e97507d3d2fe57aed68
+2025-06-03 02:28:25,884 - INFO - [68.1%] Adding: .git\objects\da\737b57f182ff67f27195b0def944cc2acff537
+2025-06-03 02:28:25,887 - INFO - [69.0%] Adding: .git\objects\de\5324c17963b82a3a6dde4e770ff904c529e2b0
+2025-06-03 02:28:25,889 - INFO - [69.8%] Adding: .git\objects\de\64222a7c2f20d9f2b8846294824dcd38afb5eb
+2025-06-03 02:28:25,896 - INFO - [70.7%] Adding: .git\objects\e4\23d5a1d19d9a6cf82531965664ba61126ad546
+2025-06-03 02:28:25,898 - INFO - [71.6%] Adding: .git\objects\ef\b5b0fb8f77023413f5327b9732abeea44f47fb
+2025-06-03 02:28:25,902 - INFO - [72.4%] Adding: .git\objects\f1\0410857da5a4cc744e255f93fc430528399b3b
+2025-06-03 02:28:25,904 - INFO - [73.3%] Adding: .git\objects\f4\3a9999814ee88368a845600f01f6b5e8668259
+2025-06-03 02:28:25,907 - INFO - [74.1%] Adding: .git\objects\f6\098820527eb82e200ce0f8842e91473daa603d
+2025-06-03 02:28:25,914 - INFO - [75.0%] Adding: .git\objects\f9\d19c6efe5193b22ba700cf84c5ae994389aeeb
+2025-06-03 02:28:25,916 - INFO - [75.9%] Adding: .git\refs\heads\main
+2025-06-03 02:28:25,921 - INFO - [76.7%] Adding: .git\refs\remotes\origin\HEAD
+2025-06-03 02:28:25,938 - INFO - [77.6%] Adding: .git\refs\remotes\origin\main
+2025-06-03 02:28:25,940 - INFO - [78.4%] Adding: components\FileUpload.tsx
+2025-06-03 02:28:25,946 - INFO - [79.3%] Adding: components\GraphVisualization.tsx
+2025-06-03 02:28:25,948 - INFO - [80.2%] Adding: components\Header.tsx
+2025-06-03 02:28:25,950 - INFO - [81.0%] Adding: lib\neo4j.ts
+2025-06-03 02:28:25,952 - INFO - [81.9%] Adding: lib\theme.ts
+2025-06-03 02:28:25,953 - INFO - [82.8%] Adding: logs\backup_2025-06-03_01-51-04.log
+2025-06-03 02:28:25,957 - INFO - [83.6%] Adding: logs\backup_2025-06-03_02-28-25.log
+2025-06-03 02:28:25,965 - INFO - [84.5%] Adding: pages\index.tsx
+2025-06-03 02:28:25,967 - INFO - [85.3%] Adding: pages\_app.tsx
+2025-06-03 02:28:25,969 - INFO - [86.2%] Adding: pages\_document.tsx
+2025-06-03 02:28:25,979 - INFO - [87.1%] Adding: pages\api\graph.ts
+2025-06-03 02:28:25,980 - INFO - [87.9%] Adding: pages\api\upload.ts
+2025-06-03 02:28:25,981 - INFO - [88.8%] Adding: public\favicon.ico
+2025-06-03 02:28:25,982 - INFO - [89.7%] Adding: public\icons\application.png
+2025-06-03 02:28:25,984 - INFO - [90.5%] Adding: public\icons\client.png
+2025-06-03 02:28:25,986 - INFO - [91.4%] Adding: public\icons\database.png
+2025-06-03 02:28:25,991 - INFO - [92.2%] Adding: public\icons\entity.png
+2025-06-03 02:28:25,994 - INFO - [93.1%] Adding: public\icons\firewall.png
+2025-06-03 02:28:26,068 - INFO - [94.0%] Adding: public\icons\router.png
+2025-06-03 02:28:26,071 - INFO - [94.8%] Adding: public\icons\server.png
+2025-06-03 02:28:26,072 - INFO - [95.7%] Adding: public\icons\switch.png
+2025-06-03 02:28:26,074 - INFO - [96.6%] Adding: public\icons\threatactor.png
+2025-06-03 02:28:26,075 - INFO - [97.4%] Adding: public\icons\unknown.png
+2025-06-03 02:28:26,084 - INFO - [98.3%] Adding: public\icons\user.png
+2025-06-03 02:28:26,089 - INFO - [99.1%] Adding: public\icons\workstation.png
+2025-06-03 02:28:26,102 - INFO - [100.0%] Adding: public\images\logo.png
+2025-06-03 02:28:26,104 - INFO - Backup completed successfully: C:/Dat/@Scripts/@OLD/@TRUCONTEXT-DEMO_2025-06-03_02-28-25_ADDGROUPING.zip
+2025-06-03 02:28:26,105 - INFO - Total files processed: 116
+2025-06-03 02:28:26,106 - INFO - Log file created at: logs\backup_2025-06-03_02-28-25.log
