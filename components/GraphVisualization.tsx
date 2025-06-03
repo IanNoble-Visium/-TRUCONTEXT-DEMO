@@ -5,12 +5,16 @@ import {
   ModalCloseButton, ModalBody, ModalFooter, Input, FormControl, 
   FormLabel, useToast, Collapse, IconButton, Wrap, WrapItem,
   Badge, Menu, MenuButton, MenuList, MenuItem, Divider,
-  Tooltip, useDisclosure, useColorModeValue
+  Tooltip, useDisclosure, useColorModeValue, Portal
 } from '@chakra-ui/react'
 import { ChevronDownIcon, ChevronUpIcon, SettingsIcon } from '@chakra-ui/icons'
 import cytoscape, { Core, NodeSingular, Collection } from 'cytoscape'
 // @ts-ignore
 import cola from 'cytoscape-cola'
+import { NodeTooltip, EdgeTooltip } from './GraphTooltip'
+import { createRoot } from 'react-dom/client'
+import { useGesture } from '@use-gesture/react'
+import { motion } from 'framer-motion'
 
 // Register the cola layout
 cytoscape.use(cola)
@@ -33,6 +37,14 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   const [currentLayout, setCurrentLayout] = useState('grid')
   const [nodeTypes, setNodeTypes] = useState<string[]>([])
   const [showControls, setShowControls] = useState(false)
+  const [tooltipData, setTooltipData] = useState<{
+    type: 'node' | 'edge' | null
+    data: any
+    position: { x: number; y: number }
+  } | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+  const [isTouch, setIsTouch] = useState(false)
+  const [controlsCollapsed, setControlsCollapsed] = useState(false)
   const { isOpen: isGroupModalOpen, onOpen: onGroupModalOpen, onClose: onGroupModalClose } = useDisclosure()
   const toast = useToast()
 
@@ -42,6 +54,32 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   const textColor = useColorModeValue("gray.600", "gray.300")
   const controlsBg = useColorModeValue("white", "gray.700")
   const hoverBg = useColorModeValue("gray.50", "gray.600")
+
+  // Mobile and touch detection
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      const isSmallScreen = window.innerWidth <= 768
+      setIsMobile(isMobileDevice || isSmallScreen)
+    }
+
+    const checkTouch = () => {
+      setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0)
+    }
+
+    checkMobile()
+    checkTouch()
+    
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Auto-collapse controls on mobile for better space usage
+  useEffect(() => {
+    if (isMobile) {
+      setShowControls(false)
+    }
+  }, [isMobile])
 
   // Helper function to get node icon path with fallback (now using SVG)
   const getNodeIconPath = (nodeType: string) => {
@@ -94,6 +132,23 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       const cy = cytoscape({
         container: containerRef.current,
         elements: elements,
+        
+        // Mobile-optimized settings
+        wheelSensitivity: isMobile ? 0.1 : 0.5,
+        minZoom: 0.1,
+        maxZoom: 3,
+        zoomingEnabled: true,
+        userZoomingEnabled: true,
+        panningEnabled: true,
+        userPanningEnabled: true,
+        boxSelectionEnabled: !isMobile, // Disable on mobile for better touch
+        selectionType: isMobile ? 'single' : 'additive',
+        touchTapThreshold: 8,
+        desktopTapThreshold: 4,
+        autolock: false,
+        autoungrabify: false,
+        autounselectify: false,
+
         style: [
           {
             selector: 'node',
@@ -255,6 +310,54 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         console.log('Edge clicked:', edge.data())
       })
 
+      // Tooltip event handlers
+      cy.on('mouseover', 'node', function(evt) {
+        const node = evt.target as NodeSingular
+        const renderedPosition = node.renderedPosition()
+        const containerOffset = containerRef.current?.getBoundingClientRect()
+        
+        if (containerOffset) {
+          setTooltipData({
+            type: 'node',
+            data: node.data(),
+            position: {
+              x: containerOffset.left + renderedPosition.x,
+              y: containerOffset.top + renderedPosition.y - 80 // Position above node
+            }
+          })
+        }
+      })
+
+      cy.on('mouseout', 'node', function(evt) {
+        setTimeout(() => setTooltipData(null), 150) // Small delay for smooth transition
+      })
+
+      cy.on('mouseover', 'edge', function(evt) {
+        const edge = evt.target
+        const renderedMidpoint = edge.renderedMidpoint()
+        const containerOffset = containerRef.current?.getBoundingClientRect()
+        
+        if (containerOffset) {
+          setTooltipData({
+            type: 'edge',
+            data: edge.data(),
+            position: {
+              x: containerOffset.left + renderedMidpoint.x,
+              y: containerOffset.top + renderedMidpoint.y - 60 // Position above edge
+            }
+          })
+        }
+      })
+
+      cy.on('mouseout', 'edge', function(evt) {
+        setTimeout(() => setTooltipData(null), 150) // Small delay for smooth transition
+      })
+
+      // Hide tooltip on pan/zoom
+      cy.on('pan zoom', function() {
+        setTooltipData(null)
+      })
+
       // Fit the graph after initialization
       cy.ready(() => {
         setTimeout(() => {
@@ -345,30 +448,135 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   const runLayout = () => {
     if (cyRef.current) {
       try {
-        const layout = cyRef.current.layout({ name: currentLayout })
+        // Enhanced layout configuration with animations
+        const layoutConfig: any = {
+          name: currentLayout,
+          animate: true,
+          animationDuration: 800,
+          animationEasing: 'ease-out-cubic',
+          fit: true,
+          padding: 50
+        }
+
+        // Layout-specific configurations
+        switch (currentLayout) {
+          case 'cola':
+            Object.assign(layoutConfig, {
+              infinite: false,
+              ungrabifyWhileSimulating: false,
+              userConstIter: 0,
+              allConstIter: 1,
+              ready: () => {
+                setTimeout(() => cyRef.current?.fit(undefined, 50), 100)
+              }
+            })
+            break
+          
+          case 'cose':
+            Object.assign(layoutConfig, {
+              idealEdgeLength: 100,
+              nodeOverlap: 20,
+              refresh: 20,
+              randomize: false,
+              componentSpacing: 100,
+              nodeRepulsion: 400000,
+              edgeElasticity: 100,
+              nestingFactor: 5,
+              gravity: 80,
+              numIter: 1000,
+              initialTemp: 200,
+              coolingFactor: 0.95,
+              minTemp: 1.0
+            })
+            break
+          
+          case 'concentric':
+            Object.assign(layoutConfig, {
+              startAngle: 3 / 2 * Math.PI,
+              clockwise: true,
+              equidistant: false,
+              minNodeSpacing: 10,
+              avoidOverlap: true,
+              concentric: (node: any) => node.degree(),
+              levelWidth: () => 1
+            })
+            break
+          
+          case 'circle':
+            Object.assign(layoutConfig, {
+              avoidOverlap: true,
+              startAngle: 3 / 2 * Math.PI,
+              clockwise: true,
+              animationDuration: 600
+            })
+            break
+          
+          case 'grid':
+            Object.assign(layoutConfig, {
+              avoidOverlap: true,
+              avoidOverlapPadding: 10,
+              condense: false,
+              animationDuration: 500
+            })
+            break
+        }
+
+        const layout = cyRef.current.layout(layoutConfig)
         layout.run()
-        // Use cy.fit() separately after layout
-        setTimeout(() => {
-          cyRef.current?.fit()
-        }, 100)
+
+        // Enhanced completion handling
+        layout.on('layoutstop', () => {
+          setTimeout(() => {
+            cyRef.current?.fit(undefined, 50)
+          }, 100)
+        })
+
       } catch (err) {
         console.error('Layout error:', err)
+        toast({
+          title: 'Layout Error',
+          description: 'Failed to apply layout',
+          status: 'error',
+          duration: 3000,
+          isClosable: true
+        })
       }
     }
   }
 
   const changeLayout = (layoutName: string) => {
+    if (layoutName === currentLayout) return // Avoid unnecessary changes
+    
     setCurrentLayout(layoutName)
+    
     if (cyRef.current) {
-      try {
-        const layout = cyRef.current.layout({ name: layoutName })
-        layout.run()
-        setTimeout(() => {
-          cyRef.current?.fit()
-        }, 100)
-      } catch (err) {
-        console.error('Layout error:', err)
-      }
+      // Add smooth transition effect
+      cyRef.current.nodes().animate({
+        style: { opacity: 0.7 }
+      }, {
+        duration: 150,
+        complete: () => {
+          runLayout()
+          // Fade back in with slight delay
+          setTimeout(() => {
+            cyRef.current?.nodes().animate({
+              style: { opacity: 1 }
+            }, {
+              duration: 250
+            })
+          }, 200)
+        }
+      })
+
+      // Show visual feedback
+      toast({
+        title: 'Layout Changed',
+        description: `Switching to ${layoutName} layout`,
+        status: 'info',
+        duration: 2000,
+        isClosable: true,
+        position: 'bottom-right'
+      })
     }
   }
 
@@ -611,46 +819,112 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   return (
     <Box height="100%">
       {/* Graph Controls */}
-      <Box bg={controlsBg} borderBottom="1px solid" borderColor={borderColor} p={3}>
-        <HStack justify="space-between" align="center">
-          <HStack spacing={3}>
-            <Select 
-              size="sm" 
-              width="140px" 
-              value={currentLayout}
-              onChange={(e) => changeLayout(e.target.value)}
-            >
-              <option value="grid">Grid Layout</option>
-              <option value="cola">Cola Layout</option>
-              <option value="circle">Circle Layout</option>
-              <option value="concentric">Concentric</option>
-              <option value="cose">Cose Layout</option>
-            </Select>
+      <Box bg={controlsBg} borderBottom="1px solid" borderColor={borderColor} p={isMobile ? 2 : 3}>
+        <VStack spacing={2} align="stretch">
+          {/* Primary controls */}
+          <HStack justify="space-between" align="center">
+            <HStack spacing={isMobile ? 2 : 3}>
+              <Select 
+                size={isMobile ? "md" : "sm"}
+                width={isMobile ? "160px" : "140px"}
+                value={currentLayout}
+                onChange={(e) => changeLayout(e.target.value)}
+              >
+                <option value="grid">Grid Layout</option>
+                <option value="cola">Cola Layout</option>
+                <option value="circle">Circle Layout</option>
+                <option value="concentric">Concentric</option>
+                <option value="cose">Cose Layout</option>
+              </Select>
 
-            <Tooltip label="Toggle grouping controls">
-              <IconButton
-                icon={showControls ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                aria-label="Toggle controls"
-                size="sm"
-                variant="outline"
-                onClick={() => setShowControls(!showControls)}
-              />
-            </Tooltip>
+              <Tooltip label="Toggle grouping controls">
+                <IconButton
+                  icon={showControls ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                  aria-label="Toggle controls"
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
+                  onClick={() => setShowControls(!showControls)}
+                />
+              </Tooltip>
+
+              {/* Mobile-specific quick actions */}
+              {isMobile && nodeCount > 0 && (
+                <IconButton
+                  icon={<SettingsIcon />}
+                  aria-label="Fit graph"
+                  size="md"
+                  variant="outline"
+                  onClick={() => {
+                    if (cyRef.current) {
+                      cyRef.current.fit()
+                      cyRef.current.center()
+                    }
+                  }}
+                />
+              )}
+            </HStack>
+
+            {selectedNodes.length > 0 && (
+              <Badge 
+                colorScheme="blue" 
+                fontSize={isMobile ? "sm" : "xs"}
+                px={isMobile ? 3 : 2}
+                py={isMobile ? 1 : 0}
+              >
+                {selectedNodes.length} selected
+              </Badge>
+            )}
           </HStack>
 
-          {selectedNodes.length > 0 && (
-            <Badge colorScheme="blue" fontSize="xs">
-              {selectedNodes.length} selected
-            </Badge>
+          {/* Mobile zoom controls */}
+          {isMobile && nodeCount > 0 && (
+            <HStack justify="center" spacing={4}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  if (cyRef.current) {
+                    const zoom = cyRef.current.zoom()
+                    cyRef.current.zoom(Math.max(0.1, zoom - 0.2))
+                  }
+                }}
+              >
+                Zoom Out
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  if (cyRef.current) {
+                    cyRef.current.fit()
+                    cyRef.current.center()
+                  }
+                }}
+              >
+                Fit
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  if (cyRef.current) {
+                    const zoom = cyRef.current.zoom()
+                    cyRef.current.zoom(Math.min(3, zoom + 0.2))
+                  }
+                }}
+              >
+                Zoom In
+              </Button>
+            </HStack>
           )}
-        </HStack>
+        </VStack>
 
         <Collapse in={showControls} animateOpacity>
           <Box pt={3}>
-            <Wrap spacing={2}>
+            <Wrap spacing={isMobile ? 3 : 2}>
               <WrapItem>
                 <Button 
-                  size="sm" 
+                  size={isMobile ? "md" : "sm"}
                   colorScheme="blue" 
                   onClick={groupByNodeType}
                   isDisabled={nodeTypes.length <= 1}
@@ -660,7 +934,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
               </WrapItem>
               <WrapItem>
                 <Button 
-                  size="sm" 
+                  size={isMobile ? "md" : "sm"}
                   colorScheme="teal" 
                   onClick={onGroupModalOpen}
                   isDisabled={selectedNodes.length < 2}
@@ -670,7 +944,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
               </WrapItem>
               <WrapItem>
                 <Button 
-                  size="sm" 
+                  size={isMobile ? "md" : "sm"}
                   colorScheme="orange" 
                   onClick={ungroupSelected}
                   isDisabled={selectedNodes.length === 0}
@@ -680,7 +954,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
               </WrapItem>
               <WrapItem>
                 <Button 
-                  size="sm" 
+                  size={isMobile ? "md" : "sm"}
                   variant="outline" 
                   onClick={resetGroups}
                   isDisabled={Object.keys(groups).length === 0}
@@ -691,12 +965,19 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
             </Wrap>
             
             {nodeTypes.length > 0 && (
-              <Box mt={2}>
-                <Text fontSize="xs" color={textColor} mb={1}>Available Types:</Text>
-                <Wrap spacing={1}>
+              <Box mt={3}>
+                <Text fontSize="xs" color={textColor} mb={2}>Available Types:</Text>
+                <Wrap spacing={isMobile ? 2 : 1}>
                   {nodeTypes.map(type => (
                     <WrapItem key={type}>
-                      <Badge size="sm" colorScheme="gray">{type}</Badge>
+                      <Badge 
+                        size={isMobile ? "md" : "sm"} 
+                        colorScheme="gray"
+                        px={isMobile ? 3 : 2}
+                        py={isMobile ? 1 : 0}
+                      >
+                        {type}
+                      </Badge>
                     </WrapItem>
                   ))}
                 </Wrap>
@@ -781,6 +1062,26 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
           </ModalFooter>
         </ModalContent>
       </Modal>
+
+      {/* Interactive Tooltip */}
+      {tooltipData && (
+        <Portal>
+          <Box
+            position="fixed"
+            top={tooltipData.position.y}
+            left={tooltipData.position.x}
+            transform="translate(-50%, -100%)"
+            zIndex={9999}
+            pointerEvents="none"
+          >
+            {tooltipData.type === 'node' ? (
+              <NodeTooltip node={tooltipData.data} />
+            ) : (
+              <EdgeTooltip edge={tooltipData.data} />
+            )}
+          </Box>
+        </Portal>
+      )}
     </Box>
   )
 }
