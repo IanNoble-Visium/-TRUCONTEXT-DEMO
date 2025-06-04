@@ -1036,7 +1036,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         // Restore all original edges
         Object.values(groups).forEach(groupData => {
           if (groupData.originalEdges.length > 0) {
-            cyRef.current!.add(groupData.originalEdges)
+            try {
+              console.log('Restoring original edges for reset, group:', groupData.id, 'Edges:', groupData.originalEdges.length)
+              cyRef.current!.add(groupData.originalEdges)
+            } catch (error) {
+              console.error('Error restoring original edges during reset for group:', groupData.id, error)
+            }
           }
         })
         
@@ -1180,7 +1185,16 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
           }
         })
 
-        // Create and add meta-edges
+        // Remove original edges between grouped nodes and external nodes to avoid duplication
+        nodeIds.forEach(nodeId => {
+          const connectedEdges = cyRef.current!.edges(`[source = "${nodeId}"], [target = "${nodeId}"]`)
+          if (connectedEdges.length > 0) {
+            console.log('Removing', connectedEdges.length, 'original edges connected to node:', nodeId)
+            cyRef.current!.remove(connectedEdges)
+          }
+        })
+        
+        // Create meta-edges with validation
         const metaEdges = createMetaEdges(groupId, nodeIds)
         if (metaEdges.length > 0) {
           cyRef.current!.add(metaEdges)
@@ -1239,7 +1253,22 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       
       // Restore original edges for this group
       if (groupData.originalEdges.length > 0) {
-        cyRef.current.add(groupData.originalEdges)
+        try {
+          console.log('Restoring original edges for type group:', targetType, 'Edges:', groupData.originalEdges.length)
+          
+          // Filter out any edges that might already exist to prevent duplicates
+          const existingEdgeIds = new Set(cyRef.current.edges().map(edge => edge.id()))
+          const edgesToRestore = groupData.originalEdges.filter(edge => !existingEdgeIds.has(edge.data.id))
+          
+          if (edgesToRestore.length > 0) {
+            cyRef.current.add(edgesToRestore)
+            console.log('Successfully restored', edgesToRestore.length, 'original edges for type group')
+          } else {
+            console.log('All original edges already exist for type group, no restoration needed')
+          }
+        } catch (error) {
+          console.error('Error restoring original edges for type group:', targetType, error)
+        }
       }
 
       // Remove the group node
@@ -1308,6 +1337,20 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       }
     })
 
+    // Verify the group node was created successfully
+    const groupNode = cyRef.current.nodes(`[id = "${groupId}"]`)
+    if (groupNode.length === 0) {
+      console.error('Failed to create group node:', groupId)
+      toast({
+        title: 'Group Creation Failed',
+        description: 'Failed to create group node',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      })
+      return
+    }
+
     // Hide grouped nodes
     nodeIds.forEach(nodeId => {
       const node = cyRef.current!.nodes(`[id = "${nodeId}"]`)
@@ -1316,10 +1359,39 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       }
     })
 
-    // Create and add meta-edges
+    // Create meta-edges with validation
     const metaEdges = createMetaEdges(groupId, nodeIds)
+    
+    // Add meta-edges with error handling
     if (metaEdges.length > 0) {
-      cyRef.current.add(metaEdges)
+      try {
+        console.log('Adding meta-edges for group:', groupId, 'Edges:', metaEdges)
+        
+        // Validate that all referenced nodes exist before adding edges
+        const validMetaEdges = metaEdges.filter(edge => {
+          const sourceExists = cyRef.current!.nodes(`[id = "${edge.data.source}"]`).length > 0
+          const targetExists = cyRef.current!.nodes(`[id = "${edge.data.target}"]`).length > 0
+          
+          if (!sourceExists) {
+            console.warn('Source node does not exist for edge:', edge.data.id, 'Source:', edge.data.source)
+          }
+          if (!targetExists) {
+            console.warn('Target node does not exist for edge:', edge.data.id, 'Target:', edge.data.target)
+          }
+          
+          return sourceExists && targetExists
+        })
+        
+        if (validMetaEdges.length > 0) {
+          cyRef.current.add(validMetaEdges)
+          console.log('Successfully added', validMetaEdges.length, 'meta-edges')
+        } else {
+          console.warn('No valid meta-edges to add for group:', groupId)
+        }
+      } catch (error) {
+        console.error('Error adding meta-edges:', error)
+        // Continue without meta-edges rather than failing completely
+      }
     }
 
     setGroups(prev => ({
@@ -1370,6 +1442,20 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       }
     })
 
+    // Verify the group node was created successfully
+    const groupNode = cyRef.current.nodes(`[id = "${groupId}"]`)
+    if (groupNode.length === 0) {
+      console.error('Failed to create custom group node:', groupId)
+      toast({
+        title: 'Group Creation Failed',
+        description: 'Failed to create custom group node',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      })
+      return
+    }
+
     // Hide selected nodes
     selectedNodes.forEach(nodeId => {
       const node = cyRef.current!.nodes(`[id = "${nodeId}"]`)
@@ -1379,10 +1465,51 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       }
     })
 
-    // Create and add meta-edges
+    // Remove original edges between grouped nodes and external nodes to avoid duplication
+    selectedNodes.forEach(nodeId => {
+      const connectedEdges = cyRef.current!.edges(`[source = "${nodeId}"], [target = "${nodeId}"]`)
+      if (connectedEdges.length > 0) {
+        console.log('Removing', connectedEdges.length, 'original edges connected to custom node:', nodeId)
+        cyRef.current!.remove(connectedEdges)
+      }
+    })
+    
+    if (edgesToRemove.length > 0) {
+      console.log('Removing', edgesToRemove.length, 'original edges for custom grouping')
+      cyRef.current.remove(edgesToRemove)
+    }
+
+    // Create and add meta-edges with validation
     const metaEdges = createMetaEdges(groupId, selectedNodes)
     if (metaEdges.length > 0) {
-      cyRef.current!.add(metaEdges)
+      try {
+        console.log('Adding meta-edges for custom group:', groupId, 'Edges:', metaEdges)
+        
+        // Validate that all referenced nodes exist before adding edges
+        const validMetaEdges = metaEdges.filter(edge => {
+          const sourceExists = cyRef.current!.nodes(`[id = "${edge.data.source}"]`).length > 0
+          const targetExists = cyRef.current!.nodes(`[id = "${edge.data.target}"]`).length > 0
+          
+          if (!sourceExists) {
+            console.warn('Source node does not exist for custom edge:', edge.data.id, 'Source:', edge.data.source)
+          }
+          if (!targetExists) {
+            console.warn('Target node does not exist for custom edge:', edge.data.id, 'Target:', edge.data.target)
+          }
+          
+          return sourceExists && targetExists
+        })
+        
+        if (validMetaEdges.length > 0) {
+          cyRef.current!.add(validMetaEdges)
+          console.log('Successfully added', validMetaEdges.length, 'custom meta-edges')
+        } else {
+          console.warn('No valid meta-edges to add for custom group:', groupId)
+        }
+      } catch (error) {
+        console.error('Error adding custom meta-edges:', error)
+        // Continue without meta-edges rather than failing completely
+      }
     }
 
     setGroups(prev => ({ 
@@ -1428,6 +1555,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         const groupData = groups[nodeId]
         
         if (groupData) {
+          console.log('Ungrouping group:', nodeId, 'with', groupData.members.length, 'members')
+          
           // Show all nodes in the group
           groupData.members.forEach(id => {
             const groupedNode = cyRef.current!.nodes(`[id = "${id}"]`)
@@ -1436,12 +1565,29 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
             }
           })
 
-          // Remove meta-edges
-          cyRef.current!.remove(cyRef.current!.edges('[type = "META"]'))
+          // Remove ONLY meta-edges for this specific group
+          const groupMetaEdges = cyRef.current!.edges(`[source = "${nodeId}"], [target = "${nodeId}"]`)
+          console.log('Removing meta-edges for group:', nodeId, 'Count:', groupMetaEdges.length)
+          cyRef.current!.remove(groupMetaEdges)
           
-          // Restore original edges
+          // Restore original edges for this specific group
           if (groupData.originalEdges.length > 0) {
-            cyRef.current!.add(groupData.originalEdges)
+            try {
+              console.log('Restoring original edges for group:', nodeId, 'Edges:', groupData.originalEdges.length)
+              
+              // Filter out any edges that might already exist to prevent duplicates
+              const existingEdgeIds = new Set(cyRef.current!.edges().map(edge => edge.id()))
+              const edgesToRestore = groupData.originalEdges.filter(edge => !existingEdgeIds.has(edge.data.id))
+              
+              if (edgesToRestore.length > 0) {
+                cyRef.current!.add(edgesToRestore)
+                console.log('Successfully restored', edgesToRestore.length, 'original edges')
+              } else {
+                console.log('All original edges already exist, no restoration needed')
+              }
+            } catch (error) {
+              console.error('Error restoring original edges for group:', nodeId, error)
+            }
           }
 
           // Remove the group node
@@ -1510,7 +1656,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     // Restore all original edges
     Object.values(groups).forEach(groupData => {
       if (groupData.originalEdges.length > 0) {
-        cyRef.current!.add(groupData.originalEdges)
+        try {
+          console.log('Restoring original edges for reset, group:', groupData.id, 'Edges:', groupData.originalEdges.length)
+          cyRef.current!.add(groupData.originalEdges)
+        } catch (error) {
+          console.error('Error restoring original edges during reset for group:', groupData.id, error)
+        }
       }
     })
 
@@ -2023,8 +2174,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       {/* Graph Container */}
       <Box
         ref={containerRef}
-        height={`calc(100vh - ${controlsHeight}px - 120px)`} // Account for page header and padding
-        minHeight="400px"
+        height={`calc(100vh - ${controlsHeight + 140}px)`} // More conservative calculation
+        maxHeight={`calc(100vh - ${controlsHeight + 140}px)`} // Enforce maximum height
+        minHeight="300px" // Reduced minimum height
         width="100%"
         bg={bgColor}
         position="relative"
