@@ -1474,11 +1474,6 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       }
     })
     
-    if (edgesToRemove.length > 0) {
-      console.log('Removing', edgesToRemove.length, 'original edges for custom grouping')
-      cyRef.current.remove(edgesToRemove)
-    }
-
     // Create and add meta-edges with validation
     const metaEdges = createMetaEdges(groupId, selectedNodes)
     if (metaEdges.length > 0) {
