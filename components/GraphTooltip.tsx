@@ -67,7 +67,7 @@ export const NodeTooltip: React.FC<NodeTooltipProps> = ({ node }) => {
       initial={{ opacity: 0, scale: 0.9, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: -10 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
     >
       <VStack align="start" spacing={3}>
         <HStack justify="space-between" w="full">
@@ -152,7 +152,7 @@ export const EdgeTooltip: React.FC<EdgeTooltipProps> = ({ edge }) => {
       initial={{ opacity: 0, scale: 0.9, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: -10 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
     >
       <VStack align="start" spacing={3}>
         <HStack justify="space-between" w="full">

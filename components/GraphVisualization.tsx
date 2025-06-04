@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { 
   Box, Alert, AlertIcon, Spinner, Text, VStack, HStack, 
   Select, Button, Modal, ModalOverlay, ModalContent, ModalHeader, 
@@ -11,7 +11,8 @@ import {
 } from '@chakra-ui/react'
 import { 
   ChevronDownIcon, ChevronUpIcon, SettingsIcon, 
-  ArrowUpIcon, ArrowDownIcon, ViewIcon, ViewOffIcon 
+  ArrowUpIcon, ArrowDownIcon, ViewIcon, ViewOffIcon,
+  RepeatIcon
 } from '@chakra-ui/icons'
 import cytoscape, { Core, NodeSingular, Collection } from 'cytoscape'
 // @ts-ignore
@@ -61,8 +62,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   const [isMobile, setIsMobile] = useState(false)
   const [isTouch, setIsTouch] = useState(false)
   const [controlsCollapsed, setControlsCollapsed] = useState(false)
+  const [layoutRunning, setLayoutRunning] = useState(false)
   const { isOpen: isGroupModalOpen, onOpen: onGroupModalOpen, onClose: onGroupModalClose } = useDisclosure()
   const toast = useToast()
+  const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const centerFitTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const controlsRef = useRef<HTMLDivElement>(null)
+  const [controlsHeight, setControlsHeight] = useState(80)
 
   // Color mode values
   const bgColor = useColorModeValue("white", "gray.800")
@@ -70,6 +76,32 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   const textColor = useColorModeValue("gray.600", "gray.300")
   const controlsBg = useColorModeValue("white", "gray.700")
   const hoverBg = useColorModeValue("gray.50", "gray.600")
+
+  // Optimized tooltip position update function
+  const updateTooltipPosition = useCallback((mouseX: number, mouseY: number) => {
+    setTooltipData(prev => prev ? {
+      ...prev,
+      position: { x: mouseX, y: mouseY }
+    } : null)
+  }, [])
+
+  // Clear tooltip with delay to prevent flickering
+  const clearTooltipWithDelay = useCallback(() => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current)
+    }
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setTooltipData(null)
+    }, 150) // Small delay to prevent flickering
+  }, [])
+
+  // Clear tooltip immediately (for mouseover events)
+  const clearTooltipTimeout = useCallback(() => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current)
+      tooltipTimeoutRef.current = null
+    }
+  }, [])
 
   // Mobile and touch detection
   useEffect(() => {
@@ -299,6 +331,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
 
     // Re-run layout
     setTimeout(() => runLayout(), 100)
+    
+    // Note: Users can now manually use Center & Fit or Reset View to reposition
   }
 
   const initializeCytoscape = (processedNodes: any[], processedEdges: any[]) => {
@@ -319,10 +353,24 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       return false
     }
 
+    // Clean up any existing instance and running operations
     if (cyRef.current) {
-      cyRef.current.destroy()
+      console.log('Cleaning up existing Cytoscape instance')
+      try {
+        // Stop any running layouts
+        cyRef.current.elements().stop()
+        // Remove all event listeners
+        cyRef.current.removeAllListeners()
+        // Destroy the instance
+        cyRef.current.destroy()
+      } catch (error) {
+        console.warn('Error during cleanup:', error)
+      }
       cyRef.current = null
     }
+
+    // Reset layout running state
+    setLayoutRunning(false)
 
     const elements = [...processedNodes, ...processedEdges]
     console.log('Initializing Cytoscape with elements:', elements)
@@ -529,30 +577,77 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       // Enhanced hover tooltips
       cy.on('mouseover', 'node', (event) => {
         const node = event.target
-        const renderedPosition = node.renderedPosition()
+        const mouseEvent = event.originalEvent
+        
+        // Clear any pending timeout
+        clearTooltipTimeout()
+        
+        // Get the container's bounding rect to calculate proper positioning
+        const containerRect = containerRef.current?.getBoundingClientRect()
+        if (!containerRect || !mouseEvent) return
+        
+        const mouseX = mouseEvent.pageX
+        const mouseY = mouseEvent.pageY
+        
         setTooltipData({
           type: 'node',
           data: node.data(),
-          position: { x: renderedPosition.x, y: renderedPosition.y }
+          position: { x: mouseX, y: mouseY }
         })
       })
 
       cy.on('mouseout', 'node', () => {
-        setTooltipData(null)
+        clearTooltipWithDelay()
       })
 
       cy.on('mouseover', 'edge', (event) => {
         const edge = event.target
-        const renderedMidpoint = edge.renderedMidpoint()
+        const mouseEvent = event.originalEvent
+        
+        // Clear any pending timeout
+        clearTooltipTimeout()
+        
+        // Get the container's bounding rect to calculate proper positioning
+        const containerRect = containerRef.current?.getBoundingClientRect()
+        if (!containerRect || !mouseEvent) return
+        
+        const mouseX = mouseEvent.pageX
+        const mouseY = mouseEvent.pageY
+        
         setTooltipData({
           type: 'edge',
           data: edge.data(),
-          position: { x: renderedMidpoint.x, y: renderedMidpoint.y }
+          position: { x: mouseX, y: mouseY }
         })
       })
 
       cy.on('mouseout', 'edge', () => {
-        setTooltipData(null)
+        clearTooltipWithDelay()
+      })
+
+      // Add mousemove events to keep tooltips following the mouse cursor
+      cy.on('mousemove', 'node', (event) => {
+        if (!tooltipData || tooltipData.type !== 'node') return
+        
+        const mouseEvent = event.originalEvent
+        if (!mouseEvent) return
+        
+        const mouseX = mouseEvent.pageX
+        const mouseY = mouseEvent.pageY
+        
+        updateTooltipPosition(mouseX, mouseY)
+      })
+
+      cy.on('mousemove', 'edge', (event) => {
+        if (!tooltipData || tooltipData.type !== 'edge') return
+        
+        const mouseEvent = event.originalEvent
+        if (!mouseEvent) return
+        
+        const mouseX = mouseEvent.pageX
+        const mouseY = mouseEvent.pageY
+        
+        updateTooltipPosition(mouseX, mouseY)
       })
 
       cyRef.current = cy
@@ -630,19 +725,36 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       return
     }
 
+    if (layoutRunning) {
+      console.log('Layout already running, skipping...')
+      return
+    }
+
     const cy = cyRef.current
     console.log('Running layout:', currentLayout, 'on', cy.nodes().length, 'nodes')
+    
+    setLayoutRunning(true)
+    
+    // Store current group state before layout
+    const visibleNodes = cy.nodes(':visible')
+    const hiddenNodes = cy.nodes(':hidden')
+    console.log('Preserving group state:', {
+      totalNodes: cy.nodes().length,
+      visibleNodes: visibleNodes.length,
+      hiddenNodes: hiddenNodes.length,
+      activeGroups: Object.keys(groups).length
+    })
     
     // Layout configurations optimized for different types
     const layoutConfigs: { [key: string]: any } = {
       grid: {
         name: 'grid',
-        rows: Math.ceil(Math.sqrt(cy.nodes().length)),
-        cols: Math.ceil(Math.sqrt(cy.nodes().length)),
+        rows: Math.ceil(Math.sqrt(visibleNodes.length)),
+        cols: Math.ceil(Math.sqrt(visibleNodes.length)),
         padding: 30,
         spacingFactor: 1.2,
         animate: true,
-        animationDuration: 800,
+        animationDuration: 500,
         animationEasing: 'ease-out'
       },
       cose: {
@@ -663,7 +775,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         coolingFactor: 0.95,
         minTemp: 1.0,
         animate: true,
-        animationDuration: 800,
+        animationDuration: 500,
         animationEasing: 'ease-out'
       },
       circle: {
@@ -671,7 +783,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         radius: Math.min(400, cy.container()?.clientWidth ? cy.container()!.clientWidth / 3 : 300),
         padding: 30,
         animate: true,
-        animationDuration: 800,
+        animationDuration: 500,
         animationEasing: 'ease-out'
       },
       concentric: {
@@ -680,7 +792,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         levelWidth: () => 2,
         padding: 30,
         animate: true,
-        animationDuration: 800,
+        animationDuration: 500,
         animationEasing: 'ease-out'
       },
       breadthfirst: {
@@ -690,7 +802,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         padding: 30,
         spacingFactor: 1.75,
         animate: true,
-        animationDuration: 800,
+        animationDuration: 500,
         animationEasing: 'ease-out'
       }
     }
@@ -698,33 +810,60 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     const config = layoutConfigs[currentLayout] || layoutConfigs.grid
     console.log('Using layout config:', config)
     
-    // Add opacity transition during layout
-    cy.nodes().animate({
-      style: { opacity: 0.7 }
-    }, {
-      duration: 200,
-      complete: () => {
-        console.log('Starting layout animation')
-        const layout = cy.layout(config)
-        layout.run()
+    // Simplified layout without nested animations to prevent infinite loops
+    console.log('Starting layout with group preservation')
+    
+    try {
+      // Run layout only on visible nodes (preserves groups)
+      const layout = visibleNodes.layout(config)
+      
+      // Use one-time event listeners to avoid multiple callbacks and cleanup properly
+      layout.one('layoutstop', () => {
+        console.log('Layout completed, restoring group state')
         
-        layout.one('layoutstop', () => {
-          console.log('Layout completed')
-          cy.nodes().animate({
-            style: { opacity: 1 }
-          }, {
-            duration: 200,
-            complete: () => {
-              console.log('Layout animation completed')
+        try {
+          // Ensure group visibility state is maintained after layout
+          Object.entries(groups).forEach(([groupId, groupData]) => {
+            if (!groupData.expanded) {
+              // Ensure grouped nodes remain hidden
+              groupData.members.forEach(nodeId => {
+                const node = cy.nodes(`[id = "${nodeId}"]`)
+                if (node.length > 0 && node.style('display') !== 'none') {
+                  node.style('display', 'none')
+                }
+              })
             }
           })
-        })
-      }
-    })
+          
+          console.log('Group state preserved successfully')
+          
+        } catch (error) {
+          console.error('Error preserving group state:', error)
+        } finally {
+          setLayoutRunning(false)
+        }
+      })
+      
+      layout.one('layouterror', (error: any) => {
+        console.error('Layout error:', error)
+        setLayoutRunning(false)
+      })
+      
+      layout.run()
+    } catch (error) {
+      console.error('Error starting layout:', error)
+      setLayoutRunning(false)
+    }
   }
 
   // Change layout with smooth transition
   const changeLayout = (layoutName: string) => {
+    if (layoutRunning) {
+      console.log('Layout currently running, deferring layout change...')
+      setTimeout(() => changeLayout(layoutName), 100)
+      return
+    }
+
     setCurrentLayout(layoutName)
     
     setTimeout(() => {
@@ -737,7 +876,261 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         duration: 2000,
         isClosable: true
       })
+      
+      // Note: Users can now manually use Center & Fit or Reset View to apply layout and reposition
     }, 100)
+  }
+
+  // Center and fit the graph to screen with layout application and visibility reset
+  const centerAndFitGraph = useCallback(() => {
+    if (!cyRef.current) return
+    
+    // Clear any pending center/fit operations to prevent rapid fire calls
+    if (centerFitTimeoutRef.current) {
+      clearTimeout(centerFitTimeoutRef.current)
+    }
+    
+    centerFitTimeoutRef.current = setTimeout(() => {
+      if (!cyRef.current) return
+      
+      try {
+        console.log('Centering and fitting graph with layout application...')
+        
+        // First, ensure ALL nodes and edges are visible (unhide any hidden ones)
+        cyRef.current.elements().style('display', 'element')
+        
+        // Apply the current layout to reorganize the graph
+        console.log('Applying current layout:', currentLayout)
+        const layoutConfig = {
+          name: currentLayout,
+          fit: true,
+          padding: 50,
+          animate: false, // No animation for immediate positioning
+          stop: () => {
+            // After layout completes, do the fitting
+            setTimeout(() => {
+              if (!cyRef.current) return
+              
+              console.log('Layout completed, now fitting to view...')
+              
+              // Get all elements (should all be visible now)
+              const allElements = cyRef.current.elements()
+              console.log('Elements to fit:', {
+                nodes: cyRef.current.nodes().length,
+                edges: cyRef.current.edges().length,
+                total: allElements.length
+              })
+              
+              // Reset zoom and pan first
+              cyRef.current.zoom(1)
+              cyRef.current.pan({ x: 0, y: 0 })
+              
+              // Get container dimensions for zoom calculation
+              const container = cyRef.current.container()
+              if (container) {
+                const containerRect = container.getBoundingClientRect()
+                const nodeCount = cyRef.current.nodes().length
+                
+                console.log('Container bounds check:', {
+                  containerWidth: containerRect.width,
+                  containerHeight: containerRect.height,
+                  viewportWidth: window.innerWidth,
+                  viewportHeight: window.innerHeight,
+                  nodeCount: nodeCount
+                })
+                
+                // Ensure container is actually visible in viewport
+                const containerTop = containerRect.top
+                const containerBottom = containerRect.bottom
+                const viewportHeight = window.innerHeight
+                
+                if (containerBottom > viewportHeight) {
+                  console.warn('Container extends beyond viewport:', {
+                    containerBottom,
+                    viewportHeight,
+                    overflow: containerBottom - viewportHeight
+                  })
+                }
+                
+                // Calculate zoom based on visible container area only
+                const effectiveHeight = Math.min(containerRect.height, viewportHeight - containerTop - 20)
+                const effectiveWidth = containerRect.width
+                
+                // Calculate a conservative zoom based on effective dimensions
+                const baseZoom = Math.min(
+                  effectiveWidth / (nodeCount * 120),   // More conservative width calculation
+                  effectiveHeight / (nodeCount * 120),  // More conservative height calculation
+                  1.0 // Lower maximum zoom
+                )
+                
+                const finalZoom = Math.max(0.3, Math.min(1.0, baseZoom))
+                console.log('Setting calculated zoom:', finalZoom, 'based on effective dimensions:', {
+                  effectiveWidth, 
+                  effectiveHeight,
+                  nodeCount
+                })
+                cyRef.current.zoom(finalZoom)
+              }
+              
+              // Fit with conservative padding to visible area
+              cyRef.current.fit(allElements, 60)
+              
+              // Center the graph
+              cyRef.current.center()
+              
+              const finalZoom = cyRef.current.zoom()
+              console.log('Graph centered and fitted. Final zoom level:', finalZoom)
+              
+              toast({
+                title: 'Graph Centered',
+                description: `Applied ${currentLayout} layout and fitted ${cyRef.current.nodes().length} nodes (zoom: ${finalZoom.toFixed(2)}x)`,
+                status: 'success',
+                duration: 2000,
+                isClosable: true
+              })
+            }, 100)
+          }
+        }
+        
+        // Run the layout
+        cyRef.current.layout(layoutConfig).run()
+        
+      } catch (error) {
+        console.error('Error in centerAndFitGraph:', error)
+        toast({
+          title: 'Center & Fit Error',
+          description: 'Failed to center and fit the graph',
+          status: 'error',
+          duration: 3000,
+          isClosable: true
+        })
+      }
+    }, 200) // 200ms debounce delay
+  }, [currentLayout])
+
+  // Emergency reset view function that applies layout and ensures all nodes are visible
+  const resetView = useCallback(() => {
+    if (!cyRef.current) return
+
+    try {
+      console.log('Emergency view reset with layout application...')
+      
+      // Show all elements that might be hidden
+      cyRef.current.elements().style('display', 'element')
+      
+      // Reset any groups to show individual nodes
+      if (Object.keys(groups).length > 0) {
+        console.log('Resetting groups to show all individual nodes...')
+        
+        // Remove all group nodes
+        Object.keys(groups).forEach(groupId => {
+          const groupNode = cyRef.current!.nodes(`[id = "${groupId}"]`)
+          if (groupNode.length > 0) {
+            groupNode.remove()
+          }
+        })
+        
+        // Remove all meta-edges
+        cyRef.current.remove(cyRef.current.edges('[type = "META"]'))
+        
+        // Restore all original edges
+        Object.values(groups).forEach(groupData => {
+          if (groupData.originalEdges.length > 0) {
+            cyRef.current!.add(groupData.originalEdges)
+          }
+        })
+        
+        // Clear groups state
+        setGroups({})
+      }
+      
+      // Apply the current layout
+      console.log('Applying layout for reset:', currentLayout)
+      const layoutConfig = {
+        name: currentLayout,
+        fit: true,
+        padding: 100,
+        animate: false,
+        stop: () => {
+          // After layout, ensure proper fitting with viewport constraints
+          setTimeout(() => {
+            if (!cyRef.current) return
+            
+            const container = cyRef.current.container()
+            if (container) {
+              const containerRect = container.getBoundingClientRect()
+              const viewportHeight = window.innerHeight
+              const containerTop = containerRect.top
+              
+              console.log('Reset view container check:', {
+                containerHeight: containerRect.height,
+                viewportHeight,
+                containerTop,
+                containerBottom: containerRect.bottom,
+                isFullyVisible: containerRect.bottom <= viewportHeight
+              })
+              
+              // Calculate effective viewing area
+              const effectiveHeight = Math.min(containerRect.height, viewportHeight - containerTop - 20)
+              
+              // Reset zoom and pan first
+              cyRef.current.zoom(1)
+              cyRef.current.pan({ x: 0, y: 0 })
+              
+              // Apply conservative zoom based on effective area
+              const nodeCount = cyRef.current.nodes().length
+              const conservativeZoom = Math.min(
+                containerRect.width / (nodeCount * 150),
+                effectiveHeight / (nodeCount * 150),
+                0.8 // Very conservative maximum
+              )
+              
+              const finalZoom = Math.max(0.3, conservativeZoom)
+              cyRef.current.zoom(finalZoom)
+              
+              // Fit to visible area with generous padding
+              cyRef.current.fit(cyRef.current.elements(), 80)
+              cyRef.current.center()
+              
+              console.log('Reset complete. Final zoom:', finalZoom, 'Effective height:', effectiveHeight)
+            } else {
+              // Fallback without container info
+              cyRef.current.zoom(0.6)
+              cyRef.current.center()
+              cyRef.current.fit(cyRef.current.elements(), 100)
+            }
+            
+            toast({
+              title: 'View Reset Complete',
+              description: `Applied ${currentLayout} layout and reset view for ${cyRef.current.nodes().length} nodes`,
+              status: 'info',
+              duration: 2000,
+              isClosable: true
+            })
+          }, 100)
+        }
+      }
+      
+      cyRef.current.layout(layoutConfig).run()
+      
+    } catch (error) {
+      console.error('Error in resetView:', error)
+      toast({
+        title: 'Reset View Error',
+        description: 'Failed to reset the view',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      })
+    }
+  }, [currentLayout, groups])
+
+  // Helper function to get node count by type
+  const getNodeCountByType = (type: string): number => {
+    if (!cyRef.current) return 0
+    return cyRef.current.nodes().filter(node => 
+      node.data('type') === type && node.data('type') !== 'Group'
+    ).length
   }
 
   // Enhanced group by node type with meta-edges
@@ -818,6 +1211,142 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       duration: 3000,
       isClosable: true
     })
+    
+    // Note: Users can now manually use Center & Fit or Reset View to reposition
+  }
+
+  // Group nodes by a specific type (with toggle functionality)
+  const groupBySpecificType = (targetType: string) => {
+    if (!cyRef.current || !graphData) return
+
+    // Check if a group for this type already exists
+    const existingGroupEntry = Object.entries(groups).find(([, group]) => group.sourceType === targetType)
+    
+    if (existingGroupEntry) {
+      // Ungroup the existing group
+      const [groupId, groupData] = existingGroupEntry
+      
+      // Show all nodes in the group
+      groupData.members.forEach(nodeId => {
+        const groupedNode = cyRef.current!.nodes(`[id = "${nodeId}"]`)
+        if (groupedNode.length > 0) {
+          groupedNode.style('display', 'element')
+        }
+      })
+
+      // Remove meta-edges for this group
+      cyRef.current.remove(cyRef.current.edges(`[source = "${groupId}"], [target = "${groupId}"]`))
+      
+      // Restore original edges for this group
+      if (groupData.originalEdges.length > 0) {
+        cyRef.current.add(groupData.originalEdges)
+      }
+
+      // Remove the group node
+      const groupNode = cyRef.current.nodes(`[id = "${groupId}"]`)
+      if (groupNode.length > 0) {
+        groupNode.remove()
+      }
+
+      // Update groups state
+      setGroups(prev => {
+        const newGroups = { ...prev }
+        delete newGroups[groupId]
+        return newGroups
+      })
+
+      runLayout()
+
+      toast({
+        title: 'Group Removed',
+        description: `Ungrouped ${groupData.members.length} "${targetType}" nodes`,
+        status: 'info',
+        duration: 3000,
+        isClosable: true
+      })
+      
+      // Note: Users can now manually use Center & Fit or Reset View to reposition
+      
+      return
+    }
+
+    // Original grouping logic for when no group exists
+    const nodeIds: string[] = []
+    
+    // Collect nodes of the specific type (excluding existing groups)
+    cyRef.current.nodes().forEach(node => {
+      const type = node.data('type')
+      if (type === targetType && type !== 'Group') {
+        nodeIds.push(node.data('id'))
+      }
+    })
+
+    if (nodeIds.length < 2) {
+      toast({
+        title: 'Cannot Group',
+        description: `Need at least 2 nodes of type "${targetType}" to create a group`,
+        status: 'warning',
+        duration: 3000,
+        isClosable: true
+      })
+      return
+    }
+
+    const groupId = `group-${targetType}-${Date.now()}`
+    
+    // Store original edges before grouping
+    const originalEdges = storeOriginalEdges(nodeIds)
+    
+    // Add group node
+    cyRef.current.add({
+      group: 'nodes',
+      data: { 
+        id: groupId, 
+        label: `${targetType} (${nodeIds.length})`, 
+        type: 'Group',
+        expanded: false
+      }
+    })
+
+    // Hide grouped nodes
+    nodeIds.forEach(nodeId => {
+      const node = cyRef.current!.nodes(`[id = "${nodeId}"]`)
+      if (node.length > 0) {
+        node.style('display', 'none')
+      }
+    })
+
+    // Create and add meta-edges
+    const metaEdges = createMetaEdges(groupId, nodeIds)
+    if (metaEdges.length > 0) {
+      cyRef.current.add(metaEdges)
+    }
+
+    setGroups(prev => ({
+      ...prev,
+      [groupId]: {
+        id: groupId,
+        name: `${targetType} (${nodeIds.length})`,
+        members: nodeIds,
+        expanded: false,
+        originalEdges: originalEdges,
+        metaEdges: metaEdges,
+        type: 'auto',
+        sourceType: targetType
+      }
+    }))
+
+    runLayout()
+
+    toast({
+      title: 'Group Created',
+      description: `Created group for ${nodeIds.length} "${targetType}" nodes`,
+      status: 'success',
+      duration: 3000,
+      isClosable: true
+    })
+    
+    // Note: Users can now manually use Center & Fit or Reset View to reposition
   }
 
   // Enhanced custom group creation
@@ -883,6 +1412,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       duration: 3000,
       isClosable: true
     })
+    
+    // Note: Users can now manually use Center & Fit or Reset View to reposition
   }
 
   // Enhanced ungroup functionality
@@ -933,7 +1464,11 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     })
 
     setSelectedNodes([])
-    runLayout()
+    
+    // Force a re-render to update the Available Types display
+    setTimeout(() => {
+      runLayout()
+    }, 50)
 
     if (ungroupedCount > 0) {
       toast({
@@ -943,6 +1478,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         duration: 3000,
         isClosable: true
       })
+      
+      // Note: Users can now manually use Center & Fit or Reset View to reposition
     }
   }
 
@@ -979,7 +1516,11 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
 
     setGroups({})
     setSelectedNodes([])
-    runLayout()
+    
+    // Force a re-render to update the Available Types display
+    setTimeout(() => {
+      runLayout()
+    }, 50)
 
     toast({
       title: 'Groups Reset',
@@ -988,6 +1529,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       duration: 3000,
       isClosable: true
     })
+    
+    // Note: Users can now manually use Center & Fit or Reset View to reposition
   }
 
   // Separate effect for initializing Cytoscape when container is ready
@@ -1032,18 +1575,62 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       // Start the initialization with retry logic
       setTimeout(() => initializeWithRetry(), 100)
     }
-  }, [graphData, containerReady, currentLayout])
+  }, [graphData, containerReady])
 
   useEffect(() => {
     loadGraphData()
 
     return () => {
+      console.log('Component unmounting, cleaning up...')
+      setLayoutRunning(false)
       if (cyRef.current) {
-        cyRef.current.destroy()
+        try {
+          // Stop any running operations
+          cyRef.current.elements().stop()
+          cyRef.current.removeAllListeners()
+          cyRef.current.destroy()
+        } catch (error) {
+          console.warn('Error during unmount cleanup:', error)
+        }
         cyRef.current = null
       }
     }
   }, [refreshTrigger])
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current)
+      }
+      if (centerFitTimeoutRef.current) {
+        clearTimeout(centerFitTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  // Monitor controls height to adjust graph container size
+  useEffect(() => {
+    const updateControlsHeight = () => {
+      if (controlsRef.current) {
+        const height = controlsRef.current.getBoundingClientRect().height
+        setControlsHeight(height + 10) // Add 10px margin
+      }
+    }
+
+    // Update height on initial load and when controls change
+    updateControlsHeight()
+    
+    // Set up ResizeObserver to monitor controls height changes
+    const resizeObserver = new ResizeObserver(updateControlsHeight)
+    if (controlsRef.current) {
+      resizeObserver.observe(controlsRef.current)
+    }
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [showControls, showGroupPanel, groups, nodeTypes])
 
   if (loading) {
     return (
@@ -1080,7 +1667,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
   return (
     <Box height="100%">
       {/* Graph Controls */}
-      <Box bg={controlsBg} borderBottom="1px solid" borderColor={borderColor} p={isMobile ? 2 : 3}>
+      <Box ref={controlsRef} bg={controlsBg} borderBottom="1px solid" borderColor={borderColor} p={isMobile ? 2 : 3}>
         <VStack spacing={2} align="stretch">
           {/* Primary controls */}
           <HStack justify="space-between" align="center">
@@ -1119,19 +1706,37 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
                 />
               </Tooltip>
 
+              <Tooltip label="Apply current layout and center all nodes">
+                <IconButton
+                  icon={<RepeatIcon />}
+                  aria-label="Center and fit graph"
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
+                  onClick={centerAndFitGraph}
+                  isDisabled={nodeCount === 0}
+                />
+              </Tooltip>
+
+              <Tooltip label="Reset view and unhide all nodes">
+                <IconButton
+                  icon={<SettingsIcon />}
+                  aria-label="Reset view"
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
+                  colorScheme="orange"
+                  onClick={resetView}
+                  isDisabled={nodeCount === 0}
+                />
+              </Tooltip>
+
               {/* Mobile-specific quick actions */}
               {isMobile && nodeCount > 0 && (
                 <IconButton
-                  icon={<SettingsIcon />}
+                  icon={<RepeatIcon />}
                   aria-label="Fit graph"
                   size="md"
                   variant="outline"
-                  onClick={() => {
-                    if (cyRef.current) {
-                      cyRef.current.fit()
-                      cyRef.current.center()
-                    }
-                  }}
+                  onClick={centerAndFitGraph}
                 />
               )}
             </HStack>
@@ -1166,12 +1771,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => {
-                  if (cyRef.current) {
-                    cyRef.current.fit()
-                    cyRef.current.center()
-                  }
-                }}
+                onClick={centerAndFitGraph}
               >
                 Fit
               </Button>
@@ -1234,24 +1834,90 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
                   Reset Groups
                 </Button>
               </WrapItem>
+              <WrapItem>
+                <Button 
+                  size={isMobile ? "md" : "sm"}
+                  colorScheme="gray" 
+                  variant="outline"
+                  onClick={centerAndFitGraph}
+                  isDisabled={nodeCount === 0}
+                >
+                  Apply Layout & Center
+                </Button>
+              </WrapItem>
+              <WrapItem>
+                <Button 
+                  size={isMobile ? "md" : "sm"}
+                  colorScheme="orange" 
+                  variant="outline"
+                  onClick={resetView}
+                  isDisabled={nodeCount === 0}
+                >
+                  Reset & Show All
+                </Button>
+              </WrapItem>
             </Wrap>
             
             {nodeTypes.length > 0 && (
               <Box mt={3}>
-                <Text fontSize="xs" color={textColor} mb={2}>Available Types:</Text>
+                <HStack spacing={2} mb={2} align="center">
+                  <Text fontSize="xs" color={textColor}>Available Types:</Text>
+                  <Badge colorScheme="green" size="xs" variant="outline">
+                    Click to group/ungroup
+                  </Badge>
+                </HStack>
                 <Wrap spacing={isMobile ? 2 : 1}>
-                  {nodeTypes.map(type => (
-                    <WrapItem key={type}>
-                      <Badge 
-                        size={isMobile ? "md" : "sm"} 
-                        colorScheme="gray"
-                        px={isMobile ? 3 : 2}
-                        py={isMobile ? 1 : 0}
-                      >
-                        {type}
-                      </Badge>
-                    </WrapItem>
-                  ))}
+                  {nodeTypes.map(type => {
+                    // Check if this type already has a group
+                    const hasExistingGroup = Object.values(groups).some(group => group.sourceType === type)
+                    
+                    // Count nodes of this type
+                    const nodeCount = getNodeCountByType(type)
+                    const canGroup = nodeCount >= 2 && !hasExistingGroup
+                    
+                    return (
+                      <WrapItem key={type}>
+                        <Tooltip 
+                          label={
+                            hasExistingGroup 
+                              ? `Click to ungroup ${type} nodes` 
+                              : nodeCount < 2 
+                                ? `Need at least 2 ${type} nodes to group` 
+                                : `Click to group ${nodeCount} ${type} nodes`
+                          }
+                          placement="top"
+                          hasArrow
+                        >
+                          <Button
+                            size={isMobile ? "sm" : "xs"}
+                            variant={hasExistingGroup ? "solid" : "outline"}
+                            colorScheme={hasExistingGroup ? "orange" : canGroup ? "green" : "gray"}
+                            isDisabled={!canGroup && !hasExistingGroup}
+                            onClick={() => groupBySpecificType(type)}
+                            px={isMobile ? 3 : 2}
+                            py={isMobile ? 1 : 0}
+                            height={isMobile ? "auto" : "24px"}
+                            fontSize={isMobile ? "sm" : "xs"}
+                            cursor={canGroup || hasExistingGroup ? "pointer" : "not-allowed"}
+                            _hover={canGroup || hasExistingGroup ? { 
+                              transform: "scale(1.05)",
+                              shadow: "md",
+                              colorScheme: hasExistingGroup ? "red" : "blue"
+                            } : {}}
+                            _active={canGroup || hasExistingGroup ? {
+                              transform: "scale(0.95)"
+                            } : {}}
+                            transition="all 0.2s"
+                            borderWidth={canGroup || hasExistingGroup ? "2px" : "1px"}
+                          >
+                            {type} ({nodeCount})
+                            {hasExistingGroup && " 🔄"}
+                            {canGroup && !hasExistingGroup && " 👆"}
+                          </Button>
+                        </Tooltip>
+                      </WrapItem>
+                    )
+                  })}
                 </Wrap>
               </Box>
             )}
@@ -1357,11 +2023,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       {/* Graph Container */}
       <Box
         ref={containerRef}
-        height="calc(100% - 80px)"
+        height={`calc(100vh - ${controlsHeight}px - 120px)`} // Account for page header and padding
         minHeight="400px"
         width="100%"
         bg={bgColor}
         position="relative"
+        overflow="hidden" // Ensure content doesn't extend beyond container
       >
         {nodeCount === 0 && edgeCount === 0 && (
           <Box
@@ -1442,9 +2109,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
         <Portal>
           <Box
             position="fixed"
-            top={tooltipData.position.y}
-            left={tooltipData.position.x}
-            transform="translate(-50%, -100%)"
+            top={Math.max(10, Math.min(window.innerHeight - 200, tooltipData.position.y - 10))}
+            left={Math.max(10, Math.min(window.innerWidth - 300, tooltipData.position.x + 15))}
             zIndex={9999}
             pointerEvents="none"
           >
