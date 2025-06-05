@@ -32,7 +32,13 @@ const CardsView: React.FC<CardsViewProps> = ({ nodes, edges, selectedNodes, onNo
 
   // Get unique node types
   const nodeTypes = useMemo(() => {
-    const types = [...new Set(nodes.map(node => node.type))].filter(Boolean)
+    const typeMap: { [key: string]: boolean } = {}
+    nodes.forEach(node => {
+      if (node.type) {
+        typeMap[node.type] = true
+      }
+    })
+    const types = Object.keys(typeMap)
     return types.sort()
   }, [nodes])
 

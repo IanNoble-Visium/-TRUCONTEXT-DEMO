@@ -250,7 +250,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     // Create meta-edges
     externalConnections.forEach((connection, externalNodeId) => {
       const metaEdgeId = `meta-${groupId}-${externalNodeId}`
-      const edgeTypes = Array.from(connection.types).join(', ')
+      const edgeTypesArray: string[] = []
+      connection.types.forEach((type: string) => edgeTypesArray.push(type))
+      const edgeTypes = edgeTypesArray.join(', ')
       const label = connection.count > 1 ? `${connection.count} connections` : edgeTypes
 
       metaEdges.push({
@@ -262,7 +264,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           type: 'META',
           label: label,
           connectionCount: connection.count,
-          connectionTypes: Array.from(connection.types),
+          connectionTypes: edgeTypesArray,
           style: 'dashed'
         }
       })
@@ -743,7 +745,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       }
       
       // Extract unique node types
-      const types = Array.from(new Set(data.nodes.map((node: any) => node.data.type).filter(Boolean))) as string[]
+      const typeMap: { [key: string]: boolean } = {}
+      data.nodes.forEach((node: any) => {
+        if (node.data.type) {
+          typeMap[node.data.type] = true
+        }
+      })
+      const types = Object.keys(typeMap)
       setNodeTypes(types)
       
       setNodeCount(data.nodes.length)

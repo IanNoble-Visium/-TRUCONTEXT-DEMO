@@ -39,14 +39,24 @@ const TableView: React.FC<TableViewProps> = ({ nodes, edges, selectedNodes, onNo
 
   // Get unique node and edge types
   const nodeTypes = useMemo(() => {
-    const typeSet = new Set(nodes.map(node => node.type))
-    const types = Array.from(typeSet).filter(Boolean)
+    const typeMap: { [key: string]: boolean } = {}
+    nodes.forEach(node => {
+      if (node.type) {
+        typeMap[node.type] = true
+      }
+    })
+    const types = Object.keys(typeMap)
     return types.sort()
   }, [nodes])
 
   const edgeTypes = useMemo(() => {
-    const typeSet = new Set(edges.map(edge => edge.type))
-    const types = Array.from(typeSet).filter(Boolean)
+    const typeMap: { [key: string]: boolean } = {}
+    edges.forEach(edge => {
+      if (edge.type) {
+        typeMap[edge.type] = true
+      }
+    })
+    const types = Object.keys(typeMap)
     return types.sort()
   }, [edges])
 

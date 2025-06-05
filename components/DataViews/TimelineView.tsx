@@ -93,7 +93,13 @@ const TimelineView: React.FC<TimelineViewProps> = ({ nodes, edges, selectedNodes
 
   // Get unique categories
   const categories = useMemo(() => {
-    const cats = [...new Set(timelineEvents.map(event => event.category))].filter(Boolean)
+    const catMap: { [key: string]: boolean } = {}
+    timelineEvents.forEach(event => {
+      if (event.category) {
+        catMap[event.category] = true
+      }
+    })
+    const cats = Object.keys(catMap)
     return cats.sort()
   }, [timelineEvents])
 
