@@ -17,6 +17,14 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, i
 - **Data Processing**: Auto-generation of timestamps and geolocation data
 - **Format Validation**: Comprehensive JSON structure checking
 
+### 📊 Multiple Data Visualization Views
+- **Graph View**: Interactive network topology with Cytoscape.js
+- **Table View**: Sortable and filterable data tables with search functionality
+- **Timeline View**: Chronological data visualization with time-based filtering
+- **Cards View**: Grid-based card layout for detailed node inspection
+- **Dashboard View**: Summary statistics and key metrics overview
+- **View Switcher**: Seamless transitions between different visualization modes
+
 ### 🎨 Advanced Visualization & Animations
 - **Graph-Focused Layout**: Maximum screen space dedicated to graph visualization
 - **Custom SVG Icons**: Dynamic vector icons based on node types with fallback system
@@ -57,6 +65,8 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, i
 - **Error Handling**: Graceful handling of missing icons and malformed data
 - **Performance Optimized**: Efficient re-layout and rendering with 60fps animations
 - **Advanced Animation System**: Framer Motion + Lottie React for smooth UX
+- **Enhanced Component Architecture**: Memoized components to prevent infinite loops
+- **Stable React Patterns**: useCallback and useMemo for optimal performance
 
 ## 🛠️ Technologies
 
@@ -192,6 +202,50 @@ The application uses a dynamic SVG icon system for optimal visual node represent
 - **Optimized Sizing**: 60x60 pixels for nodes, 80x80 for group nodes
 - **Color Coding**: Each node type has unique border colors for quick identification
 
+## 📋 Data Visualization Views
+
+### Graph View (Default)
+- **Interactive Network Topology**: Primary visualization using Cytoscape.js
+- **Multiple Layout Algorithms**: Grid, Circle, Concentric, Breadth First, and Cose layouts
+- **Node Grouping**: Auto-group by type or create custom groups
+- **Dynamic Icons**: SVG-based node icons with type-based styling
+- **Real-time Interactions**: Click selection, hover tooltips, and smooth animations
+
+### Table View
+- **Sortable Data Tables**: Click column headers to sort nodes and edges
+- **Advanced Filtering**: Search by name, type, or properties with real-time results
+- **Type-based Filtering**: Dropdown filters for specific node and edge types
+- **Expandable Properties**: Accordion-style property viewing for detailed inspection
+- **Tabbed Interface**: Separate tabs for nodes and edges with item counts
+- **Responsive Design**: Mobile-optimized table layout with touch-friendly controls
+
+### Timeline View
+- **Chronological Visualization**: Time-based layout using timestamp properties
+- **Interactive Timeline**: Zoom and pan through time periods
+- **Event Clustering**: Groups events by time proximity for better visibility
+- **Time Filtering**: Range selectors and date pickers for focused analysis
+- **Temporal Patterns**: Identify trends and sequences in your data
+
+### Cards View
+- **Grid Layout**: Card-based representation for detailed node inspection
+- **Rich Content**: Display all node properties in an easy-to-scan format
+- **Search and Filter**: Full-text search across all visible properties
+- **Type Grouping**: Organize cards by node type with visual separators
+- **Responsive Grid**: Auto-adjusting columns based on screen size
+
+### Dashboard View
+- **Summary Statistics**: Key metrics and data overview at a glance
+- **Node Type Distribution**: Charts showing the composition of your dataset
+- **Relationship Analysis**: Edge type statistics and connection patterns
+- **Interactive Charts**: Click-to-filter functionality for deeper exploration
+- **Export Capabilities**: Download reports and statistics
+
+### View Switcher
+- **Seamless Transitions**: Smooth animations when switching between views
+- **State Preservation**: Maintains selections and filters across view changes
+- **Responsive Tabs**: Mobile-optimized navigation with clear view indicators
+- **Keyboard Navigation**: Accessible tab switching with keyboard shortcuts
+
 ## 🎮 Interactive Features
 
 ### Enhanced Graph Interactions
@@ -281,23 +335,47 @@ Fetches all graph data from Neo4j for visualization.
 ### Basic Workflow
 1. **Upload Dataset**: Click "Upload Dataset" → drag/drop JSON file
 2. **Automatic Processing**: System validates and imports data
-3. **Graph Visualization**: Interactive graph appears instantly
-4. **Layout Selection**: Choose optimal layout from dropdown
-5. **Node Interaction**: Click nodes to select, view properties
+3. **Multi-View Visualization**: Choose from 5 different visualization modes
+4. **Data Exploration**: Use appropriate view for your analysis needs
+5. **Interactive Analysis**: Click, filter, sort, and explore your data
 
-### Advanced Features
-1. **Grouping by Type**: Click "Group by Type" for automatic organization
-2. **Custom Groups**: Select nodes → "Group Selected" → name group
-3. **Group Navigation**: Click group nodes to show/hide contents
-4. **Layout Switching**: Try different layouts for best visualization
-5. **Full-Screen Mode**: Hide header for maximum graph space
+### View-Specific Features
 
-### Tips
-- Use Grid layout for structured data analysis
-- Use Circle layout for relationship overview
-- Group by type to simplify complex networks
-- Create custom groups for workflow organization
-- Toggle group visibility to focus on specific areas
+#### Graph View
+1. **Layout Selection**: Choose optimal layout from dropdown (Grid, Circle, Cose, etc.)
+2. **Node Interaction**: Click nodes to select, hover for details
+3. **Grouping by Type**: Click "Group by Type" for automatic organization
+4. **Custom Groups**: Select nodes → "Group Selected" → name group
+5. **Group Navigation**: Click group nodes to show/hide contents
+
+#### Table View
+1. **Data Sorting**: Click column headers to sort nodes/edges
+2. **Search & Filter**: Use search boxes and type filters
+3. **Property Inspection**: Expand accordion items to view all properties
+4. **Tab Navigation**: Switch between nodes and edges tables
+
+#### Timeline View
+1. **Time Navigation**: Use timeline controls to zoom and pan
+2. **Event Filtering**: Select time ranges for focused analysis
+3. **Pattern Recognition**: Identify temporal trends and sequences
+
+#### Cards View
+1. **Grid Browsing**: Scroll through card-based node representations
+2. **Detailed Inspection**: View all properties in an organized format
+3. **Search Functionality**: Find specific nodes using full-text search
+
+#### Dashboard View
+1. **Overview Analysis**: Get high-level statistics about your dataset
+2. **Chart Interaction**: Click chart elements to filter data
+3. **Export Reports**: Download analysis results and metrics
+
+### Pro Tips
+- **Graph View**: Use Grid layout for structured analysis, Circle for relationship overview
+- **Table View**: Great for detailed data inspection and property comparison
+- **Timeline View**: Perfect for temporal analysis and event sequencing
+- **Cards View**: Best for browsing and detailed individual node examination
+- **Dashboard View**: Ideal for presentations and high-level data understanding
+- **View Switching**: Each view maintains your selections - switch freely for different perspectives
 
 ## 📱 Responsive Design & Mobile Support
 
@@ -425,6 +503,12 @@ A sample dataset (`sample-dataset.json`) is included with:
    - Try different layout algorithms
    - Check if WebGL is supported for better performance
 
+10. **Component Re-rendering Issues (Fixed)**
+    - Previous infinite loop issues in GraphVisualization have been resolved
+    - Enhanced component memoization prevents unnecessary re-renders
+    - Stable prop references eliminate cascading updates
+    - If you experience performance issues, refresh the page
+
 ## 📚 Documentation
 
 - [Next.js Documentation](https://nextjs.org/docs)
@@ -468,7 +552,22 @@ TruContext is powered by Visium Technologies, a leader in graph analytics and cy
 
 **Built with ❤️ by the Visium Technologies team**
 
-## 🌟 Advanced Features Completed
+## 🌟 Recent Updates & Improvements
+
+### ✅ New Data Visualization Views (Latest)
+- **Multi-View Architecture**: Complete visualization system with 5 distinct view types
+- **Table View**: Advanced sortable/filterable tables with accordion property viewing
+- **Timeline View**: Chronological data visualization with interactive time controls
+- **Cards View**: Grid-based detailed inspection with responsive layout
+- **Dashboard View**: Summary statistics and data overview charts
+- **ViewSwitcher Component**: Seamless navigation between different visualization modes
+
+### ✅ Performance & Stability Fixes (Latest)
+- **Infinite Loop Resolution**: Fixed React rendering cycles in GraphVisualization component
+- **Component Memoization**: Enhanced with useCallback and useMemo for optimal performance
+- **Stable References**: Prevented prop recreation causing unnecessary re-renders
+- **Duplicate Key Fixes**: Resolved React key warnings in TableView edge rendering
+- **Enhanced Error Handling**: Improved robustness and user experience
 
 ### ✅ Animation & Visual Enhancements
 - **Smooth Layout Transitions**: 800ms animated graph layout changes with custom easing
@@ -488,6 +587,7 @@ TruContext is powered by Visium Technologies, a leader in graph analytics and cy
 - **Page Transitions**: Smooth route and state change animations
 - **Performance Optimized**: 60fps animations with GPU acceleration
 - **TypeScript Enhanced**: Full type safety with advanced component patterns
+- **Modern React Patterns**: Best practices for hooks, memoization, and component architecture
 
 ## 🤝 Contributing
 

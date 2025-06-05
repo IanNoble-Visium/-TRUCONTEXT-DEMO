@@ -34,7 +34,7 @@ import { ChevronUpIcon, ChevronDownIcon, HamburgerIcon, InfoIcon, AttachmentIcon
 import Head from 'next/head'
 import Header from '../components/Header'
 import FileUpload from '../components/FileUpload'
-import GraphVisualization from '../components/GraphVisualization'
+import EnhancedGraphVisualization from '../components/EnhancedGraphVisualization'
 import PageTransition from '../components/PageTransition'
 
 const MotionBox = motion(chakra.div)
@@ -242,8 +242,8 @@ const HomePage: React.FC = () => {
                     <Heading size="md" color="visium.500">Interactive Graph Topology</Heading>
                   </motion.div>
                 </Box>
-                <Box height="calc(100% - 60px)" p={4}>
-                  <GraphVisualization refreshTrigger={refreshTrigger} />
+                <Box height="calc(100% - 60px)">
+                  <EnhancedGraphVisualization refreshTrigger={refreshTrigger} />
                 </Box>
               </MotionBox>
             </Box>

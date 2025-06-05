@@ -23,6 +23,9 @@ import { motion } from 'framer-motion'
 
 interface GraphVisualizationProps {
   refreshTrigger: number
+  onDataLoad?: (data: { nodes: any[], edges: any[] }) => void
+  onSelectedNodesChange?: (nodes: string[]) => void
+  externalSelectedNodes?: string[]
 }
 
 // Enhanced Group interface
@@ -37,7 +40,12 @@ interface GroupData {
   sourceType?: string
 }
 
-const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger }) => {
+const GraphVisualization: React.FC<GraphVisualizationProps> = ({ 
+  refreshTrigger, 
+  onDataLoad, 
+  onSelectedNodesChange,
+  externalSelectedNodes 
+}) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const cyRef = useRef<Core | null>(null)
   const [loading, setLoading] = useState(true)
@@ -129,6 +137,20 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     }
   }, [isMobile])
 
+  // Sync external selected nodes
+  useEffect(() => {
+    if (externalSelectedNodes && JSON.stringify(externalSelectedNodes) !== JSON.stringify(selectedNodes)) {
+      setSelectedNodes(externalSelectedNodes)
+    }
+  }, [externalSelectedNodes])
+
+  // Notify parent of selection changes
+  useEffect(() => {
+    if (onSelectedNodesChange) {
+      onSelectedNodesChange(selectedNodes)
+    }
+  }, [selectedNodes])
+
   // Periodically check for container availability after loading completes
   useEffect(() => {
     if (!loading && !error && !containerReady) {
@@ -162,7 +184,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     }
   }, [loading, error, containerReady])
 
-  // Monitor container ref availability and set ready state
+  // Monitor container ref availability and set ready state (only check once initially)
   useEffect(() => {
     if (containerRef.current && !containerReady) {
       console.log('Container ref is now available:', {
@@ -171,7 +193,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       })
       setContainerReady(true)
     }
-  }, [containerReady])
+  }, []) // Run only once on mount
 
   // Helper function to get node icon path with fallback (now using SVG)
   const getNodeIconPath = (nodeType: string) => {
@@ -700,6 +722,25 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
       // Store original data for reference
       setOriginalGraphData(data)
       setGraphData(data)
+      
+      // Expose data to parent component
+      if (onDataLoad) {
+        // Transform cytoscape format to simple format for other views
+        const simpleNodes = data.nodes.map((node: any) => ({
+          uid: node.data.id,
+          type: node.data.type,
+          showname: node.data.label,
+          properties: node.data.properties || {},
+          icon: node.data.icon
+        }))
+        const simpleEdges = data.edges.map((edge: any) => ({
+          from: edge.data.source,
+          to: edge.data.target,
+          type: edge.data.type,
+          properties: edge.data.properties || {}
+        }))
+        onDataLoad({ nodes: simpleNodes, edges: simpleEdges })
+      }
       
       // Extract unique node types
       const types = Array.from(new Set(data.nodes.map((node: any) => node.data.type).filter(Boolean))) as string[]
@@ -1776,7 +1817,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({ refreshTrigger 
     return () => {
       resizeObserver.disconnect()
     }
-  }, [showControls, showGroupPanel, groups, nodeTypes])
+  }, [showControls, showGroupPanel, groups])
 
   if (loading) {
     return (
