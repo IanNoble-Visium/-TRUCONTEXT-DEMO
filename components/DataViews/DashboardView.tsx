@@ -266,9 +266,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({ nodes, edges, selectedNod
           <CardBody pt={0}>
             <VStack spacing={3} align="stretch">
               {Object.entries(stats.nodeTypes)
-                .sort(([,a], [,b]) => b - a)
+                .sort(([,a], [,b]) => (b as number) - (a as number))
                 .map(([type, count], index) => {
-                  const percentage = (count / stats.totalNodes) * 100
+                  const numCount = count as number
+                  const percentage = (numCount / stats.totalNodes) * 100
                   return (
                     <motion.div
                       key={type}
@@ -282,7 +283,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ nodes, edges, selectedNod
                             {type}
                           </Badge>
                           <Text fontSize="sm" color="gray.500">
-                            {count} nodes
+                            {numCount} nodes
                           </Text>
                         </HStack>
                         <Text fontSize="sm" fontWeight="medium">
@@ -480,22 +481,25 @@ const DashboardView: React.FC<DashboardViewProps> = ({ nodes, edges, selectedNod
             <CardBody pt={0}>
               <Wrap spacing={2}>
                 {Object.entries(stats.edgeTypes)
-                  .sort(([,a], [,b]) => b - a)
-                  .map(([type, count]) => (
-                    <WrapItem key={type}>
-                      <Tooltip label={`${count} connections of type ${type}`}>
-                        <Badge 
-                          colorScheme="teal" 
-                          variant="subtle" 
-                          fontSize="sm"
-                          p={2}
-                          borderRadius="md"
-                        >
-                          {type}: {count}
-                        </Badge>
-                      </Tooltip>
-                    </WrapItem>
-                  ))}
+                  .sort(([,a], [,b]) => (b as number) - (a as number))
+                  .map(([type, count]) => {
+                    const numCount = count as number
+                    return (
+                                          <WrapItem key={type}>
+                        <Tooltip label={`${numCount} connections of type ${type}`}>
+                          <Badge 
+                            colorScheme="teal" 
+                            variant="subtle" 
+                            fontSize="sm"
+                            p={2}
+                            borderRadius="md"
+                          >
+                            {type}: {numCount}
+                          </Badge>
+                        </Tooltip>
+                      </WrapItem>
+                    )
+                  })}
               </Wrap>
             </CardBody>
           </MotionCard>
