@@ -7,8 +7,9 @@ import TableView from './TableView'
 import TimelineView from './TimelineView'
 import CardsView from './CardsView'
 import DashboardView from './DashboardView'
+import GeoMapView from './GeoMapView'
 
-export type ViewType = 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard'
+export type ViewType = 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
 
 interface ViewSwitcherProps {
   currentView: ViewType
@@ -40,7 +41,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
     { value: 'table', label: 'Table View', icon: '📊' },
     { value: 'timeline', label: 'Timeline View', icon: '⏰' },
     { value: 'cards', label: 'Cards View', icon: '🗂️' },
-    { value: 'dashboard', label: 'Dashboard View', icon: '📈' }
+    { value: 'dashboard', label: 'Dashboard View', icon: '📈' },
+    { value: 'geomap', label: 'Geographic Map', icon: '🗺️' }
   ]
 
   // Render the appropriate view component
@@ -61,6 +63,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
         return <CardsView {...commonProps} />
       case 'dashboard':
         return <DashboardView nodes={nodes} edges={edges} selectedNodes={selectedNodes} />
+      case 'geomap':
+        return <GeoMapView {...commonProps} />
       case 'graph':
       default:
         return GraphComponent

@@ -732,6 +732,10 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           uid: node.data.id,
           type: node.data.type,
           showname: node.data.label,
+          timestamp: node.data.timestamp, // Preserve timestamp as direct property
+          latitude: node.data.latitude, // Preserve latitude as direct property
+          longitude: node.data.longitude, // Preserve longitude as direct property
+          color: node.data.color, // Preserve color as direct property
           properties: node.data.properties || {},
           icon: node.data.icon
         }))
@@ -739,6 +743,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           from: edge.data.source,
           to: edge.data.target,
           type: edge.data.type,
+          timestamp: edge.data.timestamp, // Preserve timestamp as direct property
           properties: edge.data.properties || {}
         }))
         onDataLoad({ nodes: simpleNodes, edges: simpleEdges })

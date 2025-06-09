@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
   Box, VStack, HStack, Text, Badge, Input, Select, InputGroup, InputLeftElement,
   useColorModeValue, Tooltip, Icon, Flex, Spacer, Divider
@@ -27,6 +27,13 @@ const MotionBox = motion(Box)
 const MotionVStack = motion(VStack)
 
 const TimelineView: React.FC<TimelineViewProps> = ({ nodes, edges, selectedNodes, onNodeSelect }) => {
+  useEffect(() => {
+    console.log('TimelineView received nodes:', nodes)
+    console.log('Nodes with timestamps (properties):', nodes.filter(node => node.properties?.timestamp))
+    console.log('Nodes with timestamps (direct):', nodes.filter(node => node.timestamp))
+    console.log('Sample node structure:', nodes[0])
+  }, [nodes])
+
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [dateRange, setDateRange] = useState('all')
@@ -42,8 +49,21 @@ const TimelineView: React.FC<TimelineViewProps> = ({ nodes, edges, selectedNodes
   const parseTimestamp = (timestamp: any): Date | null => {
     if (!timestamp) return null
     try {
-      return new Date(timestamp)
-    } catch {
+      // Log the timestamp for debugging
+      console.log('Parsing timestamp:', timestamp, typeof timestamp)
+      
+      // Handle both string timestamps and Date objects
+      const date = new Date(timestamp)
+      
+      // Validate the date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date from timestamp:', timestamp)
+        return null
+      }
+      
+      return date
+    } catch (error) {
+      console.error('Error parsing timestamp:', timestamp, error)
       return null
     }
   }
@@ -54,7 +74,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ nodes, edges, selectedNodes
 
     // Add nodes with timestamps
     nodes.forEach(node => {
-      const timestamp = parseTimestamp(node.properties?.timestamp)
+      // Check for timestamp in multiple possible locations
+      const timestamp = parseTimestamp(node.timestamp || node.properties?.timestamp)
       if (timestamp) {
         events.push({
           id: node.uid,
@@ -70,11 +91,12 @@ const TimelineView: React.FC<TimelineViewProps> = ({ nodes, edges, selectedNodes
 
     // Add edges with timestamps
     edges.forEach(edge => {
-      const timestamp = parseTimestamp(edge.properties?.timestamp)
+      // Check for timestamp in multiple possible locations
+      const timestamp = parseTimestamp(edge.timestamp || edge.properties?.timestamp)
       if (timestamp) {
         const fromNode = nodes.find(n => n.uid === edge.from)
         const toNode = nodes.find(n => n.uid === edge.to)
-        
+
         events.push({
           id: `${edge.from}-${edge.to}`,
           type: 'edge',
