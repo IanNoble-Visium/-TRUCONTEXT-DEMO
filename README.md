@@ -18,16 +18,18 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, i
 - **Format Validation**: Comprehensive JSON structure checking
 
 ### 📊 Multiple Data Visualization Views
-- **Graph View**: Interactive network topology with Cytoscape.js
-- **Table View**: Sortable and filterable data tables with search functionality
-- **Timeline View**: Chronological data visualization with time-based filtering
-- **Cards View**: Grid-based card layout for detailed node inspection
-- **Dashboard View**: Summary statistics and key metrics overview
+- **Graph View**: Interactive network topology with Cytoscape.js and SVG icons in circular markers
+- **Table View**: Sortable and filterable data tables with dedicated Icon column (24px SVG icons)
+- **Timeline View**: Chronological data visualization with SVG icons for node events (20px)
+- **Cards View**: Grid-based card layout with SVG icons in headers (24px)
+- **Dashboard View**: Summary statistics with SVG icons in type distribution and connected nodes
+- **Geographic Map**: Interactive world map with SVG icons in location markers
 - **View Switcher**: Seamless transitions between different visualization modes
 
 ### 🎨 Advanced Visualization & Animations
 - **Graph-Focused Layout**: Maximum screen space dedicated to graph visualization
-- **Custom SVG Icons**: Dynamic vector icons based on node types with fallback system
+- **Unified SVG Icon System**: Dynamic vector icons across ALL views with intelligent fallback
+- **Cross-View Icon Consistency**: Same icon loading system used in all 6 visualization modes
 - **Smooth Layout Transitions**: 800ms animated transitions between layout algorithms
 - **Interactive Tooltips**: Rich hover tooltips with node/edge details and smooth animations
 - **Lottie Animations**: Beautiful loading states and empty state animations
@@ -175,32 +177,46 @@ If missing, the application automatically adds:
 - **Timestamps**: Random values between Dec 30-31, 2023
 - **Geolocation**: Random longitude (-180 to 180) and latitude (-90 to 90)
 
-## 🎨 Node Icons System
+## 🎨 Unified SVG Icon System
 
-The application uses a dynamic SVG icon system for optimal visual node representation:
+The application features a comprehensive SVG icon system that provides consistent visual representation across ALL visualization views:
 
 ### Available Icons (`/public/icons-svg/`)
 - `server.svg` - Server nodes
 - `application.svg` - Application nodes
 - `database.svg` - Database nodes
-- `user.svg` - User nodes
+- `user.svg` / `actor.svg` - User/Actor nodes
 - `firewall.svg` - Firewall nodes
-- `router.svg` - Router nodes
+- `router.svg` / `network.svg` - Router/Network nodes
 - `switch.svg` - Switch nodes
-- `workstation.svg` - Workstation nodes
+- `workstation.svg` / `device.svg` - Workstation/Device nodes
 - `client.svg` - Client nodes
 - `entity.svg` - Entity nodes
-- `threatactor.svg` - Threat actor nodes
+- `threatactor.svg` / `vulnerability.svg` - Threat/Vulnerability nodes
+- `agent.svg` - Agent/Process nodes
+- `storage.svg` - Storage/File nodes
+- `event.svg` - Event/Log nodes
+- `communication.svg` - Communication/Message nodes
 - `unknown.svg` - Fallback for unrecognized types
 
-### Icon Features
-- **Vector Graphics**: Scalable SVG format for crisp display at any size
-- **Dynamic Loading**: Icons loaded based on node type with intelligent fallback
-- **Conversion Utility**: PNG-to-SVG conversion script included (`scripts/convert_png_to_svg.py`)
-- **Type Mapping**: Node type converted to lowercase and matched to SVG filename
-- **Fallback System**: Unknown.svg used for unrecognized types
-- **Optimized Sizing**: 60x60 pixels for nodes, 80x80 for group nodes
-- **Color Coding**: Each node type has unique border colors for quick identification
+### Cross-View Icon Integration
+- **Table View**: Dedicated "Icon" column with 24px SVG icons for easy type identification
+- **Cards View**: SVG icons in card headers (24px) replacing emoji icons
+- **Timeline View**: SVG icons next to node events (20px) for visual consistency
+- **Dashboard View**: Icons in type distribution charts (16px) and connected nodes (20px)
+- **Geographic Map**: SVG icons within circular location markers with background image rendering
+- **Graph View**: SVG icons in network topology nodes with dynamic sizing
+
+### Advanced Icon Features
+- **Vector Graphics**: Scalable SVG format for crisp display at any size across all views
+- **Intelligent Caching**: Shared icon loading system prevents duplicate network requests
+- **Dynamic Loading**: Icons loaded based on node type with comprehensive fallback mapping
+- **Embedded PNG Support**: Automatic extraction and rendering of PNG data from SVG files
+- **Type Mapping**: Node type converted to lowercase with 40+ fallback mappings
+- **Fallback System**: Multi-level fallback (type → mapping → unknown.svg → generated icon)
+- **Performance Optimized**: React component with loading states and error handling
+- **Consistent Sizing**: View-appropriate sizing (16px-27px) for optimal visual hierarchy
+- **Background Rendering**: Advanced CSS background-image approach for circular containers
 
 ## 📋 Data Visualization Views
 
@@ -212,6 +228,7 @@ The application uses a dynamic SVG icon system for optimal visual node represent
 - **Real-time Interactions**: Click selection, hover tooltips, and smooth animations
 
 ### Table View
+- **SVG Icon Column**: Dedicated icon column with 24px SVG icons for instant type recognition
 - **Sortable Data Tables**: Click column headers to sort nodes and edges
 - **Advanced Filtering**: Search by name, type, or properties with real-time results
 - **Type-based Filtering**: Dropdown filters for specific node and edge types
@@ -220,6 +237,7 @@ The application uses a dynamic SVG icon system for optimal visual node represent
 - **Responsive Design**: Mobile-optimized table layout with touch-friendly controls
 
 ### Timeline View
+- **SVG Event Icons**: 20px SVG icons next to node events for visual consistency
 - **Chronological Visualization**: Time-based layout using timestamp properties
 - **Interactive Timeline**: Zoom and pan through time periods
 - **Event Clustering**: Groups events by time proximity for better visibility
@@ -227,6 +245,7 @@ The application uses a dynamic SVG icon system for optimal visual node represent
 - **Temporal Patterns**: Identify trends and sequences in your data
 
 ### Cards View
+- **SVG Card Headers**: 24px SVG icons in card headers replacing emoji icons
 - **Grid Layout**: Card-based representation for detailed node inspection
 - **Rich Content**: Display all node properties in an easy-to-scan format
 - **Search and Filter**: Full-text search across all visible properties
@@ -234,8 +253,9 @@ The application uses a dynamic SVG icon system for optimal visual node represent
 - **Responsive Grid**: Auto-adjusting columns based on screen size
 
 ### Dashboard View
+- **SVG Statistical Icons**: Icons in type distribution (16px) and most connected nodes (20px)
 - **Summary Statistics**: Key metrics and data overview at a glance
-- **Node Type Distribution**: Charts showing the composition of your dataset
+- **Node Type Distribution**: Charts showing the composition of your dataset with visual icons
 - **Relationship Analysis**: Edge type statistics and connection patterns
 - **Interactive Charts**: Click-to-filter functionality for deeper exploration
 - **Export Capabilities**: Download reports and statistics
@@ -461,11 +481,14 @@ A sample dataset (`sample-dataset.json`) is included with:
    - Verify environment variables are set
    - Ensure database is accessible
 
-3. **Icons Not Displaying**
+3. **Icons Not Displaying Across Views**
    - Check if SVG files exist in `/public/icons-svg/`
    - Verify node types match SVG filenames (lowercase)
    - Unknown.svg will be used as fallback for unrecognized types
    - Clear browser cache if icons appear corrupted
+   - Check browser console for icon loading errors
+   - Verify NodeIcon component is rendering properly in each view
+   - Test fallback system by using unrecognized node types
 
 4. **Animation Performance Issues**
    - Disable hardware acceleration if animations are choppy
@@ -554,12 +577,23 @@ TruContext is powered by Visium Technologies, a leader in graph analytics and cy
 
 ## 🌟 Recent Updates & Improvements
 
-### ✅ New Data Visualization Views (Latest)
-- **Multi-View Architecture**: Complete visualization system with 5 distinct view types
-- **Table View**: Advanced sortable/filterable tables with accordion property viewing
-- **Timeline View**: Chronological data visualization with interactive time controls
-- **Cards View**: Grid-based detailed inspection with responsive layout
-- **Dashboard View**: Summary statistics and data overview charts
+### ✅ Unified SVG Icon System Across All Views (Latest)
+- **Cross-View Icon Consistency**: SVG icons implemented in ALL 6 visualization views
+- **Table View Icons**: Dedicated Icon column with 24px SVG icons for type identification
+- **Cards View Icons**: SVG icons in card headers (24px) replacing emoji icons
+- **Timeline View Icons**: SVG icons next to node events (20px) for visual consistency
+- **Dashboard View Icons**: Icons in type distribution (16px) and connected nodes (20px)
+- **Geographic Map Icons**: SVG icons in circular location markers with background rendering
+- **Shared Icon System**: Unified `NodeIcon` component with caching and fallback handling
+- **Performance Optimized**: Icon caching prevents duplicate network requests across views
+
+### ✅ Multi-View Data Visualization Architecture
+- **Complete Visualization System**: 6 distinct view types for comprehensive data analysis
+- **Table View**: Advanced sortable/filterable tables with SVG icon column
+- **Timeline View**: Chronological data visualization with SVG event icons
+- **Cards View**: Grid-based detailed inspection with SVG header icons
+- **Dashboard View**: Summary statistics with SVG icons in charts and lists
+- **Geographic Map**: Interactive world map with SVG location markers
 - **ViewSwitcher Component**: Seamless navigation between different visualization modes
 
 ### ✅ Performance & Stability Fixes (Latest)
@@ -582,10 +616,13 @@ TruContext is powered by Visium Technologies, a leader in graph analytics and cy
 - **Responsive Animations**: Performance-optimized animations for mobile devices
 - **Touch Detection**: Automatic mobile device and capability detection
 
-### ✅ Technical Infrastructure
-- **SVG Icon System**: Scalable vector graphics with PNG-to-SVG conversion utility
+### ✅ Advanced Technical Infrastructure
+- **Unified SVG Icon System**: Cross-view icon consistency with intelligent caching and fallback
+- **Icon Utilities**: Shared `utils/iconUtils.ts` with 40+ type mappings and PNG extraction
+- **React Icon Component**: Reusable `NodeIcon` component with loading states and error handling
+- **Background Image Rendering**: Advanced CSS approach for circular container compatibility
 - **Page Transitions**: Smooth route and state change animations
-- **Performance Optimized**: 60fps animations with GPU acceleration
+- **Performance Optimized**: 60fps animations with GPU acceleration and icon caching
 - **TypeScript Enhanced**: Full type safety with advanced component patterns
 - **Modern React Patterns**: Best practices for hooks, memoization, and component architecture
 
