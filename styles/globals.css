@@ -1,0 +1,128 @@
+/* Leaflet Map Container Styles */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  background-color: #f0f0f0;
+}
+
+/* Ensure map tiles are visible */
+.leaflet-tile {
+  filter: var(--leaflet-tile-filter, none);
+}
+
+/* Fix for dark mode */
+[data-theme='dark'] .leaflet-tile {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+/* Fix for map controls */
+.leaflet-control {
+  z-index: 1000 !important;
+}
+
+/* Fix for popups */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Fix for tooltips */
+.leaflet-tooltip {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Fix for zoom controls */
+.leaflet-bar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 18px;
+}
+
+/* Fix for attribution */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8) !important;
+  padding: 2px 5px;
+  font-size: 11px;
+}
+
+/* Fix for map container in flex layouts */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+
+/* Fix for map container in Chakra UI components */
+.chakra-ui-dark .leaflet-container {
+  background-color: #1a202c;
+}
+
+/* Fix for map tiles in dark mode */
+.chakra-ui-dark .leaflet-tile {
+  filter: invert(1) hue-rotate(180deg) brightness(0.6) contrast(3) saturate(0.3) brightness(0.7);
+}
+
+/* Fix for map controls in dark mode */
+.chakra-ui-dark .leaflet-control {
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
+.chakra-ui-dark .leaflet-bar a {
+  color: #e2e8f0;
+  background-color: #2d3748;
+}
+
+.chakra-ui-dark .leaflet-bar a:hover {
+  background-color: #4a5568;
+}
+
+/* Fix for popups in dark mode */
+.chakra-ui-dark .leaflet-popup-content-wrapper {
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
+.chakra-ui-dark .leaflet-popup-tip {
+  background-color: #2d3748;
+}
+
+/* Fix for tooltips in dark mode */
+.chakra-ui-dark .leaflet-tooltip {
+  background-color: #2d3748;
+  color: #e2e8f0;
+  border: 1px solid #4a5568;
+}
+
+.chakra-ui-dark .leaflet-tooltip-top:before {
+  border-top-color: #4a5568;
+}
+
+.chakra-ui-dark .leaflet-tooltip-bottom:before {
+  border-bottom-color: #4a5568;
+}
+
+.chakra-ui-dark .leaflet-tooltip-left:before {
+  border-left-color: #4a5568;
+}
+
+.chakra-ui-dark .leaflet-tooltip-right:before {
+  border-right-color: #4a5568;
+}

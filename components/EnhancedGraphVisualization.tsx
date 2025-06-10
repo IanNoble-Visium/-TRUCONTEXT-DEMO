@@ -18,7 +18,7 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
     setGraphData(data)
   }, [])
 
-  // Handle selected nodes change from graph  
+  // Handle selected nodes change from graph
   const handleSelectedNodesChange = useCallback((nodes: string[]) => {
     setSelectedNodes(nodes)
   }, [])
@@ -40,14 +40,15 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
   }, [])
 
   // Enhanced GraphVisualization that exposes data and selection state
+  // Fixed: Remove selectedNodes and handleSelectedNodesChange from dependencies to prevent infinite re-renders
   const enhancedGraphComponent = useMemo(() => (
-    <GraphVisualizationWrapper 
+    <GraphVisualizationWrapper
       refreshTrigger={refreshTrigger}
       onDataLoad={handleDataLoad}
       selectedNodes={selectedNodes}
       onSelectedNodesChange={handleSelectedNodesChange}
     />
-  ), [refreshTrigger, handleDataLoad, selectedNodes, handleSelectedNodesChange])
+  ), [refreshTrigger, handleDataLoad])
 
   // Debug current state
   console.log('EnhancedGraphVisualization: Current state:', {

@@ -35,16 +35,19 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
 
-  // Debug logging
+  // Debug logging - only log once when nodes change significantly
   useEffect(() => {
-    console.log('GeoMapView received nodes:', nodes)
-    console.log('Sample node structure:', nodes[0])
+    console.log('GeoMapView received nodes:', nodes.length)
     if (nodes.length > 0) {
       const sampleNode = nodes[0]
-      console.log('Sample node latitude:', sampleNode.latitude, sampleNode.properties?.latitude)
-      console.log('Sample node longitude:', sampleNode.longitude, sampleNode.properties?.longitude)
+      console.log('Sample node structure:', {
+        uid: sampleNode.uid,
+        type: sampleNode.type,
+        latitude: sampleNode.latitude || sampleNode.properties?.latitude,
+        longitude: sampleNode.longitude || sampleNode.properties?.longitude
+      })
     }
-  }, [nodes])
+  }, [nodes.length]) // Only re-run when the number of nodes changes
 
   // Color mode values
   const bgColor = useColorModeValue("white", "gray.800")
@@ -56,23 +59,13 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
 
     console.log('Processing nodes for geo coordinates:', nodes.length)
 
-    nodes.forEach((node, index) => {
+    nodes.forEach((node) => {
       // Check for coordinates in multiple possible locations
       const lat = node.latitude || node.properties?.latitude
       const lng = node.longitude || node.properties?.longitude
 
-      console.log(`Node ${index} (${node.uid}):`, {
-        directLat: node.latitude,
-        directLng: node.longitude,
-        propsLat: node.properties?.latitude,
-        propsLng: node.properties?.longitude,
-        finalLat: lat,
-        finalLng: lng
-      })
-
       if (lat !== undefined && lng !== undefined &&
           !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
-        console.log(`✓ Valid coordinates found for node ${node.uid}:`, lat, lng, `Type: ${node.type}`, `Color: ${node.color}`)
         validNodes.push({
           id: node.uid,
           uid: node.uid,
@@ -84,27 +77,23 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
           properties: node.properties || {},
           isSelected: selectedNodes.includes(node.uid)
         })
-      } else {
-        console.log(`✗ Invalid coordinates for node ${node.uid}:`, { lat, lng })
       }
     })
 
     console.log(`Found ${validNodes.length} nodes with valid coordinates`)
-    console.log('Node types found:', Array.from(new Set(validNodes.map(n => n.type))))
-    console.log('Node colors found:', Array.from(new Set(validNodes.map(n => n.color))))
+    if (validNodes.length > 0) {
+      console.log('Node types found:', Array.from(new Set(validNodes.map(n => n.type))))
+    }
     return validNodes
   }, [nodes, selectedNodes])
 
   // Process edges for geographic display
   const geoEdges = useMemo(() => {
     if (!edges || edges.length === 0) {
-      console.log('No edges available for geo map')
       return []
     }
 
-    console.log('Processing edges for geo map:', edges.length)
     const validNodeIds = new Set(geoNodes.map(node => node.uid))
-    console.log('Valid node IDs for edges:', Array.from(validNodeIds))
 
     const validEdges = edges.filter(edge => {
       const fromValid = validNodeIds.has(edge.from) || validNodeIds.has(edge.source)
@@ -192,6 +181,8 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
       height="100%"
+      minHeight="600px"
+      width="100%"
       bg={bgColor}
       borderRadius="lg"
       border="1px solid"

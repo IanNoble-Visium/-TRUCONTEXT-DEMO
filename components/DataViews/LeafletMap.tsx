@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useMemo, useState } from 'react'
+import React, { useEffect, useRef, useMemo, useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { Box, Portal, Button, ButtonGroup, VStack, Text, useColorModeValue } from '@chakra-ui/react'
+import { Box, Portal, Button, ButtonGroup, VStack, Text, useColorModeValue, HStack } from '@chakra-ui/react'
 import { NodeTooltip, EdgeTooltip } from '../GraphTooltip'
+import type { Map as LeafletMapType, LatLngBounds } from 'leaflet'
 
 // Dynamically import react-leaflet components to avoid SSR issues
 const MapContainer = dynamic(
@@ -172,6 +173,7 @@ const getNodeColor = (node: GeoNode) => {
     case 'router': return '#0d9488'        // Teal
     case 'switch': return '#4338ca'        // Indigo
     case 'workstation': return '#be185d'   // Pink
+    case 'communication': return '#34c759' // Green
     default: return '#6b7280'              // Default gray
   }
 }
@@ -382,14 +384,33 @@ const getEdgeWeight = (edgeType: string) => {
 }
 
 const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNodeSelect, height }) => {
-  const mapRef = useRef<any>(null)
+  // Refs
+  const mapRef = useRef<LeafletMapType | null>(null)
+  const resizeTimeoutRef = useRef<NodeJS.Timeout>()
+  const isMountedRef = useRef(true)
+  const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // State
   const [isClient, setIsClient] = useState(false)
   const [tooltipData, setTooltipData] = useState<TooltipData | null>(null)
   const [customIcons, setCustomIcons] = useState<Map<string, any>>(new Map())
   const [iconSize, setIconSize] = useState<'small' | 'medium' | 'large'>('medium')
-  const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [selectedNode, setSelectedNode] = useState<string | null>(null)
+  const [mapCenter, setMapCenter] = useState<[number, number] | null>(null)
+  const [mapZoom, setMapZoom] = useState<number | null>(null)
+  const [mapBounds, setMapBounds] = useState<LatLngBounds | null>(null)
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
 
-  // Color mode values for the size control - moved before early return to fix hooks order
+  useEffect(() => {
+    console.log(`LeafletMap: mapLoaded state CHANGED to: ${mapLoaded}`);
+  }, [mapLoaded]);
+
+  useEffect(() => {
+    console.log(`LeafletMap: mapReady state CHANGED to: ${mapReady}`);
+  }, [mapReady]);
+
+  // Color mode values for the size control
   const bgColor = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('gray.200', 'gray.600')
 
@@ -425,107 +446,196 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
     }, 100)
   }
 
-  // Preload icons for all nodes
+  // Handle client-side rendering check
   useEffect(() => {
-    const loadIcons = async () => {
-      const iconMap = new Map()
-      for (const node of geoNodes) {
-        const iconKey = `${node.type}-${node.isSelected}-${iconSize}`
-        if (!iconMap.has(iconKey)) {
-          const icon = await createCustomIcon(node, iconSize)
-          iconMap.set(iconKey, icon)
+    setIsClient(true);
+  }, []);
+
+  // Handle map instance and resizing correctly
+  useEffect(() => {
+    if (mapRef.current) {
+      console.log('Map instance created:', mapRef.current)
+      // Do not attempt to bind event listeners that may not exist
+    }
+  }, [])
+
+  // Handle window resize with debounce
+  const handleResize = useCallback(() => {
+    console.log('LeafletMap: Window resized, attempting to update map size');
+    if (mapRef.current) {
+      try {
+        if (typeof (mapRef.current as any).invalidateSize === 'function') {
+          (mapRef.current as any).invalidateSize();
+          console.log('LeafletMap: invalidateSize() called on map instance via handleResize.');
+        } else if (typeof (mapRef.current as any)._onResize === 'function') {
+          console.warn('LeafletMap: invalidateSize not found in handleResize, falling back to _onResize.');
+          (mapRef.current as any)._onResize();
+        } else {
+          console.warn('LeafletMap: Neither invalidateSize nor _onResize available in handleResize.');
         }
+      } catch (error) {
+        console.error('LeafletMap: Error during map resize in handleResize:', error);
       }
-      setCustomIcons(iconMap)
+    } else {
+      console.warn('LeafletMap: mapRef.current is not available in handleResize.');
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize)
+    handleResize() // Initial call to set size
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current)
+      }
+    }
+  }, [handleResize])
+
+  // Handle map ready state (called by MapContainer's whenReady prop)
+  const handleMapReady = useCallback((mapEventObject: { target: LeafletMapType }) => {
+    if (!isMountedRef.current) {
+      console.log('LeafletMap: handleMapReady called but component not mounted.');
+      return;
+    }
+    
+    console.log('LeafletMap: mapEventObject received in handleMapReady:', mapEventObject);
+    const actualMapInstance = mapEventObject.target;
+
+    console.log('LeafletMap: actualMapInstance is:', actualMapInstance);
+    console.log('LeafletMap: typeof actualMapInstance?.invalidateSize is:', typeof actualMapInstance?.invalidateSize);
+
+    if (!actualMapInstance) {
+      console.error('LeafletMap: actualMapInstance (from mapEventObject.target) is null or undefined.');
+      return;
     }
 
+    if (typeof actualMapInstance.invalidateSize !== 'function') {
+      console.error('LeafletMap: actualMapInstance.invalidateSize is NOT a function. actualMapInstance:', actualMapInstance);
+      try {
+        console.log('LeafletMap: Keys of actualMapInstance:', Object.keys(actualMapInstance));
+        if (typeof actualMapInstance.getPane === 'function') {
+           console.log('LeafletMap: actualMapInstance HAS .getPane() method.');
+        } else {
+           console.log('LeafletMap: actualMapInstance does NOT have .getPane() method.');
+        }
+      } catch (e) {
+        console.error('LeafletMap: Error while inspecting actualMapInstance keys or .getPane:', e);
+      }
+      return;
+    }
+
+    mapRef.current = actualMapInstance;
+    setMapReady(true); // Indicate map instance is available and core setup is done
+    console.log('LeafletMap: setMapReady(true) CALLED in handleMapReady.');
+    setMapLoaded(true); // Indicate map tiles and visual elements are ready, for opacity transition
+    console.log('LeafletMap: setMapLoaded(true) CALLED in handleMapReady.');
+
+    console.log('LeafletMap: About to call actualMapInstance.invalidateSize().');
+    actualMapInstance.invalidateSize();
+    console.log('LeafletMap: invalidateSize() called synchronously on actualMapInstance in handleMapReady.');
+
+    // Fit map to bounds or set default view
+    if (bounds && geoNodes.length > 0) { // 'bounds' is from useMemo: [[number, number], [number, number]]
+      console.log('LeafletMap: Fitting map to memoized bounds:', bounds);
+      actualMapInstance.fitBounds(bounds, { padding: [50, 50] });
+    } else {
+      console.log('LeafletMap: No geoNodes or valid memoized bounds. Setting default map view.');
+      actualMapInstance.setView(defaultCenter, defaultZoom);
+    }
+  }, [isMountedRef, setMapReady, setMapLoaded, bounds, geoNodes, defaultCenter, defaultZoom]);
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Preload icons for all nodes
+  const loadIcons = useCallback(async () => {
+    console.log('Loading icons for geo nodes...')
+    const iconMap = new Map<string, any>()
+    const nodeTypes = Array.from(new Set(geoNodes.map(node => node.type)))
+
+    for (const type of nodeTypes) {
+      let iconPath = await getNodeIconPath(type)
+      console.log(`Attempting to load icon for ${type}: ${iconPath}`)
+      
+      try {
+        // Try to load the SVG icon
+        const response = await fetch(iconPath)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const svgText = await response.text()
+        console.log(`✅ Loaded SVG for ${type} from ${iconPath}: ${svgText.substring(0, 50)}...`)
+        
+        // Process SVG and create icon
+        const processedIcon = await createCustomIcon({ type, uid: type, latitude: 0, longitude: 0, color: '', properties: {}, isSelected: false }, iconSize)
+        if (processedIcon) {
+          iconMap.set(type, processedIcon)
+        } else {
+          console.error(`Failed to process SVG for ${type}`)
+          // Fallback to default icon if processing fails
+          iconMap.set(type, await createCustomIcon({ type, uid: type, latitude: 0, longitude: 0, color: '', properties: {}, isSelected: false }, iconSize))
+        }
+      } catch (error) {
+        console.error(`Failed to load icon for ${type} from ${iconPath}:`, error)
+        // Fallback to default icon if loading fails
+        iconMap.set(type, await createCustomIcon({ type, uid: type, latitude: 0, longitude: 0, color: '', properties: {}, isSelected: false }, iconSize))
+      }
+    }
+
+    setCustomIcons(iconMap)
+    console.log(`✓ Icons loaded for ${iconMap.size} types`)
+  }, [geoNodes, iconSize])
+
+  useEffect(() => {
     if (isClient && geoNodes.length > 0) {
       loadIcons()
     }
   }, [geoNodes, isClient, iconSize])
 
-  useEffect(() => {
-    // Ensure we're on the client side
-    setIsClient(true)
+  // Ensure the map container has proper dimensions for the parent Box
+  const mapContainerStyle = useMemo(() => ({
+    height: height || '100%', // Use prop height or fallback
+    width: '100%',
+    position: 'relative', // For the wrapper Box that might use this style
+    overflow: 'hidden',
+    borderRadius: '8px',
+    // backgroundColor: '#f0f0f0', // Consider using Chakra's useColorModeValue if theming is desired
+    zIndex: 1
+  }), [height]);
 
-    // Add custom styles for geo markers
-    if (typeof window !== 'undefined') {
+  // The useEffect hook that previously handled invalidateSize based on isClient and mapReady has been removed.
+  // This logic is now consolidated into handleMapReady and the window resize handler.
 
-      // Add custom CSS for geo markers
-      const style = document.createElement('style')
-      style.textContent = `
-        .custom-geo-marker {
-          background: transparent !important;
-          border: none !important;
-        }
-        .custom-geo-marker .geo-marker-container {
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-          overflow: hidden !important;
-        }
-        .custom-geo-marker:hover .geo-marker-container {
-          transform: scale(1.1);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
-        }
-        .custom-geo-marker img {
-          max-width: 100% !important;
-          max-height: 100% !important;
-          object-fit: contain;
-          object-position: center;
-          image-rendering: auto;
-          image-rendering: -webkit-optimize-contrast;
-          image-rendering: crisp-edges;
-          display: block;
-          filter: contrast(1.1) brightness(1.05);
-          transition: filter 0.2s ease;
-        }
-        .custom-geo-marker:hover img {
-          filter: contrast(1.2) brightness(1.1);
-        }
-        .leaflet-marker-icon {
-          border: none !important;
-          background: transparent !important;
-          overflow: visible !important;
-        }
-      `
-      document.head.appendChild(style)
-
-      // Fix for default markers in react-leaflet
-      const L = require('leaflet')
-      delete (L.Icon.Default.prototype as any)._getIconUrl
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-      })
-    }
-  }, [])
-
-  useEffect(() => {
-    // Fit bounds when nodes change
-    if (mapRef.current && bounds && isClient) {
-      // Check if the map instance has the fitBounds method
-      const mapInstance = mapRef.current
-      if (mapInstance && typeof mapInstance.fitBounds === 'function') {
-        try {
-          mapInstance.fitBounds(bounds, { padding: [20, 20] })
-        } catch (error) {
-          console.warn('Failed to fit bounds:', error)
-        }
-      }
-    }
-  }, [bounds, isClient])
-
-  // Don't render on server side
-  if (!isClient) {
-    return (
-      <div style={{ height, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        Loading map...
-      </div>
-    )
-  }
+  const loadingStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)'),
+    zIndex: 1000,
+    opacity: mapLoaded ? 0 : 1,
+    pointerEvents: 'none',
+    transition: 'opacity 0.3s ease-in-out'
+  };
 
   return (
-    <Box position="relative" height={height} width="100%">
+    <Box position="relative" height={height} width="100%" style={mapContainerStyle}>
       {/* Icon Size Control */}
       <Box
         position="absolute"
@@ -536,211 +646,196 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
         border="1px solid"
         borderColor={borderColor}
         borderRadius="md"
-        p={2}
         boxShadow="md"
+        p={2}
       >
-        <VStack spacing={2} align="stretch">
-          <Text fontSize="xs" fontWeight="bold" textAlign="center">
-            Icon Size
-          </Text>
-          <ButtonGroup size="xs" isAttached variant="outline">
-            <Button
-              onClick={() => setIconSize('small')}
-              colorScheme={iconSize === 'small' ? 'blue' : 'gray'}
-              variant={iconSize === 'small' ? 'solid' : 'outline'}
-            >
-              S
-            </Button>
-            <Button
-              onClick={() => setIconSize('medium')}
-              colorScheme={iconSize === 'medium' ? 'blue' : 'gray'}
-              variant={iconSize === 'medium' ? 'solid' : 'outline'}
-            >
-              M
-            </Button>
-            <Button
-              onClick={() => setIconSize('large')}
-              colorScheme={iconSize === 'large' ? 'blue' : 'gray'}
-              variant={iconSize === 'large' ? 'solid' : 'outline'}
-            >
-              L
-            </Button>
+        <HStack spacing={2}>
+          <Text fontSize="sm" fontWeight="medium">Icon Size</Text>
+          <ButtonGroup size="sm" isAttached variant="outline">
+            <Button onClick={() => setIconSize('S')} isActive={iconSize === 'S'}>S</Button>
+            <Button onClick={() => setIconSize('M')} isActive={iconSize === 'M'}>M</Button>
+            <Button onClick={() => setIconSize('L')} isActive={iconSize === 'L'}>L</Button>
           </ButtonGroup>
-        </VStack>
+        </HStack>
       </Box>
-
       <MapContainer
-      center={bounds ? undefined : defaultCenter}
-      zoom={bounds ? undefined : defaultZoom}
-      bounds={bounds}
-      boundsOptions={{ padding: [20, 20] }}
-      style={{ height: '100%', width: '100%' }}
-      ref={mapRef}
-      worldCopyJump={true}
-      maxBounds={[[-90, -180], [90, 180]]}
-      maxBoundsViscosity={1.0}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        noWrap={true}
-        bounds={[[-90, -180], [90, 180]]}
-        minZoom={2}
-        maxZoom={18}
-      />
+        center={bounds ? undefined : defaultCenter}
+        zoom={bounds ? undefined : defaultZoom}
+        bounds={bounds}
+        boundsOptions={{ padding: [20, 20] }}
+        style={{ height: '100%', width: '100%' }}
+        whenReady={handleMapReady}
+        worldCopyJump={true}
+        maxBounds={[[-90, -180], [90, 180]]}
+        maxBoundsViscosity={1.0}
+        zoomControl={false}
+        ref={mapRef}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          noWrap={true}
+          bounds={[[-90, -180], [90, 180]]}
+          minZoom={2}
+          maxZoom={18}
+          tileSize={256}
+          zoomOffset={0}
+          updateWhenIdle={false}
+          updateWhenZooming={false}
+          detectRetina={true}
+          errorTileUrl="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+        />
 
-      {/* Render edges first so they appear behind markers */}
-      {geoEdges.map((edge, index) => {
-        const fromNode = geoNodes.find(node => node.uid === edge.from || node.id === edge.from)
-        const toNode = geoNodes.find(node => node.uid === edge.to || node.id === edge.to)
+        {/* Render edges first so they appear behind markers */}
+        {geoEdges.map((edge, index) => {
+          const fromNode = geoNodes.find(node => node.uid === edge.from || node.id === edge.from)
+          const toNode = geoNodes.find(node => node.uid === edge.to || node.id === edge.to)
 
-        if (!fromNode || !toNode) return null
+          if (!fromNode || !toNode) return null
 
-        return (
-          <Polyline
-            key={`edge-${index}`}
-            positions={[
-              [fromNode.latitude, fromNode.longitude],
-              [toNode.latitude, toNode.longitude]
-            ]}
-            pathOptions={{
-              color: getEdgeColor(edge.type),
-              weight: getEdgeWeight(edge.type),
-              opacity: 0.7,
-              dashArray: edge.type === 'attack' ? '5, 5' : undefined
-            }}
-            eventHandlers={{
-              mouseover: (event) => {
-                const mouseEvent = event.originalEvent
-                if (mouseEvent) {
-                  clearTooltipTimeout()
-                  setTooltipData({
-                    type: 'edge',
-                    data: {
-                      id: `${edge.from}-${edge.to}`,
-                      label: edge.type,
-                      source: fromNode.showname,
-                      target: toNode.showname,
-                      type: edge.type,
-                      properties: edge.properties
-                    },
-                    position: { x: mouseEvent.pageX, y: mouseEvent.pageY }
-                  })
+          return (
+            <Polyline
+              key={`edge-${index}`}
+              positions={[
+                [fromNode.latitude, fromNode.longitude],
+                [toNode.latitude, toNode.longitude]
+              ]}
+              pathOptions={{
+                color: getEdgeColor(edge.type),
+                weight: getEdgeWeight(edge.type),
+                opacity: 0.7,
+                dashArray: edge.type === 'attack' ? '5, 5' : undefined
+              }}
+              eventHandlers={{
+                mouseover: (event) => {
+                  const mouseEvent = event.originalEvent
+                  if (mouseEvent) {
+                    clearTooltipTimeout()
+                    setTooltipData({
+                      type: 'edge',
+                      data: {
+                        id: `${edge.from}-${edge.to}`,
+                        label: edge.type,
+                        source: fromNode.showname,
+                        target: toNode.showname,
+                        type: edge.type,
+                        properties: edge.properties
+                      },
+                      position: { x: mouseEvent.pageX, y: mouseEvent.pageY }
+                    })
+                  }
+                },
+                mouseout: () => {
+                  clearTooltipWithDelay()
                 }
-              },
-              mouseout: () => {
-                clearTooltipWithDelay()
-              }
-            }}
-          >
-            <Popup>
-              <div style={{ minWidth: '150px' }}>
-                <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 'bold' }}>
-                  Connection
-                </h4>
-                <p style={{ margin: '4px 0', fontSize: '12px' }}>
-                  <strong>Type:</strong> {edge.type}
-                </p>
-                <p style={{ margin: '4px 0', fontSize: '12px' }}>
-                  <strong>From:</strong> {fromNode.showname}
-                </p>
-                <p style={{ margin: '4px 0', fontSize: '12px' }}>
-                  <strong>To:</strong> {toNode.showname}
-                </p>
-              </div>
-            </Popup>
-          </Polyline>
-        )
-      })}
+              }}
+            >
+              <Popup>
+                <div style={{ minWidth: '150px' }}>
+                  <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 'bold' }}>
+                    Connection
+                  </h4>
+                  <p style={{ margin: '4px 0', fontSize: '12px' }}>
+                    <strong>Type:</strong> {edge.type}
+                  </p>
+                  <p style={{ margin: '4px 0', fontSize: '12px' }}>
+                    <strong>From:</strong> {fromNode.showname}
+                  </p>
+                  <p style={{ margin: '4px 0', fontSize: '12px' }}>
+                    <strong>To:</strong> {toNode.showname}
+                  </p>
+                </div>
+              </Popup>
+            </Polyline>
+          )
+        })}
 
-      {/* Render nodes */}
-      {geoNodes.map((node) => {
-        const iconKey = `${node.type}-${node.isSelected}-${iconSize}`
-        const icon = customIcons.get(iconKey)
+        {/* Render nodes */}
+        {geoNodes.map((node) => {
+          const icon = customIcons.get(node.type)
+          if (!icon) return null // Skip if icon not loaded yet
 
-        if (!icon) return null // Skip if icon not loaded yet
-
-        return (
-          <Marker
-            key={node.id}
-            position={[node.latitude, node.longitude]}
-            icon={icon}
-            eventHandlers={{
-              click: () => onNodeSelect(node.uid),
-              mouseover: (event) => {
-                const mouseEvent = event.originalEvent
-                if (mouseEvent) {
-                  clearTooltipTimeout()
-                  setTooltipData({
-                    type: 'node',
-                    data: {
-                      id: node.uid,
-                      label: node.showname,
-                      type: node.type,
-                      lat: node.latitude,
-                      lon: node.longitude,
-                      properties: node.properties,
-                      timestamp: node.properties.timestamp,
-                      showname: node.showname
-                    },
-                    position: { x: mouseEvent.pageX, y: mouseEvent.pageY }
-                  })
+          return (
+            <Marker
+              key={node.id}
+              position={[node.latitude, node.longitude]}
+              icon={icon}
+              eventHandlers={{
+                click: () => onNodeSelect(node.uid),
+                mouseover: (event) => {
+                  const mouseEvent = event.originalEvent
+                  if (mouseEvent) {
+                    clearTooltipTimeout()
+                    setTooltipData({
+                      type: 'node',
+                      data: {
+                        id: node.uid,
+                        label: node.showname,
+                        type: node.type,
+                        lat: node.latitude,
+                        lon: node.longitude,
+                        properties: node.properties,
+                        timestamp: node.properties.timestamp,
+                        showname: node.showname
+                      },
+                      position: { x: mouseEvent.pageX, y: mouseEvent.pageY }
+                    })
+                  }
+                },
+                mouseout: () => {
+                  clearTooltipWithDelay()
                 }
-              },
-              mouseout: () => {
-                clearTooltipWithDelay()
-              }
-            }}
-          >
-            <Popup>
-              <div style={{ minWidth: '200px' }}>
-                <h3 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 'bold' }}>
-                  {node.showname}
-                </h3>
-                <p style={{ margin: '4px 0', fontSize: '12px' }}>
-                  <strong>Type:</strong> {node.type}
-                </p>
-                <p style={{ margin: '4px 0', fontSize: '12px' }}>
-                  <strong>ID:</strong> {node.uid}
-                </p>
-                <p style={{ margin: '4px 0', fontSize: '12px' }}>
-                  <strong>Location:</strong> {node.latitude.toFixed(4)}, {node.longitude.toFixed(4)}
-                </p>
-                {node.properties.cve && (
-                  <p style={{ margin: '4px 0', fontSize: '12px', color: '#d63384' }}>
-                    <strong>CVE:</strong> {node.properties.cve}
+              }}
+            >
+              <Popup>
+                <div style={{ minWidth: '200px' }}>
+                  <h3 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: 'bold' }}>
+                    {node.showname}
+                  </h3>
+                  <p style={{ margin: '4px 0', fontSize: '12px' }}>
+                    <strong>Type:</strong> {node.type}
                   </p>
-                )}
-                {node.properties.cvss_score && (
-                  <p style={{ margin: '4px 0', fontSize: '12px', color: '#d63384' }}>
-                    <strong>CVSS Score:</strong> {node.properties.cvss_score}
+                  <p style={{ margin: '4px 0', fontSize: '12px' }}>
+                    <strong>ID:</strong> {node.uid}
                   </p>
-                )}
-              </div>
-            </Popup>
-          </Marker>
-        )
-      })}
-    </MapContainer>
+                  <p style={{ margin: '4px 0', fontSize: '12px' }}>
+                    <strong>Location:</strong> {node.latitude.toFixed(4)}, {node.longitude.toFixed(4)}
+                  </p>
+                  {node.properties.cve && (
+                    <p style={{ margin: '4px 0', fontSize: '12px', color: '#d63384' }}>
+                      <strong>CVE:</strong> {node.properties.cve}
+                    </p>
+                  )}
+                  {node.properties.cvss_score && (
+                    <p style={{ margin: '4px 0', fontSize: '12px', color: '#d63384' }}>
+                      <strong>CVSS Score:</strong> {node.properties.cvss_score}
+                    </p>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          )
+        })}
+      </MapContainer>
 
-    {/* Interactive Tooltip */}
-    {tooltipData && (
-      <Portal>
-        <Box
-          position="fixed"
-          top={Math.max(10, Math.min(window.innerHeight - 200, tooltipData.position.y - 10))}
-          left={Math.max(10, Math.min(window.innerWidth - 300, tooltipData.position.x + 15))}
-          zIndex={9999}
-          pointerEvents="none"
-        >
-          {tooltipData.type === 'node' ? (
-            <NodeTooltip node={tooltipData.data} />
-          ) : (
-            <EdgeTooltip edge={tooltipData.data} />
-          )}
-        </Box>
-      </Portal>
-    )}
+      {/* Interactive Tooltip */}
+      {tooltipData && (
+        <Portal>
+          <Box
+            position="fixed"
+            top={Math.max(10, Math.min(window.innerHeight - 200, tooltipData.position.y - 10))}
+            left={Math.max(10, Math.min(window.innerWidth - 300, tooltipData.position.x + 15))}
+            zIndex={9999}
+            pointerEvents="none"
+          >
+            {tooltipData.type === 'node' ? (
+              <NodeTooltip node={tooltipData.data} />
+            ) : (
+              <EdgeTooltip edge={tooltipData.data} />
+            )}
+          </Box>
+        </Portal>
+      )}
     </Box>
   )
 }

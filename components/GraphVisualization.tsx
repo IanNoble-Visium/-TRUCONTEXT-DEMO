@@ -137,17 +137,20 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
   }, [isMobile])
 
-  // Sync external selected nodes
+  // Sync external selected nodes - avoid infinite loop by not including selectedNodes in deps
   useEffect(() => {
     if (externalSelectedNodes && JSON.stringify(externalSelectedNodes) !== JSON.stringify(selectedNodes)) {
       setSelectedNodes(externalSelectedNodes)
     }
   }, [externalSelectedNodes])
 
-  // Notify parent of selection changes
+  // Notify parent of selection changes - use useRef to avoid infinite loops
+  const onSelectedNodesChangeRef = useRef(onSelectedNodesChange)
+  onSelectedNodesChangeRef.current = onSelectedNodesChange
+
   useEffect(() => {
-    if (onSelectedNodesChange) {
-      onSelectedNodesChange(selectedNodes)
+    if (onSelectedNodesChangeRef.current) {
+      onSelectedNodesChangeRef.current(selectedNodes)
     }
   }, [selectedNodes])
 

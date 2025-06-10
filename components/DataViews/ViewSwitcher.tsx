@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Box, Select, HStack, Text, useColorModeValue } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -45,8 +45,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
     { value: 'geomap', label: 'Geographic Map', icon: '🗺️' }
   ]
 
-  // Render the appropriate view component
-  const renderView = () => {
+  // Memoize the rendered view to prevent unnecessary re-renders
+  const renderedView = useMemo(() => {
     const commonProps = {
       nodes,
       edges,
@@ -72,7 +72,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       default:
         return GraphComponent
     }
-  }
+  }, [currentView, nodes, edges, selectedNodes, onNodeSelect, GraphComponent])
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
@@ -121,7 +121,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
             top={0}
             left={0}
           >
-            {renderView()}
+            {renderedView}
           </MotionBox>
         </AnimatePresence>
       </Box>
