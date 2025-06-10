@@ -494,20 +494,17 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
   }, [handleResize])
 
   // Handle map ready state (called by MapContainer's whenReady prop)
-  const handleMapReady = useCallback((mapEventObject: { target: LeafletMapType }) => {
+  const handleMapReady = useCallback(() => {
     if (!isMountedRef.current) {
       console.log('LeafletMap: handleMapReady called but component not mounted.');
       return;
     }
     
-    console.log('LeafletMap: mapEventObject received in handleMapReady:', mapEventObject);
-    const actualMapInstance = mapEventObject.target;
-
-    console.log('LeafletMap: actualMapInstance is:', actualMapInstance);
-    console.log('LeafletMap: typeof actualMapInstance?.invalidateSize is:', typeof actualMapInstance?.invalidateSize);
+    console.log('LeafletMap: mapEventObject received in handleMapReady:');
+    const actualMapInstance = mapRef.current;
 
     if (!actualMapInstance) {
-      console.error('LeafletMap: actualMapInstance (from mapEventObject.target) is null or undefined.');
+      console.error('LeafletMap: actualMapInstance (from mapRef.current) is null or undefined.');
       return;
     }
 
@@ -526,7 +523,6 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
       return;
     }
 
-    mapRef.current = actualMapInstance;
     setMapReady(true); // Indicate map instance is available and core setup is done
     console.log('LeafletMap: setMapReady(true) CALLED in handleMapReady.');
     setMapLoaded(true); // Indicate map tiles and visual elements are ready, for opacity transition
@@ -664,7 +660,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
         bounds={bounds}
         boundsOptions={{ padding: [20, 20] }}
         style={{ height: '100%', width: '100%' }}
-        whenReady={handleMapReady}
+        whenReady={() => handleMapReady()}
         worldCopyJump={true}
         maxBounds={[[-90, -180], [90, 180]]}
         maxBoundsViscosity={1.0}
