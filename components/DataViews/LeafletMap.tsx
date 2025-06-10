@@ -575,18 +575,48 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
         console.log(`✅ Loaded SVG for ${type} from ${iconPath}: ${svgText.substring(0, 50)}...`)
         
         // Process SVG and create icon
-        const processedIcon = await createCustomIcon({ type, uid: type, latitude: 0, longitude: 0, color: '', properties: {}, isSelected: false }, iconSize)
+        const processedIcon = await createCustomIcon({
+          id: type,
+          uid: type,
+          showname: type,
+          type,
+          latitude: 0,
+          longitude: 0,
+          color: '',
+          properties: {},
+          isSelected: false
+        }, iconSize)
         if (processedIcon) {
           iconMap.set(type, processedIcon)
         } else {
           console.error(`Failed to process SVG for ${type}`)
           // Fallback to default icon if processing fails
-          iconMap.set(type, await createCustomIcon({ type, uid: type, latitude: 0, longitude: 0, color: '', properties: {}, isSelected: false }, iconSize))
+          iconMap.set(type, await createCustomIcon({
+            id: type,
+            uid: type,
+            showname: type,
+            type,
+            latitude: 0,
+            longitude: 0,
+            color: '',
+            properties: {},
+            isSelected: false
+          }, iconSize))
         }
       } catch (error) {
         console.error(`Failed to load icon for ${type} from ${iconPath}:`, error)
         // Fallback to default icon if loading fails
-        iconMap.set(type, await createCustomIcon({ type, uid: type, latitude: 0, longitude: 0, color: '', properties: {}, isSelected: false }, iconSize))
+        iconMap.set(type, await createCustomIcon({
+          id: type,
+          uid: type,
+          showname: type,
+          type,
+          latitude: 0,
+          longitude: 0,
+          color: '',
+          properties: {},
+          isSelected: false
+        }, iconSize))
       }
     }
 
@@ -604,12 +634,10 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
   const mapContainerStyle = useMemo(() => ({
     height: height || '100%', // Use prop height or fallback
     width: '100%',
-    position: 'relative', // For the wrapper Box that might use this style
     overflow: 'hidden',
     borderRadius: '8px',
-    // backgroundColor: '#f0f0f0', // Consider using Chakra's useColorModeValue if theming is desired
     zIndex: 1
-  }), [height]);
+  }) as React.CSSProperties, [height]);
 
   // The useEffect hook that previously handled invalidateSize based on isClient and mapReady has been removed.
   // This logic is now consolidated into handleMapReady and the window resize handler.
@@ -648,9 +676,9 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
         <HStack spacing={2}>
           <Text fontSize="sm" fontWeight="medium">Icon Size</Text>
           <ButtonGroup size="sm" isAttached variant="outline">
-            <Button onClick={() => setIconSize('S')} isActive={iconSize === 'S'}>S</Button>
-            <Button onClick={() => setIconSize('M')} isActive={iconSize === 'M'}>M</Button>
-            <Button onClick={() => setIconSize('L')} isActive={iconSize === 'L'}>L</Button>
+            <Button onClick={() => setIconSize('small')} isActive={iconSize === 'small'}>S</Button>
+            <Button onClick={() => setIconSize('medium')} isActive={iconSize === 'medium'}>M</Button>
+            <Button onClick={() => setIconSize('large')} isActive={iconSize === 'large'}>L</Button>
           </ButtonGroup>
         </HStack>
       </Box>
