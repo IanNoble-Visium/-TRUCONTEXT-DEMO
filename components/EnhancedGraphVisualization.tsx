@@ -14,6 +14,7 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
 
   // Handle data load from graph
   const handleDataLoad = useCallback((data: { nodes: any[], edges: any[] }) => {
+    console.log('EnhancedGraphVisualization: Received data from GraphVisualization:', data)
     setGraphData(data)
   }, [])
 
@@ -48,6 +49,15 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
     />
   ), [refreshTrigger, handleDataLoad, selectedNodes, handleSelectedNodesChange])
 
+  // Debug current state
+  console.log('EnhancedGraphVisualization: Current state:', {
+    currentView,
+    graphDataExists: !!graphData,
+    nodeCount: graphData?.nodes?.length || 0,
+    edgeCount: graphData?.edges?.length || 0,
+    selectedNodesCount: selectedNodes.length
+  })
+
   return (
     <Box height="100%">
       <ViewSwitcher
@@ -71,14 +81,15 @@ interface GraphVisualizationWrapperProps {
   onSelectedNodesChange: (nodes: string[]) => void
 }
 
-const GraphVisualizationWrapper: React.FC<GraphVisualizationWrapperProps> = ({ 
-  refreshTrigger, 
-  onDataLoad, 
-  selectedNodes, 
-  onSelectedNodesChange 
+const GraphVisualizationWrapper: React.FC<GraphVisualizationWrapperProps> = ({
+  refreshTrigger,
+  onDataLoad,
+  selectedNodes,
+  onSelectedNodesChange
 }) => {
+  console.log('GraphVisualizationWrapper: Rendering with refreshTrigger:', refreshTrigger)
   return (
-    <GraphVisualization 
+    <GraphVisualization
       refreshTrigger={refreshTrigger}
       onDataLoad={onDataLoad}
       onSelectedNodesChange={onSelectedNodesChange}

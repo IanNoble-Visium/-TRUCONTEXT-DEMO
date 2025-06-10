@@ -195,24 +195,59 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
   }, []) // Run only once on mount
 
-  // Helper function to get node icon path with fallback (now using SVG)
-  const getNodeIconPath = (nodeType: string) => {
+  // Cache for icon existence checks in GraphVisualization
+  const graphIconExistsCache = new Map<string, boolean>()
+
+  // Helper function to check if an icon file exists
+  const checkGraphIconExists = async (iconPath: string): Promise<boolean> => {
+    if (graphIconExistsCache.has(iconPath)) {
+      return graphIconExistsCache.get(iconPath)!
+    }
+
+    try {
+      const response = await fetch(iconPath, { method: 'HEAD' })
+      const exists = response.ok
+      graphIconExistsCache.set(iconPath, exists)
+      return exists
+    } catch (error) {
+      console.warn(`Failed to check icon existence: ${iconPath}`, error)
+      graphIconExistsCache.set(iconPath, false)
+      return false
+    }
+  }
+
+  // Dynamic icon path resolution with fallback for GraphVisualization
+  const getNodeIconPath = async (nodeType: string): Promise<string> => {
     if (!nodeType) return '/icons-svg/unknown.svg'
-    
+
     // Convert type to lowercase for filename matching
     const filename = nodeType.toLowerCase()
-    
-    // List of available icons (now SVG format)
-    const availableIcons = [
-      'server', 'application', 'database', 'user', 'threatactor', 
-      'firewall', 'router', 'switch', 'workstation', 'client', 'entity'
-    ]
-    
-    if (availableIcons.includes(filename)) {
-      return `/icons-svg/${filename}.svg`
+    const primaryPath = `/icons-svg/${filename}.svg`
+
+    // Check if the primary icon exists
+    const exists = await checkGraphIconExists(primaryPath)
+    if (exists) {
+      console.log(`✓ Graph: Found icon for ${nodeType}: ${primaryPath}`)
+      return primaryPath
     }
-    
-    // Fallback to unknown.svg for any missing icons
+
+    // Fallback mappings for common variations
+    const fallbackMappings: { [key: string]: string } = {
+      'threatactor': 'actor',
+      'workstation': 'client',
+    }
+
+    const fallbackType = fallbackMappings[filename]
+    if (fallbackType) {
+      const fallbackPath = `/icons-svg/${fallbackType}.svg`
+      const fallbackExists = await checkGraphIconExists(fallbackPath)
+      if (fallbackExists) {
+        console.log(`✓ Graph: Using fallback icon for ${nodeType}: ${fallbackPath}`)
+        return fallbackPath
+      }
+    }
+
+    console.warn(`⚠ Graph: No icon found for ${nodeType}, using unknown.svg`)
     return '/icons-svg/unknown.svg'
   }
 
@@ -359,7 +394,42 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     // Note: Users can now manually use Center & Fit or Reset View to reposition
   }
 
-  const initializeCytoscape = (processedNodes: any[], processedEdges: any[]) => {
+  // Preload icon existence checks
+  const preloadIconChecks = async (nodes: any[]) => {
+    console.log(`Debug: Received ${nodes.length} nodes for preloading`)
+    console.log(`Debug: Sample node structure:`, nodes[0])
+
+    // Extract types from Cytoscape node format: { data: { type: "NodeType" } }
+    const extractTypes = (nodes: any[]) => {
+      const types = []
+      for (const node of nodes) {
+        // For Cytoscape format, the type is in node.data.type
+        const type = node.data?.type || node.type || node.properties?.type || node.nodeType
+        if (type) {
+          types.push(type)
+          console.log(`Debug: Found type "${type}" for node ${node.data?.id || node.id}`)
+        } else {
+          console.warn(`Debug: No type found for node:`, node)
+        }
+      }
+      return types
+    }
+
+    const allTypes = extractTypes(nodes)
+    const uniqueTypes = [...new Set(allTypes)]
+    console.log(`Debug: Extracted types:`, allTypes)
+    console.log(`Preloading icon checks for types:`, uniqueTypes)
+
+    for (const type of uniqueTypes) {
+      await getNodeIconPath(type)
+    }
+
+    console.log(`✓ Icon checks completed for ${uniqueTypes.length} types`)
+  }
+
+  const initializeCytoscape = async (processedNodes: any[], processedEdges: any[]) => {
+    // Preload icon existence checks
+    await preloadIconChecks(processedNodes)
     if (!containerRef.current) {
       console.log('Container ref not available')
       return false
@@ -427,8 +497,40 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             selector: 'node',
             style: {
               'background-image': (ele: any) => {
-                const type = ele.data('type')
-                return getNodeIconPath(type)
+                // Get the node type from Cytoscape element data
+                const nodeData = ele.data()
+                const type = nodeData.type
+
+                if (!type) {
+                  console.warn(`No type found for node ${nodeData.id}:`, nodeData)
+                  return '/icons-svg/unknown.svg'
+                }
+
+                // Convert to lowercase for case-insensitive matching
+                const filename = type.toLowerCase()
+                const primaryPath = `/icons-svg/${filename}.svg`
+
+                // Check cache first
+                if (graphIconExistsCache.has(primaryPath) && graphIconExistsCache.get(primaryPath)) {
+                  return primaryPath
+                }
+
+                // Check fallback mappings for common variations
+                const fallbackMappings: { [key: string]: string } = {
+                  'threatactor': 'actor',
+                  'workstation': 'client',
+                }
+
+                const fallbackType = fallbackMappings[filename]
+                if (fallbackType) {
+                  const fallbackPath = `/icons-svg/${fallbackType}.svg`
+                  if (graphIconExistsCache.has(fallbackPath) && graphIconExistsCache.get(fallbackPath)) {
+                    return fallbackPath
+                  }
+                }
+
+                // Default to unknown.svg
+                return '/icons-svg/unknown.svg'
               },
               'background-fit': 'cover',
               'background-color': 'white',
@@ -702,11 +804,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
   // Load graph data from API
   const loadGraphData = async () => {
+    console.log('GraphVisualization: loadGraphData called')
     try {
       setLoading(true)
       setError(null)
       setContainerReady(false) // Reset container ready state
 
+      console.log('GraphVisualization: Fetching data from /api/graph')
       const response = await fetch('/api/graph')
       
       if (!response.ok) {
@@ -727,6 +831,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       
       // Expose data to parent component
       if (onDataLoad) {
+        console.log('GraphVisualization: Calling onDataLoad callback with data transformation')
         // Transform cytoscape format to simple format for other views
         const simpleNodes = data.nodes.map((node: any) => ({
           uid: node.data.id,
@@ -746,7 +851,15 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           timestamp: edge.data.timestamp, // Preserve timestamp as direct property
           properties: edge.data.properties || {}
         }))
+        console.log('GraphVisualization: Transformed data for other views:', {
+          nodeCount: simpleNodes.length,
+          edgeCount: simpleEdges.length,
+          sampleNode: simpleNodes[0],
+          sampleEdge: simpleEdges[0]
+        })
         onDataLoad({ nodes: simpleNodes, edges: simpleEdges })
+      } else {
+        console.log('GraphVisualization: No onDataLoad callback provided')
       }
       
       // Extract unique node types
@@ -1739,7 +1852,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       console.log('Attempting to initialize Cytoscape...')
       
       // Add a longer delay and more robust checking
-      const initializeWithRetry = (attempt = 1, maxAttempts = 5) => {
+      const initializeWithRetry = async (attempt = 1, maxAttempts = 5) => {
         if (!containerRef.current) {
           console.log(`Container ref not available (attempt ${attempt}/${maxAttempts})`)
           if (attempt < maxAttempts) {
@@ -1766,9 +1879,16 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         }
 
         // Container is ready, initialize Cytoscape
-        const success = initializeCytoscape(graphData.nodes, graphData.edges)
-        if (!success && attempt < maxAttempts) {
-          setTimeout(() => initializeWithRetry(attempt + 1, maxAttempts), 200 * attempt)
+        try {
+          const success = await initializeCytoscape(graphData.nodes, graphData.edges)
+          if (!success && attempt < maxAttempts) {
+            setTimeout(() => initializeWithRetry(attempt + 1, maxAttempts), 200 * attempt)
+          }
+        } catch (error) {
+          console.error('Failed to initialize Cytoscape:', error)
+          if (attempt < maxAttempts) {
+            setTimeout(() => initializeWithRetry(attempt + 1, maxAttempts), 200 * attempt)
+          }
         }
       }
 
@@ -1778,6 +1898,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   }, [graphData, containerReady])
 
   useEffect(() => {
+    console.log('GraphVisualization: useEffect triggered with refreshTrigger:', refreshTrigger)
     loadGraphData()
 
     return () => {

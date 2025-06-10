@@ -54,6 +54,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       onNodeSelect
     }
 
+    console.log(`ViewSwitcher: Rendering view "${currentView}" with ${nodes.length} nodes and ${edges.length} edges`)
+
     switch (currentView) {
       case 'table':
         return <TableView {...commonProps} />
@@ -64,6 +66,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       case 'dashboard':
         return <DashboardView nodes={nodes} edges={edges} selectedNodes={selectedNodes} />
       case 'geomap':
+        console.log('ViewSwitcher: Rendering GeoMapView with props:', commonProps)
         return <GeoMapView {...commonProps} />
       case 'graph':
       default:
@@ -81,7 +84,11 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
           </Text>
           <Select
             value={currentView}
-            onChange={(e) => onViewChange(e.target.value as ViewType)}
+            onChange={(e) => {
+              const newView = e.target.value as ViewType
+              console.log(`ViewSwitcher: Changing view from "${currentView}" to "${newView}"`)
+              onViewChange(newView)
+            }}
             size="sm"
             width="200px"
             bg={bgColor}

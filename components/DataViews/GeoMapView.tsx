@@ -72,7 +72,7 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
 
       if (lat !== undefined && lng !== undefined &&
           !isNaN(parseFloat(lat)) && !isNaN(parseFloat(lng))) {
-        console.log(`✓ Valid coordinates found for node ${node.uid}:`, lat, lng)
+        console.log(`✓ Valid coordinates found for node ${node.uid}:`, lat, lng, `Type: ${node.type}`, `Color: ${node.color}`)
         validNodes.push({
           id: node.uid,
           uid: node.uid,
@@ -90,8 +90,36 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
     })
 
     console.log(`Found ${validNodes.length} nodes with valid coordinates`)
+    console.log('Node types found:', [...new Set(validNodes.map(n => n.type))])
+    console.log('Node colors found:', [...new Set(validNodes.map(n => n.color))])
     return validNodes
   }, [nodes, selectedNodes])
+
+  // Process edges for geographic display
+  const geoEdges = useMemo(() => {
+    if (!edges || edges.length === 0) {
+      console.log('No edges available for geo map')
+      return []
+    }
+
+    console.log('Processing edges for geo map:', edges.length)
+    const validNodeIds = new Set(geoNodes.map(node => node.uid))
+    console.log('Valid node IDs for edges:', Array.from(validNodeIds))
+
+    const validEdges = edges.filter(edge => {
+      const fromValid = validNodeIds.has(edge.from) || validNodeIds.has(edge.source)
+      const toValid = validNodeIds.has(edge.to) || validNodeIds.has(edge.target)
+      return fromValid && toValid
+    }).map(edge => ({
+      from: edge.from || edge.source,
+      to: edge.to || edge.target,
+      type: edge.type || edge.label || 'connection',
+      properties: edge.properties || {}
+    }))
+
+    console.log(`Found ${validEdges.length} valid edges for geo map`)
+    return validEdges
+  }, [edges, geoNodes])
 
   // Get unique node types for filtering
   const nodeTypes = useMemo(() => {
@@ -214,6 +242,7 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
       <Box flex="1" position="relative">
         <LeafletMap
           geoNodes={filteredNodes}
+          geoEdges={geoEdges}
           onNodeSelect={handleMarkerClick}
           height="100%"
         />
