@@ -448,9 +448,8 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
     // Ensure we're on the client side
     setIsClient(true)
 
-    // Import Leaflet CSS and add custom styles
+    // Add custom styles for geo markers
     if (typeof window !== 'undefined') {
-      import('leaflet/dist/leaflet.css')
 
       // Add custom CSS for geo markers
       const style = document.createElement('style')

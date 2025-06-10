@@ -1,6 +1,8 @@
 // Shared SVG icon utilities for all views
 // This module provides consistent SVG icon loading and rendering across the application
 
+import React from 'react'
+
 // SVG cache to avoid repeated network requests
 const svgCache = new Map<string, string>()
 

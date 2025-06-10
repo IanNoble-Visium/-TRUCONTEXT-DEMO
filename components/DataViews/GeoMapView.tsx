@@ -90,8 +90,8 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
     })
 
     console.log(`Found ${validNodes.length} nodes with valid coordinates`)
-    console.log('Node types found:', [...new Set(validNodes.map(n => n.type))])
-    console.log('Node colors found:', [...new Set(validNodes.map(n => n.color))])
+    console.log('Node types found:', Array.from(new Set(validNodes.map(n => n.type))))
+    console.log('Node colors found:', Array.from(new Set(validNodes.map(n => n.color))))
     return validNodes
   }, [nodes, selectedNodes])
 

@@ -416,7 +416,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
 
     const allTypes = extractTypes(nodes)
-    const uniqueTypes = [...new Set(allTypes)]
+    const uniqueTypes = Array.from(new Set(allTypes))
     console.log(`Debug: Extracted types:`, allTypes)
     console.log(`Preloading icon checks for types:`, uniqueTypes)
 
