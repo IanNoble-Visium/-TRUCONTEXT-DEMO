@@ -626,6 +626,14 @@ TruContext is powered by Visium Technologies, a leader in graph analytics and cy
 - **TypeScript Enhanced**: Full type safety with advanced component patterns
 - **Modern React Patterns**: Best practices for hooks, memoization, and component architecture
 
+### ✅ Geographic Map View & Icon Rendering Fixes (June 2024)
+- **Geographic Map Responsiveness**: The Geographic Map view now auto-fills its parent container responsively, adapting to all device sizes (desktop, tablet, mobile) with a minimum height fallback for small screens.
+- **Icon Rendering Bugfixes**: Fixed a bug where node icons/markers were not displaying on the Geographic Map due to a type mismatch in the icon preloading logic. All node types now display the correct SVG icon or fallback.
+- **Type Safety for Cloud Builds**: Addressed strict type errors in the icon preloading logic, ensuring all required properties are present for type safety. The codebase now passes Vercel/Next.js cloud builds without type errors.
+- **Debugging & Developer Experience**: Improved debugging instructions and added temporary debug styles to help diagnose map rendering and overlay issues. These have been reverted for production.
+- **Unified Icon System**: The unified SVG icon system is now robust across all views, with consistent fallback and caching behavior.
+- **Documentation Updated**: README and troubleshooting sections updated to reflect new fixes and best practices for debugging map/icon issues.
+
 ## 🤝 Contributing
 
 ### Development Guidelines
