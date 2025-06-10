@@ -6,6 +6,7 @@ import {
 } from '@chakra-ui/react'
 import { SearchIcon, InfoIcon } from '@chakra-ui/icons'
 import { motion } from 'framer-motion'
+import NodeIcon from '../common/NodeIcon'
 
 interface CardsViewProps {
   nodes: any[]
@@ -260,7 +261,7 @@ const CardsView: React.FC<CardsViewProps> = ({ nodes, edges, selectedNodes, onNo
                   <VStack spacing={2} align="stretch">
                     <HStack justify="space-between" align="start">
                       <HStack spacing={2}>
-                        <Text fontSize="xl">{getNodeIcon(node.type)}</Text>
+                        <NodeIcon nodeType={node.type} size={24} />
                         <VStack spacing={0} align="start" flex="1">
                           <Text fontWeight="bold" fontSize="sm" noOfLines={1}>
                             {node.showname || node.uid}

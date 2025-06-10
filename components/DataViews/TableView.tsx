@@ -7,6 +7,7 @@ import {
 } from '@chakra-ui/react'
 import { SearchIcon, ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons'
 import { motion } from 'framer-motion'
+import NodeIcon from '../common/NodeIcon'
 
 interface TableViewProps {
   nodes: any[]
@@ -218,6 +219,7 @@ const TableView: React.FC<TableViewProps> = ({ nodes, edges, selectedNodes, onNo
               <Table size="sm">
                 <Thead bg={headerBg} position="sticky" top={0} zIndex={1}>
                   <Tr>
+                    <Th width="60px">Icon</Th>
                     <Th cursor="pointer" onClick={() => handleSort('uid', true)}>
                       <HStack>
                         <Text>ID</Text>
@@ -251,6 +253,9 @@ const TableView: React.FC<TableViewProps> = ({ nodes, edges, selectedNodes, onNo
                       cursor="pointer"
                       onClick={() => onNodeSelect(node.uid)}
                     >
+                      <Td textAlign="center">
+                        <NodeIcon nodeType={node.type} size={24} />
+                      </Td>
                       <Td fontFamily="mono" fontSize="sm">{node.uid}</Td>
                       <Td fontWeight="medium">{node.showname || 'N/A'}</Td>
                       <Td>

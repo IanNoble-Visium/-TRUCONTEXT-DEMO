@@ -5,6 +5,7 @@ import {
 } from '@chakra-ui/react'
 import { SearchIcon, TimeIcon } from '@chakra-ui/icons'
 import { motion } from 'framer-motion'
+import NodeIcon from '../common/NodeIcon'
 
 interface TimelineViewProps {
   nodes: any[]
@@ -213,10 +214,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ nodes, edges, selectedNodes
     }
   }
 
-  // Get event icon
-  const getEventIcon = (event: TimelineEvent) => {
-    return event.type === 'node' ? '🔵' : '🔗'
-  }
+
 
   if (timelineEvents.length === 0) {
     return (
@@ -379,7 +377,11 @@ const TimelineView: React.FC<TimelineViewProps> = ({ nodes, edges, selectedNodes
                         <VStack spacing={2} align="stretch">
                           <HStack justify="space-between">
                             <HStack spacing={3}>
-                              <Text fontSize="lg">{getEventIcon(event)}</Text>
+                              {event.type === 'node' ? (
+                                <NodeIcon nodeType={event.category} size={20} />
+                              ) : (
+                                <Text fontSize="lg">🔗</Text>
+                              )}
                               <VStack spacing={0} align="start">
                                 <Text fontWeight="bold" fontSize="md">
                                   {event.title}

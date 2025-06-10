@@ -6,6 +6,7 @@ import {
 } from '@chakra-ui/react'
 import { InfoIcon, WarningIcon, CheckCircleIcon, TimeIcon } from '@chakra-ui/icons'
 import { motion, useSpring, useTransform } from 'framer-motion'
+import NodeIcon from '../common/NodeIcon'
 
 interface DashboardViewProps {
   nodes: any[]
@@ -279,6 +280,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ nodes, edges, selectedNod
                     >
                       <HStack justify="space-between" mb={1}>
                         <HStack>
+                          <NodeIcon nodeType={type} size={16} />
                           <Badge colorScheme={getTypeColor(type)} variant="subtle">
                             {type}
                           </Badge>
@@ -375,19 +377,22 @@ const DashboardView: React.FC<DashboardViewProps> = ({ nodes, edges, selectedNod
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                   >
                     <HStack justify="space-between" p={2} bg={statBg} borderRadius="md">
-                      <VStack spacing={0} align="start">
-                        <Text fontSize="sm" fontWeight="medium">
-                          {node.showname || node.uid}
-                        </Text>
-                        <HStack>
-                          <Badge colorScheme={getTypeColor(node.type)} size="sm">
-                            {node.type}
-                          </Badge>
-                          <Text fontSize="xs" color="gray.500">
-                            {node.uid}
+                      <HStack spacing={2}>
+                        <NodeIcon nodeType={node.type} size={20} />
+                        <VStack spacing={0} align="start">
+                          <Text fontSize="sm" fontWeight="medium">
+                            {node.showname || node.uid}
                           </Text>
-                        </HStack>
-                      </VStack>
+                          <HStack>
+                            <Badge colorScheme={getTypeColor(node.type)} size="sm">
+                              {node.type}
+                            </Badge>
+                            <Text fontSize="xs" color="gray.500">
+                              {node.uid}
+                            </Text>
+                          </HStack>
+                        </VStack>
+                      </HStack>
                       <Badge colorScheme="blue" variant="solid">
                         {node.connections} connections
                       </Badge>
