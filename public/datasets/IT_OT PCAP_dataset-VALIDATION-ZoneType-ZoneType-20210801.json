@@ -1,0 +1,1148 @@
+{
+  "description": "ALERTs with destinations compromised",
+  "name": "IT/OT PCAP",
+  "nodes": [
+    {
+      "uid": "172.26.10.200",
+      "showname": "Router (Level 5)",
+      "type": "Network",
+      "properties": {
+        "API-SOURCE": "OVERLAY-BUCKET",
+        "SIDE": "SOURCE",
+        "SOURCE IP": "209.42.129.148",
+        "pcap_date": "1627840667.0",
+        "COUNT": "250",
+        "OVERLAY DATASET": "IT & OS Convergence",
+        "Zone": "Enterprise Security",
+        "ZoneType": "Router",
+        "ZoneLevel": "Level 5"
+      }
+    },
+    {
+      "uid": "209.42.129.148",
+      "showname": "Internet (Level 5)",
+      "type": "Network",
+      "properties": {
+        "API-SOURCE": "OVERLAY-BUCKET",
+        "SIDE": "DESTINATION",
+        "pcap_date": "1627840667.0",
+        "COUNT": "188",
+        "OVERLAY DATASET": "IT & OS Convergence",
+        "Zone": "Enterprise Security",
+        "ZoneType": "Internet",
+        "ZoneLevel": "Level 5"
+      }
+    },
+    {
+      "uid": "172.26.13.200",
+      "showname": " Actuators (Level 0)",
+      "type": "Process",
+      "properties": {
+        "API-SOURCE": "OVERLAY-BUCKET",
+        "SIDE": "DESTINATION",
+        "SOURCE IP": "172.26.10.200",
+        "pcap_date": "1627840678.0",
+        "COUNT": "13",
+        "OVERLAY DATASET": "IT & OS Convergence",
+        "Zone": "Cell/Area, Control Area",
+        "ZoneType": " Actuators",
+        "ZoneLevel": "Level 0"
+      }
+    },
+    {
+      "uid": "172.26.8.72",
+      "showname": " Safety Control (Level 1)",
+      "type": "Basic Control",
+      "properties": {
+        "API-SOURCE": "OVERLAY-BUCKET",
+        "SIDE": "DESTINATION",
+        "SOURCE IP": "172.26.10.200",
+        "pcap_date": "1627840678.0",
+        "COUNT": "18",
+        "OVERLAY DATASET": "IT & OS Convergence",
+        "Zone": "Cell/Area, Control Area",
+        "ZoneType": " Safety Control",
+        "ZoneLevel": "Level 1"
+      }
+    },
+    {
+      "uid": "172.26.1.238",
+      "showname": " Operator Interface (Level 2)",
+      "type": "Area Supeverisory Control",
+      "properties": {
+        "API-SOURCE": "OVERLAY-BUCKET",
+        "SIDE": "DESTINATION",
+        "SOURCE IP": "172.26.10.200",
+        "pcap_date": "1627840678.0",
+        "COUNT": "2",
+        "OVERLAY DATASET": "IT & OS Convergence",
+        "Zone": "Cell/Area, Control Area",
+        "ZoneType": " Operator Interface",
+        "ZoneLevel": "Level 2"
+      }
+    },
+    {
+      "uid": "172.26.11.181",
+      "showname": " Application Mirror (Level 3)",
+      "type": "Site Operations",
+      "properties": {
+        "API-SOURCE": "OVERLAY-BUCKET",
+        "SIDE": "DESTINATION",
+        "SOURCE IP": "172.26.10.200",
+        "pcap_date": "1627840678.0",
+        "COUNT": "13",
+        "OVERLAY DATASET": "IT & OS Convergence",
+        "Zone": "Industrial Security",
+        "ZoneType": " Application Mirror",
+        "ZoneLevel": "Level 3"
+      }
+    },
+    {
+      "uid": "172.26.12.2",
+      "showname": " AV Server (Level 4)",
+      "type": "Server",
+      "properties": {
+        "API-SOURCE": "OVERLAY-BUCKET",
+        "SIDE": "DESTINATION",
+        "SOURCE IP": "172.26.10.200",
+        "pcap_date": "1627840678.0",
+        "COUNT": "15",
+        "OVERLAY DATASET": "IT & OS Convergence",
+        "Zone": "Industrial Demilitarized",
+        "ZoneType": " AV Server",
+        "ZoneLevel": "Level 4"
+      }
+    },
+    {
+      "uid": "169.254.169.123",
+      "showname": "Internet (Level 5)",
+      "type": "Network",
+      "properties": {
+        "API-SOURCE": "OVERLAY-BUCKET",
+        "SIDE": "DESTINATION",
+        "SOURCE IP": "172.26.10.200",
+        "pcap_date": "1627840679.0",
+        "COUNT": "1",
+        "OVERLAY DATASET": "IT & OS Convergence",
+        "Zone": "Enterprise Security",
+        "ZoneType": "Internet",
+        "ZoneLevel": "Level 5"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneLevel-Level 5-Level 0",
+      "showname": "ZoneLevel: Level 5 to Level 0",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneLevel-Level 5-Level 1",
+      "showname": "ZoneLevel: Level 5 to Level 1",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneLevel-Level 5-Level 2",
+      "showname": "ZoneLevel: Level 5 to Level 2",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.13.200-ZoneLevel-Level 0-Level 5",
+      "showname": "ZoneLevel: Level 0 to Level 5",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.11.181-ZoneLevel-Level 3-Level 5",
+      "showname": "ZoneLevel: Level 3 to Level 5",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneType-Router-Internet",
+      "showname": "ZoneType: Router to Internet",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "3",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneType-Router- Actuators",
+      "showname": "ZoneType: Router to  Actuators",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneType-Router- Safety Control",
+      "showname": "ZoneType: Router to  Safety Control",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneType-Router- Operator Interface",
+      "showname": "ZoneType: Router to  Operator Interface",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneType-Router- Application Mirror",
+      "showname": "ZoneType: Router to  Application Mirror",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "172.26.10.200-ZoneType-Router- AV Server",
+      "showname": "ZoneType: Router to  AV Server",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    },
+    {
+      "uid": "209.42.129.148-ZoneType-Internet-Router",
+      "showname": "ZoneType: Internet to Router",
+      "type": "Vulnerability",
+      "properties": {
+        "COUNT": "3",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "overlay_date": "1627840684.0"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "209.42.129.148",
+      "to": "172.26.10.200",
+      "uid": "209.42.129.148-->(1035)-->TCP-->(22)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "5",
+        "kronograph_date": "1627840681.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840681.0",
+        "SRC IP": "209.42.129.148",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "1035",
+        "DST PORT": "22",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Internet (209.42.129.148) is not allowed to talk to Router (172.26.10.200)",
+        "uid": "missing-uid-0"
+      }
+    },
+    {
+      "from": "209.42.129.148",
+      "to": "172.26.10.200",
+      "uid": "209.42.129.148-->(1044)-->TCP-->(22)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "75",
+        "kronograph_date": "1627840681.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840681.0",
+        "SRC IP": "209.42.129.148",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "1044",
+        "DST PORT": "22",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Internet (209.42.129.148) is not allowed to talk to Router (172.26.10.200)",
+        "uid": "missing-uid-1"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "209.42.129.148",
+      "uid": "172.26.10.200-->(22)-->TCP-->(1044)--209.42.129.148",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "77",
+        "kronograph_date": "1627840681.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840681.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "209.42.129.148",
+        "SRC PORT": "22",
+        "DST PORT": "1044",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to Internet (209.42.129.148)",
+        "uid": "missing-uid-2"
+      }
+    },
+    {
+      "from": "209.42.129.148",
+      "to": "172.26.10.200",
+      "uid": "209.42.129.148-->(1040)-->TCP-->(22)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "11",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "209.42.129.148",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "1040",
+        "DST PORT": "22",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Internet (209.42.129.148) is not allowed to talk to Router (172.26.10.200)",
+        "uid": "missing-uid-3"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "209.42.129.148",
+      "uid": "172.26.10.200-->(22)-->TCP-->(1040)--209.42.129.148",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "20",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "209.42.129.148",
+        "SRC PORT": "22",
+        "DST PORT": "1040",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to Internet (209.42.129.148)",
+        "uid": "missing-uid-4"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.13.200",
+      "uid": "172.26.10.200-->(33640)-->TCP-->(80)--172.26.13.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.13.200",
+        "SRC PORT": "33640",
+        "DST PORT": "80",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Actuators (172.26.13.200)",
+        "uid": "missing-uid-5"
+      }
+    },
+    {
+      "from": "172.26.13.200",
+      "to": "172.26.10.200",
+      "uid": "172.26.13.200-->(80)-->TCP-->(33640)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.13.200",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "80",
+        "DST PORT": "33640",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Level 0 (172.26.13.200) is not allowed to talk to Level 5 (172.26.10.200)",
+        "uid": "missing-uid-6"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.13.200",
+      "uid": "172.26.10.200-->(33784)-->TCP-->(22)--172.26.13.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.13.200",
+        "SRC PORT": "33784",
+        "DST PORT": "22",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Actuators (172.26.13.200)",
+        "uid": "missing-uid-7"
+      }
+    },
+    {
+      "from": "172.26.13.200",
+      "to": "172.26.10.200",
+      "uid": "172.26.13.200-->(22)-->TCP-->(33784)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "3",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.13.200",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "22",
+        "DST PORT": "33784",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Level 0 (172.26.13.200) is not allowed to talk to Level 5 (172.26.10.200)",
+        "uid": "missing-uid-8"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.13.200",
+      "uid": "172.26.10.200-->(48110)-->TCP-->(21)--172.26.13.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.13.200",
+        "SRC PORT": "48110",
+        "DST PORT": "21",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Actuators (172.26.13.200)",
+        "uid": "missing-uid-9"
+      }
+    },
+    {
+      "from": "172.26.13.200",
+      "to": "172.26.10.200",
+      "uid": "172.26.13.200-->(21)-->TCP-->(48110)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.13.200",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "21",
+        "DST PORT": "48110",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Level 0 (172.26.13.200) is not allowed to talk to Level 5 (172.26.10.200)",
+        "uid": "missing-uid-10"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.13.200",
+      "uid": "172.26.10.200-->(Unknown)-->ICMP-->(Unknown)--172.26.13.200",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.13.200",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Actuators (172.26.13.200)",
+        "uid": "missing-uid-11"
+      }
+    },
+    {
+      "from": "172.26.13.200",
+      "to": "172.26.10.200",
+      "uid": "172.26.13.200-->(Unknown)-->ICMP-->(Unknown)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.13.200",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "OVERLAY-VIOLATION": "Level 0 (172.26.13.200) is not allowed to talk to Level 5 (172.26.10.200)",
+        "uid": "missing-uid-12"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.8.72",
+      "uid": "172.26.10.200-->(39298)-->TCP-->(80)--172.26.8.72",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.8.72",
+        "SRC PORT": "39298",
+        "DST PORT": "80",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Safety Control (172.26.8.72)",
+        "uid": "missing-uid-13"
+      }
+    },
+    {
+      "from": "172.26.8.72",
+      "to": "172.26.10.200",
+      "uid": "172.26.8.72-->(80)-->TCP-->(39298)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "2",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.8.72",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "80",
+        "DST PORT": "39298",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "uid": "missing-uid-14"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.8.72",
+      "uid": "172.26.10.200-->(55628)-->TCP-->(22)--172.26.8.72",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "5",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.8.72",
+        "SRC PORT": "55628",
+        "DST PORT": "22",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Safety Control (172.26.8.72)",
+        "uid": "missing-uid-15"
+      }
+    },
+    {
+      "from": "172.26.8.72",
+      "to": "172.26.10.200",
+      "uid": "172.26.8.72-->(22)-->TCP-->(55628)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.8.72",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "22",
+        "DST PORT": "55628",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "uid": "missing-uid-16"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.8.72",
+      "uid": "172.26.10.200-->(48168)-->TCP-->(21)--172.26.8.72",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.8.72",
+        "SRC PORT": "48168",
+        "DST PORT": "21",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Safety Control (172.26.8.72)",
+        "uid": "missing-uid-17"
+      }
+    },
+    {
+      "from": "172.26.8.72",
+      "to": "172.26.10.200",
+      "uid": "172.26.8.72-->(21)-->TCP-->(48168)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.8.72",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "21",
+        "DST PORT": "48168",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "uid": "missing-uid-18"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.8.72",
+      "uid": "172.26.10.200-->(Unknown)-->ICMP-->(Unknown)--172.26.8.72",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.8.72",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Safety Control (172.26.8.72)",
+        "uid": "missing-uid-19"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.1.238",
+      "uid": "172.26.10.200-->(Unknown)-->ICMP-->(Unknown)--172.26.1.238",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.1.238",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Operator Interface (172.26.1.238)",
+        "uid": "missing-uid-20"
+      }
+    },
+    {
+      "from": "172.26.1.238",
+      "to": "172.26.10.200",
+      "uid": "172.26.1.238-->(Unknown)-->ICMP-->(Unknown)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.1.238",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "uid": "missing-uid-21"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.11.181",
+      "uid": "172.26.10.200-->(56008)-->TCP-->(80)--172.26.11.181",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.11.181",
+        "SRC PORT": "56008",
+        "DST PORT": "80",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Application Mirror (172.26.11.181)",
+        "uid": "missing-uid-22"
+      }
+    },
+    {
+      "from": "172.26.11.181",
+      "to": "172.26.10.200",
+      "uid": "172.26.11.181-->(80)-->TCP-->(56008)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.11.181",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "80",
+        "DST PORT": "56008",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Level 3 (172.26.11.181) is not allowed to talk to Level 5 (172.26.10.200)",
+        "uid": "missing-uid-23"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.11.181",
+      "uid": "172.26.10.200-->(38812)-->TCP-->(22)--172.26.11.181",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.11.181",
+        "SRC PORT": "38812",
+        "DST PORT": "22",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Application Mirror (172.26.11.181)",
+        "uid": "missing-uid-24"
+      }
+    },
+    {
+      "from": "172.26.11.181",
+      "to": "172.26.10.200",
+      "uid": "172.26.11.181-->(22)-->TCP-->(38812)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "3",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.11.181",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "22",
+        "DST PORT": "38812",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Level 3 (172.26.11.181) is not allowed to talk to Level 5 (172.26.10.200)",
+        "uid": "missing-uid-25"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.11.181",
+      "uid": "172.26.10.200-->(38850)-->TCP-->(21)--172.26.11.181",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.11.181",
+        "SRC PORT": "38850",
+        "DST PORT": "21",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Application Mirror (172.26.11.181)",
+        "uid": "missing-uid-26"
+      }
+    },
+    {
+      "from": "172.26.11.181",
+      "to": "172.26.10.200",
+      "uid": "172.26.11.181-->(21)-->TCP-->(38850)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.11.181",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "21",
+        "DST PORT": "38850",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Level 3 (172.26.11.181) is not allowed to talk to Level 5 (172.26.10.200)",
+        "uid": "missing-uid-27"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.11.181",
+      "uid": "172.26.10.200-->(Unknown)-->ICMP-->(Unknown)--172.26.11.181",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.11.181",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  Application Mirror (172.26.11.181)",
+        "uid": "missing-uid-28"
+      }
+    },
+    {
+      "from": "172.26.11.181",
+      "to": "172.26.10.200",
+      "uid": "172.26.11.181-->(Unknown)-->ICMP-->(Unknown)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.11.181",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "OVERLAY-VIOLATION": "Level 3 (172.26.11.181) is not allowed to talk to Level 5 (172.26.10.200)",
+        "uid": "missing-uid-29"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.12.2",
+      "uid": "172.26.10.200-->(37710)-->TCP-->(80)--172.26.12.2",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.12.2",
+        "SRC PORT": "37710",
+        "DST PORT": "80",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  AV Server (172.26.12.2)",
+        "uid": "missing-uid-30"
+      }
+    },
+    {
+      "from": "172.26.12.2",
+      "to": "172.26.10.200",
+      "uid": "172.26.12.2-->(80)-->TCP-->(37710)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.12.2",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "80",
+        "DST PORT": "37710",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "uid": "missing-uid-31"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.12.2",
+      "uid": "172.26.10.200-->(37618)-->TCP-->(22)--172.26.12.2",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "5",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.12.2",
+        "SRC PORT": "37618",
+        "DST PORT": "22",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  AV Server (172.26.12.2)",
+        "uid": "missing-uid-32"
+      }
+    },
+    {
+      "from": "172.26.12.2",
+      "to": "172.26.10.200",
+      "uid": "172.26.12.2-->(22)-->TCP-->(37618)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.12.2",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "22",
+        "DST PORT": "37618",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "uid": "missing-uid-33"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.12.2",
+      "uid": "172.26.10.200-->(36728)-->TCP-->(21)--172.26.12.2",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.12.2",
+        "SRC PORT": "36728",
+        "DST PORT": "21",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  AV Server (172.26.12.2)",
+        "uid": "missing-uid-34"
+      }
+    },
+    {
+      "from": "172.26.12.2",
+      "to": "172.26.10.200",
+      "uid": "172.26.12.2-->(21)-->TCP-->(36728)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "TCP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.12.2",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "21",
+        "DST PORT": "36728",
+        "PROTOCOL": "TCP",
+        "PROTOCOL DESC": "Transmission Control",
+        "uid": "missing-uid-35"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "172.26.12.2",
+      "uid": "172.26.10.200-->(Unknown)-->ICMP-->(Unknown)--172.26.12.2",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "172.26.12.2",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to  AV Server (172.26.12.2)",
+        "uid": "missing-uid-36"
+      }
+    },
+    {
+      "from": "172.26.12.2",
+      "to": "172.26.10.200",
+      "uid": "172.26.12.2-->(Unknown)-->ICMP-->(Unknown)--172.26.10.200",
+      "showname": "PCAP",
+      "type": "ICMP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840678.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840678.0",
+        "SRC IP": "172.26.12.2",
+        "DST IP": "172.26.10.200",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "ICMP",
+        "PROTOCOL DESC": "Internet Control Message",
+        "uid": "missing-uid-37"
+      }
+    },
+    {
+      "from": "172.26.10.200",
+      "to": "169.254.169.123",
+      "uid": "172.26.10.200-->(Unknown)-->UDP-->(Unknown)--169.254.169.123",
+      "showname": "PCAP",
+      "type": "UDP",
+      "properties": {
+        "COUNT": "1",
+        "kronograph_date": "1627840679.0",
+        "API-SOURCE": "PCAP",
+        "pcap_date": "1627840679.0",
+        "SRC IP": "172.26.10.200",
+        "DST IP": "169.254.169.123",
+        "SRC PORT": "Unknown",
+        "DST PORT": "Unknown",
+        "PROTOCOL": "UDP",
+        "PROTOCOL DESC": "User Datagram",
+        "OVERLAY-VIOLATION": "Router (172.26.10.200) is not allowed to talk to Internet (169.254.169.123)",
+        "uid": "missing-uid-38"
+      }
+    },
+    {
+      "from": "172.26.10.200-ZoneLevel-Level 5-Level 0",
+      "to": "172.26.10.200",
+      "uid": "172.26.10.200-ZoneLevel",
+      "showname": "VIOLATION",
+      "type": "Violation",
+      "properties": {
+        "COUNT": "9",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "pcap_date": "1627840684.0",
+        "uid": "missing-uid-39"
+      }
+    },
+    {
+      "from": "172.26.13.200-ZoneLevel-Level 0-Level 5",
+      "to": "172.26.13.200",
+      "uid": "172.26.13.200-ZoneLevel",
+      "showname": "VIOLATION",
+      "type": "Violation",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "pcap_date": "1627840684.0",
+        "uid": "missing-uid-40"
+      }
+    },
+    {
+      "from": "172.26.11.181-ZoneLevel-Level 3-Level 5",
+      "to": "172.26.11.181",
+      "uid": "172.26.11.181-ZoneLevel",
+      "showname": "VIOLATION",
+      "type": "Violation",
+      "properties": {
+        "COUNT": "4",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "pcap_date": "1627840684.0",
+        "uid": "missing-uid-41"
+      }
+    },
+    {
+      "from": "172.26.10.200-ZoneType-Router-Internet",
+      "to": "172.26.10.200",
+      "uid": "172.26.10.200-ZoneType",
+      "showname": "VIOLATION",
+      "type": "Violation",
+      "properties": {
+        "COUNT": "20",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "pcap_date": "1627840684.0",
+        "uid": "missing-uid-42"
+      }
+    },
+    {
+      "from": "209.42.129.148-ZoneType-Internet-Router",
+      "to": "209.42.129.148",
+      "uid": "209.42.129.148-ZoneType",
+      "showname": "VIOLATION",
+      "type": "Violation",
+      "properties": {
+        "COUNT": "3",
+        "kronograph_date": "1627840684.0",
+        "API-SOURCE": "OVERLAY-VIOLATION",
+        "pcap_date": "1627840684.0",
+        "uid": "missing-uid-43"
+      }
+    }
+  ]
+}

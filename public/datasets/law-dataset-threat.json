@@ -1,0 +1,923 @@
+{
+  "nodes": [
+    {
+      "uid": "BANK01",
+      "type": "Bank",
+      "showname": "Union Bank",
+      "properties": {
+        "TC_THICKNESS": "1.5",
+        "settime": "Random",
+        "TC_IMAGE": "http://trucontext.s3.amazonaws.com/bank01.jpg",
+        "TC_DATE": "1655449816.0",
+        "date": "1655449816.0",
+        "kronograph_time": "1655449816.0",
+        "TC_LONGITUDE": "-74.2475",
+        "TC_LATITUDE": "-12.9397",
+        "TC_CITY": "Huanta",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "Ayacucho",
+        "TC_FLASH": "1",
+        "TC_FLASH_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY"
+      }
+    },
+    {
+      "uid": "BUILDING01",
+      "type": "Building",
+      "showname": "Paramount",
+      "properties": {
+        "TC_THICKNESS": "1.5",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/building01.jpg",
+        "TC_DATE": "1655822738.0",
+        "date": "1655822738.0",
+        "kronograph_time": "1655822738.0",
+        "TC_LONGITUDE": "-75.7333",
+        "TC_LATITUDE": "-14.0667",
+        "TC_CITY": "Ica",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "Ica"
+      }
+    },
+    {
+      "uid": "BUILDING02",
+      "type": "Building",
+      "showname": "Garden Spire",
+      "properties": {
+        "TC_THICKNESS": "1.5",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/building02.jpg",
+        "TC_DATE": "1655452152.0",
+        "date": "1655452152.0",
+        "kronograph_time": "1655452152.0",
+        "TC_LONGITUDE": "-76.5333",
+        "TC_LATITUDE": "-6.4167",
+        "TC_CITY": "Lamas",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "San Martín"
+      }
+    },
+    {
+      "uid": "BUILDING07",
+      "type": "Building",
+      "showname": "High Woods",
+      "properties": {
+        "TC_THICKNESS": "1.5",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/building07.jpg",
+        "TC_DATE": "1656017710.0",
+        "date": "1656017710.0",
+        "kronograph_time": "1656017710.0",
+        "TC_LONGITUDE": "-80.6253",
+        "TC_LATITUDE": "-5.2008",
+        "TC_CITY": "Piura",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "Piura"
+      }
+    },
+    {
+      "uid": "BUILDING04",
+      "type": "Building",
+      "showname": "Reverance",
+      "properties": {
+        "TC_THICKNESS": "1.5",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/building04.jpg",
+        "TC_DATE": "1655624300.0",
+        "date": "1655624300.0",
+        "kronograph_time": "1655624300.0",
+        "TC_LONGITUDE": "-76.0833",
+        "TC_LATITUDE": "-5.9",
+        "TC_CITY": "Yurimaguas",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "Loreto"
+      }
+    },
+    {
+      "uid": "BUILDING05",
+      "type": "Building",
+      "showname": "Paramount",
+      "properties": {
+        "TC_THICKNESS": "1.5",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/building05.jpg",
+        "TC_DATE": "1655484688.0",
+        "date": "1655484688.0",
+        "kronograph_time": "1655484688.0",
+        "TC_LONGITUDE": "-77.6",
+        "TC_LATITUDE": "-11.1",
+        "TC_CITY": "Huaura",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "Lima"
+      }
+    },
+    {
+      "uid": "BUILDING06",
+      "type": "Building",
+      "showname": "Lake Lookout",
+      "properties": {
+        "TC_THICKNESS": "1.5",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/building06.jpg",
+        "TC_DATE": "1655874418.0",
+        "date": "1655874418.0",
+        "kronograph_time": "1655874418.0",
+        "TC_LONGITUDE": "-70.0236",
+        "TC_LATITUDE": "-15.8433",
+        "TC_CITY": "Puno",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "Puno"
+      }
+    },
+    {
+      "uid": "BUILDING08",
+      "type": "Building",
+      "showname": "Phoenix Lookout",
+      "properties": {
+        "TC_THICKNESS": "1.5",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/building08.png",
+        "TC_DATE": "1655722024.0",
+        "date": "1655722024.0",
+        "kronograph_time": "1655722024.0",
+        "TC_LONGITUDE": "-70.9333",
+        "TC_LATITUDE": "-17.2",
+        "TC_CITY": "Moquegua",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "Moquegua"
+      }
+    },
+    {
+      "uid": "CAMERA01",
+      "type": "Camera",
+      "showname": "CCTV",
+      "properties": {
+        "location": "Room 101",
+        "floor": "2",
+        "model": "Qubo Smart Cam 360",
+        "settime": "Random",
+        "TC_VIDEO": "https://www.youtube.com/embed/1-iS7LArMPA",
+        "TC_DATE": "1655658826.0",
+        "date": "1655658826.0",
+        "kronograph_time": "1655658826.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "uid": "CAMERA02",
+      "type": "Camera",
+      "showname": "CCTV",
+      "properties": {
+        "location": "Room 102",
+        "floor": "1",
+        "model": "Mi 360 1080p Full HD",
+        "settime": "Random",
+        "TC_DATE": "1655523366.0",
+        "date": "1655523366.0",
+        "kronograph_time": "1655523366.0"
+      }
+    },
+    {
+      "uid": "CAMERA03",
+      "type": "Camera",
+      "showname": "CCTV",
+      "properties": {
+        "location": "Front of Building",
+        "floor": "1",
+        "model": "RLC-410",
+        "settime": "Random",
+        "TC_VIDEO": "https://www.youtube.com/embed/1EiC9bvVGnk",
+        "TC_DATE": "1655832602.0",
+        "date": "1655832602.0",
+        "kronograph_time": "1655832602.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-SMOKE",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "uid": "CAMERA008",
+      "type": "Camera",
+      "showname": "CCTV",
+      "properties": {
+        "location": "Front of Building",
+        "floor": "1",
+        "model": "Srihome SH025",
+        "settime": "Random",
+        "TC_DATE": "1655932226.0",
+        "date": "1655932226.0",
+        "kronograph_time": "1655932226.0"
+      }
+    },
+    {
+      "uid": "CAMERA004",
+      "type": "Camera",
+      "showname": "CCTV",
+      "properties": {
+        "location": "Front of Building",
+        "floor": "1",
+        "model": "Yi 87001",
+        "settime": "Random",
+        "TC_VIDEO": "https://www.youtube.com/embed/jQcotlKaPYY",
+        "TC_DATE": "1655878966.0",
+        "date": "1655878966.0",
+        "kronograph_time": "1655878966.0"
+      }
+    },
+    {
+      "uid": "CAMERA005",
+      "type": "Camera",
+      "showname": "CCTV",
+      "properties": {
+        "location": "Front of Building",
+        "floor": "1",
+        "model": "EZVIZ C6N",
+        "settime": "Random",
+        "TC_VIDEO": "https://www.youtube.com/embed/WBvHHNXXeqw",
+        "TC_DATE": "1655615308.0",
+        "date": "1655615308.0",
+        "kronograph_time": "1655615308.0"
+      }
+    },
+    {
+      "uid": "CAMERA006",
+      "type": "Camera",
+      "showname": "CCTV",
+      "properties": {
+        "location": "Front of Building",
+        "floor": "1",
+        "model": "TechEase Security Camera",
+        "settime": "Random",
+        "TC_VIDEO": "https://www.youtube.com/embed/mOuVHSuvAbg",
+        "TC_DATE": "1655974124.0",
+        "date": "1655974124.0",
+        "kronograph_time": "1655974124.0"
+      }
+    },
+    {
+      "uid": "CAMERA007",
+      "type": "Camera",
+      "showname": "CCTV",
+      "properties": {
+        "location": "Front of Building",
+        "floor": "1",
+        "model": "RMH2001 1080p",
+        "settime": "Random",
+        "TC_DATE": "1655729876.0",
+        "date": "1655729876.0",
+        "kronograph_time": "1655729876.0"
+      }
+    },
+    {
+      "uid": "MANAGER01",
+      "showname": "Building Manager",
+      "type": "Person",
+      "properties": {
+        "status": "Employee",
+        "identity": "Identified CCTV",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/manager01.jpg",
+        "TC_DATE": "1655740570.0",
+        "date": "1655740570.0",
+        "kronograph_time": "1655740570.0"
+      }
+    },
+    {
+      "uid": "MANAGER02",
+      "showname": "Bank Manager",
+      "type": "Person",
+      "properties": {
+        "status": "Employee",
+        "identity": "Identified CCTV",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/manager02.jpg",
+        "TC_DATE": "1655638084.0",
+        "date": "1655638084.0",
+        "kronograph_time": "1655638084.0"
+      }
+    },
+    {
+      "uid": "EMPLOYEE01",
+      "showname": "Building Employee",
+      "type": "Person",
+      "properties": {
+        "status": "Employee",
+        "identity": "Identified CCTV",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/employee01.jpg",
+        "TC_DATE": "1655902456.0",
+        "date": "1655902456.0",
+        "kronograph_time": "1655902456.0"
+      }
+    },
+    {
+      "uid": "EMPLOYEE02",
+      "showname": "Building Employee",
+      "type": "Person",
+      "properties": {
+        "status": "Employee",
+        "identity": "Identified CCTV",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/employee02.jpg",
+        "TC_DATE": "1655753664.0",
+        "date": "1655753664.0",
+        "kronograph_time": "1655753664.0"
+      }
+    },
+    {
+      "uid": "PERSON01",
+      "showname": "Person01",
+      "type": "Person",
+      "properties": {
+        "status": "Non-Employee",
+        "identity": "Identified CCTV",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/person01.png",
+        "TC_DATE": "1655604426.0",
+        "date": "1655604426.0",
+        "kronograph_time": "1655604426.0"
+      }
+    },
+    {
+      "uid": "PERSON02",
+      "showname": "Person02",
+      "type": "Person",
+      "properties": {
+        "status": "Non-Employee",
+        "settime": "Random",
+        "identity": "Unidentified CCTV",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/person02-id.jpg",
+        "TC_DATE": "1655969182.0",
+        "date": "1655969182.0",
+        "kronograph_time": "1655969182.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY,THREAT-PERSON02-SMOKE,THREAT-PERSON02-THEFT",
+        "TC_FLASH_COLOR": "#A1000E",
+        "TC_LONGITUDE": "-72.1167",
+        "TC_LATITUDE": "-13.3042",
+        "TC_CITY": "Urubamba",
+        "TC_CONTRY": "PER",
+        "TC_STATE": "Cusco"
+      }
+    },
+    {
+      "uid": "PERSON03",
+      "showname": "Person03",
+      "type": "Person",
+      "properties": {
+        "status": "Non-Employee",
+        "identity": "Unidentified CCTV",
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/person03.png",
+        "TC_DATE": "1655550154.0",
+        "date": "1655550154.0",
+        "kronograph_time": "1655550154.0"
+      }
+    },
+    {
+      "uid": "VAN01",
+      "showname": "VAN",
+      "type": "Car",
+      "properties": {
+        "settime": "Random",
+        "identity": "Unidentified CCTV",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/van01.png",
+        "TC_DATE": "1655857480.0",
+        "date": "1655857480.0",
+        "kronograph_time": "1655857480.0"
+      }
+    },
+    {
+      "uid": "PERSON05",
+      "showname": "Person06",
+      "type": "Person",
+      "properties": {
+        "status": "Non-Employee",
+        "settime": "Random",
+        "identity": "Identified Records",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/person05.jpg",
+        "TC_DATE": "1655855622.0",
+        "date": "1655855622.0",
+        "kronograph_time": "1655855622.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-THEFT",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "uid": "MONEY01",
+      "showname": "Money",
+      "type": "Money",
+      "properties": {
+        "amount": "1000",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/money01.jpg",
+        "settime": "Random",
+        "TC_DATE": "1655470828.0",
+        "date": "1655470828.0",
+        "kronograph_time": "1655470828.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-THEFT",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "uid": "GUN01",
+      "showname": "Glock 9M",
+      "type": "Gun",
+      "properties": {
+        "discharge": "False",
+        "percentage": "80",
+        "settime": "Random",
+        "identity": "Unidentified CCTV",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/gun01.png",
+        "TC_DATE": "1655732620.0",
+        "date": "1655732620.0",
+        "kronograph_time": "1655732620.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "uid": "SMOKE01",
+      "type": "Smoke",
+      "showname": "Green Smoke",
+      "properties": {
+        "settime": "Random",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/smoke01.png",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-SMOKE",
+        "TC_FLASH_COLOR": "#A1000E",
+        "TC_DATE": "1655482148.0",
+        "date": "1655482148.0",
+        "kronograph_time": "1655482148.0"
+      }
+    },
+    {
+      "showname": "Funds",
+      "type": "Money",
+      "uid": "FUNDS01",
+      "properties": {
+        "amount": "10000",
+        "TC_IMAGE": "https://trucontext.s3.amazonaws.com/funds01.png",
+        "TC_FLASH": "1",
+        "TC_FLASH_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY",
+        "settime": "Random",
+        "TC_DATE": "1655653710.0",
+        "date": "1655653710.0",
+        "kronograph_time": "1655653710.0"
+      }
+    },
+    {
+      "uid": "STREETCAMERA01",
+      "type": "Camera",
+      "showname": "Street Camera",
+      "properties": {
+        "settime": "Random",
+        "TC_DATE": "1655793744.0",
+        "date": "1655793744.0",
+        "kronograph_time": "1655793744.0"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "CAMERA01",
+      "to": "BANK01",
+      "type": "Inside",
+      "properties": {
+        "uid": "CAMERA01-BANK01",
+        "settime": "Random",
+        "TC_DATE": "1655645890.0",
+        "date": "1655645890.0",
+        "kronograph_time": "1655645890.0",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "3",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "from": "CAMERA02",
+      "to": "BANK01",
+      "type": "Inside",
+      "properties": {
+        "uid": "CAMERA02-BANK01",
+        "settime": "Random",
+        "TC_DATE": "1655656900.0",
+        "date": "1655656900.0",
+        "kronograph_time": "1655656900.0"
+      }
+    },
+    {
+      "from": "CAMERA01",
+      "to": "PERSON01",
+      "type": "Standing",
+      "properties": {
+        "uid": "CAMERA01-PERSON01",
+        "settime": "Random",
+        "TC_DATE": "1655644682.0",
+        "date": "1655644682.0",
+        "kronograph_time": "1655644682.0"
+      }
+    },
+    {
+      "from": "CAMERA03",
+      "to": "BUILDING01",
+      "type": "Outside",
+      "properties": {
+        "uid": "CAMERA03-BUILDING01",
+        "settime": "Random",
+        "TC_DATE": "1655625840.0",
+        "date": "1655625840.0",
+        "kronograph_time": "1655625840.0"
+      }
+    },
+    {
+      "from": "CAMERA008",
+      "to": "BUILDING07",
+      "type": "Outside",
+      "properties": {
+        "uid": "BUILDING07-CAMERA008",
+        "settime": "Random",
+        "TC_DATE": "1655687354.0",
+        "date": "1655687354.0",
+        "kronograph_time": "1655687354.0"
+      }
+    },
+    {
+      "from": "CAMERA004",
+      "to": "BUILDING04",
+      "type": "Outside",
+      "properties": {
+        "uid": "BUILDING04-CAMERA004",
+        "settime": "Random",
+        "TC_DATE": "1655694716.0",
+        "date": "1655694716.0",
+        "kronograph_time": "1655694716.0"
+      }
+    },
+    {
+      "from": "CAMERA005",
+      "to": "BUILDING05",
+      "type": "Outside",
+      "properties": {
+        "uid": "BUILDING05-CAMERA005",
+        "settime": "Random",
+        "TC_DATE": "1655646722.0",
+        "date": "1655646722.0",
+        "kronograph_time": "1655646722.0"
+      }
+    },
+    {
+      "from": "CAMERA006",
+      "to": "BUILDING06",
+      "type": "Outside",
+      "properties": {
+        "uid": "BUILDING06-CAMERA006",
+        "settime": "Random",
+        "TC_DATE": "1655876194.0",
+        "date": "1655876194.0",
+        "kronograph_time": "1655876194.0"
+      }
+    },
+    {
+      "from": "CAMERA03",
+      "to": "PERSON02",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA03-PERSON02",
+        "settime": "Random",
+        "TC_DATE": "1655801954.0",
+        "date": "1655801954.0",
+        "kronograph_time": "1655801954.0",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "3",
+        "TC_THREAT_PATH": "THREAT-PERSON02-SMOKE",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "from": "CAMERA03",
+      "to": "PERSON03",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA03-PERSON03",
+        "settime": "Random",
+        "TC_DATE": "1655983478.0",
+        "date": "1655983478.0",
+        "kronograph_time": "1655983478.0"
+      }
+    },
+    {
+      "from": "CAMERA03",
+      "to": "VAN01",
+      "type": "Parked",
+      "properties": {
+        "uid": "CAMERA03-VAN01",
+        "settime": "Random",
+        "TC_DATE": "1655800956.0",
+        "date": "1655800956.0",
+        "kronograph_time": "1655800956.0"
+      }
+    },
+    {
+      "from": "CAMERA03",
+      "to": "MANAGER01",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA03-MANAGER01",
+        "settime": "Random",
+        "TC_DATE": "1655578170.0",
+        "date": "1655578170.0",
+        "kronograph_time": "1655578170.0"
+      }
+    },
+    {
+      "from": "MANAGER01",
+      "to": "MANAGER02",
+      "type": "Knows",
+      "properties": {
+        "uid": "MANAGER01-MANAGER02",
+        "settime": "Random",
+        "TC_DATE": "1655934028.0",
+        "date": "1655934028.0",
+        "kronograph_time": "1655934028.0"
+      }
+    },
+    {
+      "from": "CAMERA008",
+      "to": "MANAGER01",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA008-MANAGER01",
+        "settime": "Random",
+        "TC_DATE": "1655667848.0",
+        "date": "1655667848.0",
+        "kronograph_time": "1655667848.0"
+      }
+    },
+    {
+      "from": "CAMERA004",
+      "to": "MANAGER01",
+      "type": "Standing",
+      "properties": {
+        "uid": "CAMERA004-MANAGER01",
+        "settime": "Random",
+        "TC_DATE": "1655982664.0",
+        "date": "1655982664.0",
+        "kronograph_time": "1655982664.0"
+      }
+    },
+    {
+      "from": "CAMERA004",
+      "to": "EMPLOYEE02",
+      "type": "Standing",
+      "properties": {
+        "uid": "EMPLOYEE02-MANAGER01",
+        "settime": "Random",
+        "TC_DATE": "1655983146.0",
+        "date": "1655983146.0",
+        "kronograph_time": "1655983146.0"
+      }
+    },
+    {
+      "from": "CAMERA005",
+      "to": "MANAGER01",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA005-MANAGER01",
+        "settime": "Random",
+        "TC_DATE": "1655894740.0",
+        "date": "1655894740.0",
+        "kronograph_time": "1655894740.0"
+      }
+    },
+    {
+      "from": "CAMERA006",
+      "to": "MANAGER01",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA006-MANAGER01",
+        "settime": "Random",
+        "TC_DATE": "1655524190.0",
+        "date": "1655524190.0",
+        "kronograph_time": "1655524190.0"
+      }
+    },
+    {
+      "from": "CAMERA01",
+      "to": "MANAGER02",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA01-MANAGER02",
+        "settime": "Random",
+        "TC_DATE": "1655947066.0",
+        "date": "1655947066.0",
+        "kronograph_time": "1655947066.0"
+      }
+    },
+    {
+      "from": "CAMERA02",
+      "to": "MANAGER02",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA02-MANAGER02",
+        "settime": "Random",
+        "TC_DATE": "1655521796.0",
+        "date": "1655521796.0",
+        "kronograph_time": "1655521796.0"
+      }
+    },
+    {
+      "from": "CAMERA006",
+      "to": "EMPLOYEE02",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA006-EMPLOYEE02",
+        "settime": "Random",
+        "TC_DATE": "1655424472.0",
+        "date": "1655424472.0",
+        "kronograph_time": "1655424472.0"
+      }
+    },
+    {
+      "from": "EMPLOYEE02",
+      "to": "PERSON05",
+      "type": "Knows",
+      "properties": {
+        "uid": "EMPLOYEE02-PERSON05",
+        "settime": "Random",
+        "TC_DATE": "1655742326.0",
+        "date": "1655742326.0",
+        "kronograph_time": "1655742326.0"
+      }
+    },
+    {
+      "from": "CAMERA008",
+      "to": "EMPLOYEE01",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA008-EMPLOYEE01",
+        "settime": "Random",
+        "TC_DATE": "1655798982.0",
+        "date": "1655798982.0",
+        "kronograph_time": "1655798982.0"
+      }
+    },
+    {
+      "from": "PERSON05",
+      "to": "MONEY01",
+      "type": "Robbed",
+      "properties": {
+        "uid": "PERSON05-MONEY01",
+        "settime": "Random",
+        "TC_DATE": "1655725766.0",
+        "date": "1655725766.0",
+        "kronograph_time": "1655725766.0",
+        "TC_THICKNESS": "3",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-THEFT",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "from": "CAMERA01",
+      "to": "GUN01",
+      "type": "Detected",
+      "properties": {
+        "uid": "CAMERA01-GUN01",
+        "percentage": "80",
+        "settime": "Random",
+        "TC_DATE": "1655955118.0",
+        "date": "1655955118.0",
+        "kronograph_time": "1655955118.0",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "3",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "from": "GUN01",
+      "to": "PERSON02",
+      "type": "Held By",
+      "properties": {
+        "uid": "GUN01-PERSON02",
+        "settime": "Random",
+        "TC_DATE": "1655983580.0",
+        "date": "1655983580.0",
+        "kronograph_time": "1655983580.0",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "3",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "from": "CAMERA01",
+      "to": "PERSON02",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA01-PERSON02",
+        "settime": "Random",
+        "TC_DATE": "1655928458.0",
+        "date": "1655928458.0",
+        "kronograph_time": "1655928458.0",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "3",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "from": "CAMERA02",
+      "to": "PERSON02",
+      "type": "Walking",
+      "properties": {
+        "uid": "CAMERA02-PERSON02",
+        "settime": "Random",
+        "TC_DATE": "1655445172.0",
+        "date": "1655445172.0",
+        "kronograph_time": "1655445172.0"
+      }
+    },
+    {
+      "from": "CAMERA02",
+      "to": "PERSON01",
+      "type": "Running",
+      "properties": {
+        "uid": "CAMERA02-PERSON01",
+        "settime": "Random",
+        "TC_DATE": "1656011600.0",
+        "date": "1656011600.0",
+        "kronograph_time": "1656011600.0"
+      }
+    },
+    {
+      "from": "CAMERA03",
+      "to": "SMOKE01",
+      "type": "Detected",
+      "properties": {
+        "uid": "CAMERA03-SMOKE01",
+        "percentage": "80",
+        "settime": "Random",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "3",
+        "TC_THREAT_PATH": "THREAT-PERSON02-SMOKE",
+        "TC_FLASH_COLOR": "#A1000E",
+        "TC_DATE": "1655882360.0",
+        "date": "1655882360.0",
+        "kronograph_time": "1655882360.0"
+      }
+    },
+    {
+      "from": "PERSON02",
+      "to": "PERSON05",
+      "type": "Knows",
+      "properties": {
+        "uid": "PERSON02-PERSON05",
+        "settime": "Random",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "3",
+        "TC_THREAT_PATH": "THREAT-PERSON02-THEFT",
+        "TC_FLASH_COLOR": "#A1000E",
+        "TC_DATE": "1655767242.0",
+        "date": "1655767242.0",
+        "kronograph_time": "1655767242.0"
+      }
+    },
+    {
+      "from": "FUNDS01",
+      "to": "BANK01",
+      "type": "Stolen",
+      "properties": {
+        "uid": "FUNDS01-BANK01",
+        "settime": "Random",
+        "TC_THICKNESS": "3",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "THREAT-PERSON02-ROBBERY",
+        "TC_FLASH_COLOR": "#A1000E",
+        "TC_DATE": "1655773164.0",
+        "date": "1655773164.0",
+        "kronograph_time": "1655773164.0"
+      }
+    },
+    {
+      "from": "STREETCAMERA01",
+      "to": "PERSON02",
+      "type": "Detected",
+      "properties": {
+        "uid": "STREETCAMERA01-PERSON02",
+        "settime": "Random",
+        "TC_DATE": "1655547016.0",
+        "date": "1655547016.0",
+        "kronograph_time": "1655547016.0"
+      }
+    }
+  ],
+  "types": []
+}

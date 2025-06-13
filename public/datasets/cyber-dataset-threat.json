@@ -1,0 +1,2844 @@
+{
+  "nodes": [
+    {
+      "type": "Server",
+      "showname": "General Server (Enterprise Core Servers)",
+      "uid": "GeneralServer",
+      "properties": {
+        "kronograph_date": "1652140179.0",
+        "TC_DATE": "1655512888.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "type": "Data Store",
+      "showname": "Database (Enterprise Core Servers)",
+      "uid": "Database",
+      "properties": {
+        "kronograph_date": "1651628455.0",
+        "TC_DATE": "1655812782.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "type": "Server",
+      "showname": "LDAP Server (Enterprise Core Servers)",
+      "uid": "LDAPServer",
+      "properties": {
+        "kronograph_date": "1651926353.0",
+        "TC_DATE": "1655472832.0"
+      }
+    },
+    {
+      "type": "Server",
+      "showname": "CRM Server (Enterprise Core Servers)",
+      "uid": "CRMServer",
+      "properties": {
+        "kronograph_date": "1651684783.0",
+        "TC_DATE": "1655698918.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "type": "Server",
+      "showname": "Application Server (Enterprise Core Servers)",
+      "uid": "ApplicationServer",
+      "properties": {
+        "kronograph_date": "1651874639.0",
+        "TC_DATE": "1655917104.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP"
+      }
+    },
+    {
+      "type": "Server",
+      "showname": "Web Server (Enterprise Core Servers)",
+      "uid": "WebServer",
+      "properties": {
+        "kronograph_date": "1651801313.0",
+        "TC_DATE": "1656007628.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Server",
+      "showname": "System Monitor Server (Enterprise Core Servers)",
+      "uid": "SystemMonitorServer",
+      "properties": {
+        "kronograph_date": "1652092363.0",
+        "TC_DATE": "1655648892.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER"
+      }
+    },
+    {
+      "type": "Cloud",
+      "showname": "VPC (AWS)",
+      "uid": "VPC",
+      "properties": {
+        "kronograph_date": "1651856607.0",
+        "TC_DATE": "1655701958.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "type": "Subnet",
+      "showname": "Private Subnet (Enterprise Core)",
+      "uid": "PrivateSubnet",
+      "properties": {
+        "kronograph_date": "1651713243.0",
+        "TC_DATE": "1655807396.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "type": "Subnet",
+      "showname": "DMZ Subnet (Enterprise Core)",
+      "uid": "DMZSubnet",
+      "properties": {
+        "kronograph_date": "1651880339.0",
+        "TC_DATE": "1655555958.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Subnet",
+      "showname": "Transit Subnet (Enterprise Core)",
+      "uid": "TransitSubnet",
+      "properties": {
+        "kronograph_date": "1652196411.0",
+        "TC_DATE": "1655608208.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Subnet",
+      "showname": "Transit Subnet (Regional)",
+      "uid": "TransitSubnet2",
+      "properties": {
+        "kronograph_date": "1651950293.0",
+        "TC_DATE": "1655441068.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01"
+      }
+    },
+    {
+      "type": "Domain",
+      "showname": "Data Center (Enterprise Core)",
+      "uid": "DataCenter",
+      "properties": {
+        "kronograph_date": "1651875553.0",
+        "TC_DATE": "1655904512.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Actor",
+      "showname": "Attacker (Internet)",
+      "uid": "Attacker",
+      "properties": {
+        "kronograph_date": "1651706335.0",
+        "TC_DATE": "1655888128.0"
+      }
+    },
+    {
+      "type": "Server",
+      "showname": "Local File Share (Regional)",
+      "uid": "LocalFileShare",
+      "properties": {
+        "kronograph_date": "1652055849.0",
+        "TC_DATE": "1655436514.0",
+        "CLUSTER": "Enterprise"
+      }
+    },
+    {
+      "type": "Server",
+      "showname": "File Share (Enterprise Core Servers)",
+      "uid": "FileShare",
+      "properties": {
+        "kronograph_date": "1651698165.0",
+        "TC_DATE": "1655640546.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [1] EXFIL-M2T - CMDB to THREATACTOR01"
+      }
+    },
+    {
+      "type": "Device",
+      "showname": "IoT Machine (Enterprise Core)",
+      "uid": "IoTMachine",
+      "properties": {
+        "kronograph_date": "1652189685.0",
+        "TC_DATE": "1655960018.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER"
+      }
+    },
+    {
+      "type": "Data Store",
+      "showname": "Data Lake (Enterprise Core)",
+      "uid": "DataLake",
+      "properties": {
+        "kronograph_date": "1651988087.0",
+        "TC_DATE": "1655681144.0",
+        "CLUSTER": "Enterprise"
+      }
+    },
+    {
+      "type": "Gateway",
+      "showname": "Router (Enterprise Core)",
+      "uid": "Router",
+      "properties": {
+        "kronograph_date": "1651751355.0",
+        "TC_DATE": "1655859126.0",
+        "CLUSTER": "Enterprise"
+      }
+    },
+    {
+      "type": "Server",
+      "showname": "CMDB",
+      "uid": "CMDB",
+      "properties": {
+        "kronograph_date": "1652004893.0",
+        "TC_DATE": "1655466994.0",
+        "CLUSTER": "Enterprise",
+        "ZoneType": "Private",
+        "malware": "True",
+        "Threat Intel Feed": "AAT&CK, VirusShare",
+        "TC_LONGITUDE": "-117.2498",
+        "TC_LATITUDE": "34.0451",
+        "TC_CITY": "Loma Linda",
+        "TC_CONTRY": "USA",
+        "TC_STATE": "California",
+        "TC_THREAT_PATH": "[1] EXFIL-T2M - THREATACTOR01 to CMDB, [1] EXFIL-T2M - THREATACTOR01 to CMDB (PHY), [2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01 (PHY), [2] EXFIL-M2T - APPSERVER to THREATACTOR01",
+        "TC_COLOR": "#A1000E",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "1.5"
+      }
+    },
+    {
+      "type": "Device",
+      "showname": "Laptop (Regional)",
+      "uid": "Laptop",
+      "properties": {
+        "kronograph_date": "1651822627.0",
+        "TC_DATE": "1655866298.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP"
+      }
+    },
+    {
+      "type": "Device",
+      "showname": "Personal Mobile Device (Regional)",
+      "uid": "PersonalMobileDevice",
+      "properties": {
+        "kronograph_date": "1651786291.0",
+        "TC_DATE": "1655695286.0",
+        "CLUSTER": "Enterprise"
+      }
+    },
+    {
+      "type": "Device",
+      "showname": "Printer (Regional)",
+      "uid": "Printer",
+      "properties": {
+        "kronograph_date": "1651703571.0",
+        "TC_DATE": "1655863218.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP"
+      }
+    },
+    {
+      "type": "Gateway",
+      "showname": "Hot Spot (Regional)",
+      "uid": "HotSpot",
+      "properties": {
+        "kronograph_date": "1651647691.0",
+        "TC_DATE": "1655744284.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Cloud",
+      "showname": "Transit Gateway (AWS)",
+      "uid": "TransitGateway",
+      "properties": {
+        "kronograph_date": "1651859575.0",
+        "TC_DATE": "1655803310.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Device",
+      "showname": "WAP (Regional)",
+      "uid": "WAP",
+      "properties": {
+        "kronograph_date": "1652153555.0",
+        "TC_DATE": "1655874180.0",
+        "CLUSTER": "Enterprise"
+      }
+    },
+    {
+      "type": "Cloud",
+      "showname": "Private Link EP (AWS)",
+      "uid": "PrivateLinkEP",
+      "properties": {
+        "kronograph_date": "1651995197.0",
+        "TC_DATE": "1655852130.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Cloud",
+      "showname": "EC2 (AWS)",
+      "uid": "EC2",
+      "properties": {
+        "kronograph_date": "1651920897.0",
+        "TC_DATE": "1655726918.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Cloud",
+      "showname": "S3 Bucket (AWS)",
+      "uid": "S3Bucket",
+      "properties": {
+        "kronograph_date": "1651978537.0",
+        "TC_DATE": "1655418242.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "type": "Cloud",
+      "showname": "SP NLB (AWS)",
+      "uid": "SPNLB",
+      "properties": {
+        "kronograph_date": "1651675149.0",
+        "TC_DATE": "1655459204.0",
+        "CLUSTER": "Internet",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Appliance",
+      "showname": "Firewall (Enterprise Core)",
+      "uid": "Firewall",
+      "properties": {
+        "kronograph_date": "1651647323.0",
+        "TC_DATE": "1655638038.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Appliance",
+      "showname": "IPAM (Enterprise Core)",
+      "uid": "IPAM",
+      "properties": {
+        "kronograph_date": "1652123925.0",
+        "TC_DATE": "1655654828.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "CVE (Enterprise Core)",
+      "uid": "CVE1",
+      "properties": {
+        "kronograph_date": "1652151209.0",
+        "TC_DATE": "1655422620.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "CVE (Enterprise Core)",
+      "uid": "CVE",
+      "properties": {
+        "kronograph_date": "1651756593.0",
+        "TC_DATE": "1655996518.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "CVSS (Enterprise Core)",
+      "uid": "CVSS",
+      "properties": {
+        "kronograph_date": "1652065915.0",
+        "TC_DATE": "1655833110.0"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "CVE (Regional)",
+      "uid": "CVE3",
+      "properties": {
+        "kronograph_date": "1651879197.0",
+        "TC_DATE": "1655546078.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "CVSS (Regional)",
+      "uid": "CVSS3",
+      "properties": {
+        "kronograph_date": "1652088487.0",
+        "TC_DATE": "1655434578.0",
+        "TC_FLASH": "1",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "CVE (AWS)",
+      "uid": "CVE2",
+      "properties": {
+        "kronograph_date": "1651959401.0",
+        "TC_DATE": "1655651618.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "CVSS (AWS)",
+      "uid": "CVSS2",
+      "properties": {
+        "kronograph_date": "1652090965.0",
+        "TC_DATE": "1655474156.0"
+      }
+    },
+    {
+      "type": "Data Store",
+      "showname": "Personal Cloud Storage (Internet)",
+      "uid": "PersonalCloudStorage",
+      "properties": {
+        "kronograph_date": "1651642143.0",
+        "TC_DATE": "1655800654.0",
+        "CLUSTER": "Internet",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "type": "Gateway",
+      "showname": "SD-WAN Gateway (Regional)",
+      "uid": "SDWANGateway",
+      "properties": {
+        "kronograph_date": "1652118567.0",
+        "TC_DATE": "1655422768.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Device",
+      "showname": "Environmental IoT (Regional)",
+      "uid": "EnvironmentalIoT",
+      "properties": {
+        "kronograph_date": "1651835591.0",
+        "TC_DATE": "1655574854.0",
+        "CLUSTER": "Enterprise"
+      }
+    },
+    {
+      "type": "Appliance",
+      "showname": "Cyber Inspection Tool (Enterprise Core)",
+      "uid": "CyberInspectionTool",
+      "properties": {
+        "kronograph_date": "1652026785.0",
+        "TC_DATE": "1655995300.0",
+        "CLUSTER": "Enterprise"
+      }
+    },
+    {
+      "type": "Actor",
+      "showname": "Inside Threat Actor (Enterprise Core Servers)",
+      "uid": "InsideThreatActor",
+      "properties": {
+        "kronograph_date": "1651719145.0",
+        "TC_DATE": "1655947240.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Actor",
+      "showname": "Infected Actor (Enterprise Core Servers)",
+      "uid": "InfectedActor",
+      "properties": {
+        "kronograph_date": "1652011377.0",
+        "TC_DATE": "1655448530.0",
+        "CLUSTER": "Internet",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Actor",
+      "showname": "Threat Actor (Internet)",
+      "uid": "ThreatActor",
+      "properties": {
+        "kronograph_date": "1651900809.0",
+        "TC_DATE": "1655584574.0",
+        "CLUSTER": "Internet",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01"
+      }
+    },
+    {
+      "type": "Actor",
+      "showname": "Infected Actor (AWS)",
+      "uid": "InfectedActor2",
+      "properties": {
+        "kronograph_date": "1652024645.0",
+        "TC_DATE": "1655536312.0",
+        "CLUSTER": "Internet",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "Infected System (Regional)",
+      "uid": "InfectedSystem",
+      "properties": {
+        "kronograph_date": "1651798067.0",
+        "TC_DATE": "1655428972.0",
+        "CLUSTER": "Enterprise"
+      }
+    },
+    {
+      "type": "Domain",
+      "showname": "Internet (Domain)",
+      "uid": "Internet",
+      "properties": {
+        "kronograph_date": "1651802543.0",
+        "TC_DATE": "1655754382.0",
+        "CLUSTER": "Internet",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "type": "Domain",
+      "showname": "Regional Network (Region)",
+      "uid": "RegionalNetwork",
+      "properties": {
+        "kronograph_date": "1651777791.0",
+        "TC_DATE": "1656016894.0",
+        "CLUSTER": "Enterprise",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Domain",
+      "showname": "Known Exfiltrate Command Center (Internet)",
+      "uid": "KnownExfiltrateCommandCenter",
+      "properties": {
+        "kronograph_date": "1652069503.0",
+        "TC_DATE": "1655948664.0",
+        "CLUSTER": "Internet",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS"
+      }
+    },
+    {
+      "type": "Domain",
+      "showname": "DDNS Launch Pad (Internet)",
+      "uid": "DDNSLaunchPad",
+      "properties": {
+        "kronograph_date": "1652142145.0",
+        "TC_DATE": "1655894200.0",
+        "CLUSTER": "Internet"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "ATT&CK (Internet)",
+      "uid": "ATTCK3",
+      "properties": {
+        "kronograph_date": "1651954619.0",
+        "TC_DATE": "1655987966.0"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "CrowdStrike (Internet)",
+      "uid": "CrowdStrike",
+      "properties": {
+        "kronograph_date": "1651762197.0",
+        "TC_DATE": "1655633100.0"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "ATT&CK (Enterprise Core)",
+      "uid": "ATTCK1",
+      "properties": {
+        "kronograph_date": "1651799963.0",
+        "TC_DATE": "1655954512.0"
+      }
+    },
+    {
+      "type": "Vulnerability",
+      "showname": "ATT&CK (Enterprise Core)",
+      "uid": "ATTCK",
+      "properties": {
+        "kronograph_date": "1651793661.0",
+        "TC_DATE": "1655664968.0",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER"
+      }
+    },
+    {
+      "uid": "APPSERVER",
+      "showname": "Application Server",
+      "type": "Server",
+      "properties": {
+        "CLUSTER": "Enterprise",
+        "ZoneType": "Private",
+        "malware": "True",
+        "Threat Intel Feed": "AAT&CK, VirusShare",
+        "TC_LONGITUDE": "-123.0151",
+        "TC_LATITUDE": "38.7961",
+        "TC_CITY": "Cloverdale",
+        "TC_CONTRY": "USA",
+        "TC_STATE": "California",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01",
+        "TC_COLOR": "#A1000E",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "1.5"
+      }
+    },
+    {
+      "uid": "DATACENTER",
+      "showname": "Data Center",
+      "type": "Domain",
+      "properties": {
+        "CLUSTER": "Enterprise",
+        "ZoneType": "Private",
+        "TC_LONGITUDE": "-118.335",
+        "TC_LATITUDE": "33.8885",
+        "TC_CITY": "Alondra Park",
+        "TC_CONTRY": "USA",
+        "TC_STATE": "California",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP"
+      }
+    },
+    {
+      "uid": "TRANSITNETWORK",
+      "showname": "Transit Network",
+      "type": "Domain",
+      "properties": {
+        "CLUSTER": "Enterprise",
+        "ZoneType": "Private",
+        "TC_LONGITUDE": "-97.9566",
+        "TC_LATITUDE": "26.0962",
+        "TC_CITY": "Progreso",
+        "TC_CONTRY": "USA",
+        "TC_STATE": "Texas",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP"
+      }
+    },
+    {
+      "uid": "FIREWALL",
+      "showname": "PHY FW",
+      "type": "firewall",
+      "properties": {
+        "ZoneType": "Private",
+        "TC_LONGITUDE": "-95.5544",
+        "TC_LATITUDE": "30.705",
+        "TC_CITY": "Huntsville",
+        "TC_CONTRY": "USA",
+        "TC_STATE": "Texas",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01"
+      }
+    },
+    {
+      "uid": "NAT",
+      "showname": "Logi FW NAT",
+      "type": "Domain",
+      "properties": {
+        "ZoneType": "Private",
+        "TC_LONGITUDE": "-116.8767",
+        "TC_LATITUDE": "33.0474",
+        "TC_CITY": "Ramona",
+        "TC_CONTRY": "USA",
+        "TC_STATE": "California",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[1] EXFIL-T2M - THREATACTOR01 to CMDB, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [1] EXFIL-M2T - CMDB to THREATACTOR01"
+      }
+    },
+    {
+      "uid": "EXCC",
+      "showname": "Exfiltration Command Center",
+      "type": "Internet",
+      "properties": {
+        "CLUSTER": "Internet",
+        "ZoneType": "Public",
+        "TC_LONGITUDE": "149.2175",
+        "TC_LATITUDE": "-21.4225",
+        "TC_CITY": "Sarina",
+        "TC_CONTRY": "AUS",
+        "TC_STATE": "Queensland",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP"
+      }
+    },
+    {
+      "uid": "CVE101",
+      "showname": "CVE (Malware Detected)",
+      "type": "Bug",
+      "properties": {}
+    },
+    {
+      "uid": "THREATACTOR01",
+      "showname": "Threat Actor",
+      "type": "isp",
+      "properties": {
+        "CLUSTER": "Internet",
+        "ip": "185.191.34.120",
+        "asn": "AS50340",
+        "domain": "selectel.ru",
+        "route": "185.191.34.0/25",
+        "continent_code": "EU",
+        "continent_name": "Europe",
+        "country_code": "RU",
+        "country_name": "Russia",
+        "is_eu": "False",
+        "TC_LONGITUDE": "55.7386",
+        "TC_LATITUDE": "37.6068",
+        "is_anonymous": "False",
+        "is_bogon": "False",
+        "is_known_abuser": "False",
+        "is_known_attacker": "True",
+        "is_proxy": "False",
+        "is_threat": "True",
+        "is_tor": "False",
+        "name": "Europe/Moscow",
+        "TC_THREAT_PATH": "[1] EXFIL-T2M - THREATACTOR01 to CMDB, [1] EXFIL-T2M - THREATACTOR01 to CMDB (PHY), [2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP (PHY), [1] EXFIL-M2T - CMDB to THREATACTOR01 (PHY), [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01 (PHY)",
+        "TC_COLOR": "#A1000E",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "1.5"
+      }
+    },
+    {
+      "uid": "172.26.15.115-OS",
+      "showname": "Regional Laptop",
+      "type": "Laptop",
+      "properties": {
+        "CLUSTER": "Enterprise",
+        "ZoneType": "Private",
+        "malware": "True",
+        "Threat Intel Feed": "AAT&CK, VirusShare",
+        "TC_LONGITUDE": "-98.378",
+        "TC_LATITUDE": "26.2164",
+        "TC_CITY": "Palmview South",
+        "TC_CONTRY": "USA",
+        "TC_STATE": "Texas"
+      }
+    },
+    {
+      "uid": "PCS",
+      "showname": "Personal Cloud Storage",
+      "type": "Storage",
+      "properties": {
+        "CLUSTER": "Internet",
+        "ZoneType": "Public",
+        "TC_LONGITUDE": "175.872",
+        "TC_LATITUDE": "-38.22",
+        "TC_CITY": "Tokoroa",
+        "TC_CONTRY": "NZL",
+        "TC_STATE": "Waikato",
+        "TC_FLASH": "1",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "uid": "REGIONALLAPTOP",
+      "showname": "Regional Laptop",
+      "type": "Laptop",
+      "properties": {
+        "CLUSTER": "Enterprise",
+        "ZoneType": "Private",
+        "malware": "True",
+        "Threat Intel Feed": "AAT&CK, VirusShare",
+        "TC_LONGITUDE": "-116.4216",
+        "TC_LATITUDE": "34.1234",
+        "TC_CITY": "Yucca Valley",
+        "TC_CONTRY": "USA",
+        "TC_STATE": "California",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP (PHY), [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01 (PHY)",
+        "TC_COLOR": "#A1000E",
+        "TC_FLASH": "1",
+        "TC_THICKNESS": "1.5",
+        "TC_FLASH_COLOR": "#A1000E"
+      }
+    },
+    {
+      "showname": "CVE-1999-0001",
+      "uid": "VPC-0-NODE",
+      "type": "Threat",
+      "properties": {
+        "CVE-1999-0001": "THREAT",
+        "Status": "Candidate",
+        "Description": "ip_input.c in BSD-derived TCP/IP implementations allows remote attackers to cause a denial of service (crash or hang) via crafted packets.",
+        "References": "BUGTRAQ:19981223 Re: CERT Advisory CA-98.13 - TCP/IP Denial of Service   |   CERT:CA-98-13-tcp-denial-of-service   |   CONFIRM:http://www.openbsd.org/errata23.html#tcpfix   |   OSVDB:5707   |   URL:http://www.osvdb.org/5707",
+        "TC_DATE": "1655633756.0",
+        "API-SOURCE": "OVERLAY-THREAT",
+        "TC_THICKNESS": "1.1"
+      }
+    },
+    {
+      "showname": "CVE-2021-29995",
+      "uid": "PersonalCloudStorage-1-NODE",
+      "type": "Threat",
+      "properties": {
+        "CVE-2021-29995": "THREAT",
+        "Status": "Candidate",
+        "Description": "A Cross Site Request Forgery (CSRF) issue in Server Console in CloverDX through 5.9.0 allows remote attackers to execute any action as the logged-in user (including script execution). The issue is resolved in CloverDX 5.10, CloverDX 5.9.1, CloverDX 5.8.2, and CloverDX 5.7.1.",
+        "References": "CONFIRM:https://support1.cloverdx.com/hc/en-us/articles/360021006520   |   MISC:https://support.cloverdx.com/releases/",
+        "TC_DATE": "1655832582.0",
+        "API-SOURCE": "OVERLAY-THREAT",
+        "TC_THICKNESS": "1.1"
+      }
+    },
+    {
+      "showname": "CVE-2021-30006",
+      "uid": "PrivateLinkEP-2-NODE",
+      "type": "Threat",
+      "properties": {
+        "CVE-2021-30006": "THREAT",
+        "Status": "Candidate",
+        "Description": "In IntelliJ IDEA before 2020.3.3, XXE was possible, leading to information disclosure.",
+        "References": "MISC:https://blog.jetbrains.com   |   MISC:https://blog.jetbrains.com/blog/2021/05/07/jetbrains-security-bulletin-q1-2021/",
+        "TC_DATE": "1655582382.0",
+        "API-SOURCE": "OVERLAY-THREAT",
+        "TC_THICKNESS": "1.1"
+      }
+    },
+    {
+      "showname": "CVE-1999-0002",
+      "uid": "EnvironmentalIoT-3-NODE",
+      "type": "Threat",
+      "properties": {
+        "CVE-1999-0002": "THREAT",
+        "Status": "Entry",
+        "Description": "Buffer overflow in NFS mountd gives root access to remote attackers, mostly in Linux systems.",
+        "References": "BID:121   |   URL:http://www.securityfocus.com/bid/121   |   CERT:CA-98.12.mountd   |   CIAC:J-006   |   URL:http://www.ciac.org/ciac/bulletins/j-006.shtml   |   SGI:19981006-01-I   |   URL:ftp://patches.sgi.com/support/free/security/advisories/19981006-01-I   |   XF:linux-mountd-bo",
+        "TC_DATE": "1655969938.0",
+        "API-SOURCE": "OVERLAY-THREAT",
+        "TC_THICKNESS": "1.1"
+      }
+    },
+    {
+      "showname": "CVE-2021-30004",
+      "uid": "PersonalCloudStorage-1-NODE-4-NODE",
+      "type": "Threat",
+      "properties": {
+        "CVE-2021-30004": "THREAT",
+        "Status": "Candidate",
+        "Description": "In wpa_supplicant and hostapd 2.9, forging attacks may occur because AlgorithmIdentifier parameters are mishandled in tls/pkcs1.c and tls/x509v3.c.",
+        "References": "MISC:https://w1.fi/cgit/hostap/commit/?id=a0541334a6394f8237a4393b7372693cd7e96f15",
+        "TC_DATE": "1655979568.0",
+        "API-SOURCE": "OVERLAY-THREAT",
+        "TC_THICKNESS": "1.1"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "InsideThreatActor",
+      "to": "IoTMachine",
+      "showname": "Controls",
+      "type": "Controls",
+      "properties": {
+        "uid": "InsideThreatActor-->(1477)-->TCP-->(22)--IoTMachine",
+        "kronograph_date": "1651719001.0",
+        "TC_DATE": "1655798410.0",
+        "Mbps": "823",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "InsideThreatActor",
+      "to": "CMDB",
+      "showname": "Access",
+      "type": "Access",
+      "properties": {
+        "uid": "InsideThreatActor-->(1477)-->TCP-->(22)--CMDB",
+        "kronograph_date": "1652043715.0",
+        "TC_DATE": "1655978016.0",
+        "Mbps": "619",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "InsideThreatActor",
+      "to": "GeneralServer",
+      "showname": "Access",
+      "type": "Access",
+      "properties": {
+        "uid": "InsideThreatActor-->(1477)-->TCP-->(22)--GeneralServer",
+        "kronograph_date": "1652100997.0",
+        "TC_DATE": "1655437756.0",
+        "Mbps": "305",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "GeneralServer",
+      "to": "CMDB",
+      "showname": "Exposes",
+      "type": "Exposes",
+      "properties": {
+        "uid": "GeneralServer-->(21)-->TCP-->(40670)--CMDB",
+        "kronograph_date": "1652063385.0",
+        "TC_DATE": "1655968424.0",
+        "Mbps": "355",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "GeneralServer",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "GeneralServer-->(21)-->TCP-->(40670)--PrivateSubnet",
+        "kronograph_date": "1652127245.0",
+        "TC_DATE": "1655563402.0",
+        "Mbps": "161",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVE",
+      "to": "GeneralServer",
+      "showname": "Against",
+      "type": "Against",
+      "properties": {
+        "uid": "CVE-->(46456)-->TCP-->(22)--GeneralServer",
+        "kronograph_date": "1651781621.0",
+        "TC_DATE": "1655613310.0",
+        "Mbps": "887",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVE",
+      "to": "FileShare",
+      "showname": "Against",
+      "type": "Against",
+      "properties": {
+        "uid": "CVE-->(46456)-->TCP-->(22)--FileShare",
+        "kronograph_date": "1652158349.0",
+        "TC_DATE": "1656015406.0",
+        "Mbps": "479",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVE",
+      "to": "IPAM",
+      "showname": "Against",
+      "type": "Against",
+      "properties": {
+        "uid": "CVE-->(46456)-->TCP-->(22)--IPAM",
+        "kronograph_date": "1651934971.0",
+        "TC_DATE": "1655440210.0",
+        "Mbps": "285",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "IPAM",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "IPAM-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1651765773.0",
+        "TC_DATE": "1655690804.0",
+        "Mbps": "439",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVSS",
+      "to": "IPAM",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "CVSS-->(46456)-->TCP-->(22)--IPAM",
+        "kronograph_date": "1652144055.0",
+        "TC_DATE": "1655858188.0",
+        "Mbps": "827",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-thermometer-full"
+      }
+    },
+    {
+      "from": "FileShare",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "FileShare-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1652182009.0",
+        "TC_DATE": "1655630190.0",
+        "Mbps": "357",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "IoTMachine",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "IoTMachine-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1651900557.0",
+        "TC_DATE": "1655939720.0",
+        "Mbps": "397",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "LDAP",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "LDAP-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1651732069.0",
+        "TC_DATE": "1655900254.0",
+        "Mbps": "719",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-thermometer-full"
+      }
+    },
+    {
+      "from": "CMDB",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "CMDB-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1651860155.0",
+        "TC_DATE": "1655718342.0",
+        "Mbps": "351",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "Database",
+      "to": "CMDB",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "Database-->(46456)-->TCP-->(22)--CMDB",
+        "kronograph_date": "1651768837.0",
+        "TC_DATE": "1655469240.0",
+        "Mbps": "163",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Database",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "Database-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1652121081.0",
+        "TC_DATE": "1655566746.0",
+        "Mbps": "643",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-thermometer-full"
+      }
+    },
+    {
+      "from": "ATTCK",
+      "to": "IoTMachine",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "ATTCK-->(46456)-->TCP-->(22)--IoTMachine",
+        "kronograph_date": "1651621399.0",
+        "TC_DATE": "1655837676.0",
+        "Mbps": "493",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "ATTCK",
+      "to": "CMDB",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "ATTCK-->(46456)-->TCP-->(22)--CMDB",
+        "kronograph_date": "1651699241.0",
+        "TC_DATE": "1655760842.0",
+        "Mbps": "689",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "ATTCK",
+      "to": "SystemMonitorServer",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "ATTCK-->(46456)-->TCP-->(22)--SystemMonitorServer",
+        "kronograph_date": "1651642853.0",
+        "TC_DATE": "1655596942.0",
+        "Mbps": "101",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "DataLake",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "DataLake-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1652041473.0",
+        "TC_DATE": "1655535128.0",
+        "Mbps": "551",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-thermometer-full"
+      }
+    },
+    {
+      "from": "ApplicationServer",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "ApplicationServer-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1651622983.0",
+        "TC_DATE": "1655782734.0",
+        "Mbps": "515",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "ApplicationServer",
+      "to": "CMDB",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "ApplicationServer-->(46456)-->TCP-->(22)--CMDB",
+        "kronograph_date": "1651940415.0",
+        "TC_DATE": "1655449152.0",
+        "Mbps": "189",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CRMServer",
+      "to": "PrivateSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "CRMServer-->(46456)-->TCP-->(22)--PrivateSubnet",
+        "kronograph_date": "1651771975.0",
+        "TC_DATE": "1655974580.0",
+        "Mbps": "75",
+        "TC_THICKNESS": "2",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CRMServer",
+      "to": "CMDB",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "CRMServer-->(46456)-->TCP-->(22)--CMDB",
+        "kronograph_date": "1652040133.0",
+        "TC_DATE": "1655922862.0",
+        "Mbps": "775",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "SystemMonitorServer",
+      "to": "TransitSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "SystemMonitorServer-->(46456)-->TCP-->(22)--TransitSubnet",
+        "kronograph_date": "1651897361.0",
+        "TC_DATE": "1655734038.0",
+        "Mbps": "853",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "TransitSubnet",
+      "to": "TransitGateway",
+      "showname": "Violation",
+      "type": "Violation",
+      "properties": {
+        "uid": "TransitSubnet-->(46456)-->TCP-->(22)--TransitGateway",
+        "kronograph_date": "1651714593.0",
+        "TC_DATE": "1655863390.0",
+        "Mbps": "433",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "PrivateSubnet",
+      "to": "DataCenter",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "PrivateSubnet-->(46456)-->TCP-->(22)--DataCenter",
+        "kronograph_date": "1652149669.0",
+        "TC_DATE": "1655941736.0",
+        "Mbps": "767",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "InsideThreatActor",
+      "to": "DataCenter",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "InsideThreatActor-->(1477)-->TCP-->(22)--DataCenter",
+        "kronograph_date": "1651610977.0",
+        "TC_DATE": "1655767980.0",
+        "Mbps": "71",
+        "TC_THICKNESS": "2",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Router",
+      "to": "DataCenter",
+      "showname": "routed",
+      "type": "routed",
+      "properties": {
+        "uid": "Router-->(1477)-->TCP-->(22)--DataCenter",
+        "kronograph_date": "1652058295.0",
+        "TC_DATE": "1655828216.0",
+        "Mbps": "321",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "Router",
+      "to": "TransitSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "Router-->(1477)-->TCP-->(22)--TransitSubnet",
+        "kronograph_date": "1651732563.0",
+        "TC_DATE": "1655846024.0",
+        "Mbps": "63",
+        "TC_THICKNESS": "2",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "ATTCK1",
+      "to": "WebServer",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "ATTCK1-->(1477)-->TCP-->(22)--WebServer",
+        "kronograph_date": "1651679921.0",
+        "TC_DATE": "1655473822.0",
+        "Mbps": "109",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Firewall",
+      "to": "Internet",
+      "showname": "To",
+      "type": "To",
+      "properties": {
+        "uid": "Firewall-->(1477)-->TCP-->(22)--Internet",
+        "kronograph_date": "1651727393.0",
+        "TC_DATE": "1655967472.0",
+        "Mbps": "143",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Firewall",
+      "to": "TransitSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "Firewall-->(1477)-->TCP-->(22)--TransitSubnet",
+        "kronograph_date": "1651626063.0",
+        "TC_DATE": "1655430244.0",
+        "Mbps": "477",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Firewall",
+      "to": "DMZSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "Firewall-->(1477)-->TCP-->(22)--DMZSubnet",
+        "kronograph_date": "1651658943.0",
+        "TC_DATE": "1655810006.0",
+        "Mbps": "401",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Firewall",
+      "to": "TransitGateway",
+      "showname": "Direct Connected",
+      "type": "Direct Connected",
+      "properties": {
+        "uid": "Firewall-->(1477)-->TCP-->(22)--TransitGateway",
+        "kronograph_date": "1651918869.0",
+        "TC_DATE": "1655427366.0",
+        "Mbps": "133",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "WebServer",
+      "to": "DMZSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "WebServer-->(1477)-->TCP-->(22)--DMZSubnet",
+        "kronograph_date": "1651898017.0",
+        "TC_DATE": "1655691380.0",
+        "Mbps": "435",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CyberInspectionTool",
+      "to": "DMZSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "CyberInspectionTool-->(1477)-->TCP-->(22)--DMZSubnet",
+        "kronograph_date": "1652185375.0",
+        "TC_DATE": "1655449974.0",
+        "Mbps": "553",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-thermometer-full"
+      }
+    },
+    {
+      "from": "InfectedActor",
+      "to": "DMZSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "InfectedActor-->(1477)-->TCP-->(22)--DMZSubnet",
+        "kronograph_date": "1651759831.0",
+        "TC_DATE": "1655986756.0",
+        "Mbps": "457",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "CVE1",
+      "to": "InfectedActor",
+      "showname": "Against",
+      "type": "Against",
+      "properties": {
+        "uid": "CVE1-->(46456)-->TCP-->(22)--InfectedActor",
+        "kronograph_date": "1651746917.0",
+        "TC_DATE": "1655960670.0",
+        "Mbps": "387",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "TransitGateway",
+      "to": "VPC",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "TransitGateway-->(1477)-->TCP-->(22)--VPC",
+        "kronograph_date": "1652079333.0",
+        "TC_DATE": "1655537982.0",
+        "Mbps": "487",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "KnownExfiltrateCommandCenter",
+      "to": "Internet",
+      "showname": "Launch",
+      "type": "Launch",
+      "properties": {
+        "uid": "KnownExfiltrateCommandCenter-->(1477)-->TCP-->(22)--Internet",
+        "kronograph_date": "1651826299.0",
+        "TC_DATE": "1655643192.0",
+        "Mbps": "95",
+        "TC_THICKNESS": "2",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "DDNSLaunchPad",
+      "to": "Internet",
+      "showname": "Launch",
+      "type": "Launch",
+      "properties": {
+        "uid": "DDNSLaunchPad-->(1477)-->TCP-->(22)--Internet",
+        "kronograph_date": "1652052395.0",
+        "TC_DATE": "1655494248.0",
+        "Mbps": "35",
+        "TC_THICKNESS": "2",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "ThreatActor",
+      "to": "Internet",
+      "showname": "Launch",
+      "type": "Launch",
+      "properties": {
+        "uid": "ThreatActor-->(1477)-->TCP-->(22)--Internet",
+        "kronograph_date": "1652137551.0",
+        "TC_DATE": "1655714104.0",
+        "Mbps": "131",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "ThreatActor",
+      "to": "KnownExfiltrateCommandCenter",
+      "showname": "Exfiltrates",
+      "type": "Exfiltrates",
+      "properties": {
+        "uid": "ThreatActor-->(1477)-->TCP-->(22)--KnownExfiltrateCommandCenter",
+        "kronograph_date": "1652160647.0",
+        "TC_DATE": "1655418342.0",
+        "Mbps": "561",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "ThreatActor",
+      "to": "PersonalCloudStorage",
+      "showname": "Exfiltrates",
+      "type": "Exfiltrates",
+      "properties": {
+        "uid": "ThreatActor-->(1477)-->TCP-->(22)--PersonalCloudStorage",
+        "kronograph_date": "1651728333.0",
+        "TC_DATE": "1655529938.0",
+        "Mbps": "535",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "PersonalCloudStorage",
+      "to": "Internet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "PersonalCloudStorage-->(1477)-->TCP-->(22)--Internet",
+        "kronograph_date": "1652011877.0",
+        "TC_DATE": "1655647080.0",
+        "Mbps": "771",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "PersonalCloudStorage",
+      "to": "Laptop",
+      "showname": "Exposes",
+      "type": "Exposes",
+      "properties": {
+        "uid": "PersonalCloudStorage-->(1477)-->TCP-->(22)--Laptop",
+        "kronograph_date": "1651669007.0",
+        "TC_DATE": "1655641510.0",
+        "Mbps": "575",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "ATTCK3",
+      "to": "ThreatActor",
+      "showname": "Associated",
+      "type": "Associated",
+      "properties": {
+        "uid": "ATTCK3-->(1477)-->TCP-->(22)--ThreatActor",
+        "kronograph_date": "1651982883.0",
+        "TC_DATE": "1655699212.0",
+        "Mbps": "525",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CrowdStrike",
+      "to": "ThreatActor",
+      "showname": "Associated",
+      "type": "Associated",
+      "properties": {
+        "uid": "CrowdStrike-->(1477)-->TCP-->(22)--ThreatActor",
+        "kronograph_date": "1652193499.0",
+        "TC_DATE": "1655515464.0",
+        "Mbps": "339",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "EC2",
+      "to": "VPC",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "EC2-->(1477)-->TCP-->(22)--VPC",
+        "kronograph_date": "1651793035.0",
+        "TC_DATE": "1655958706.0",
+        "Mbps": "519",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "EC2",
+      "to": "S3Bucket",
+      "showname": "Stores",
+      "type": "Stores",
+      "properties": {
+        "uid": "EC2-->(1477)-->TCP-->(22)--S3Bucket",
+        "kronograph_date": "1652183891.0",
+        "TC_DATE": "1655459270.0",
+        "Mbps": "361",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "S3Bucket",
+      "to": "VPC",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "S3Bucket-->(1477)-->TCP-->(22)--VPC",
+        "kronograph_date": "1652191057.0",
+        "TC_DATE": "1655787948.0",
+        "Mbps": "879",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-thermometer-full"
+      }
+    },
+    {
+      "from": "PrivateLinkEP",
+      "to": "VPC",
+      "showname": "In",
+      "type": "In",
+      "properties": {
+        "uid": "PrivateLinkEP-->(1477)-->TCP-->(22)--VPC",
+        "kronograph_date": "1651858567.0",
+        "TC_DATE": "1655993196.0",
+        "Mbps": "367",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "PrivateLinkEP",
+      "to": "SPNLB",
+      "showname": "Access",
+      "type": "Access",
+      "properties": {
+        "uid": "PrivateLinkEP-->(1477)-->TCP-->(22)--SPNLB",
+        "kronograph_date": "1651977769.0",
+        "TC_DATE": "1655856414.0",
+        "Mbps": "631",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "SPNLB",
+      "to": "PrivateLinkEP",
+      "showname": "Delivers",
+      "type": "Delivers",
+      "properties": {
+        "uid": "SPNLB-->(1477)-->TCP-->(22)--PrivateLinkEP",
+        "kronograph_date": "1652142205.0",
+        "TC_DATE": "1655706672.0",
+        "Mbps": "281",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "InfectedActor2",
+      "to": "SPNLB",
+      "showname": "Exposes",
+      "type": "Exposes",
+      "properties": {
+        "uid": "InfectedActor2-->(1477)-->TCP-->(22)--SPNLB",
+        "kronograph_date": "1651741627.0",
+        "TC_DATE": "1655973402.0",
+        "Mbps": "537",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-thermometer-full"
+      }
+    },
+    {
+      "from": "CVE2",
+      "to": "InfectedActor2",
+      "showname": "Against",
+      "type": "Against",
+      "properties": {
+        "uid": "CVE2-->(46456)-->TCP-->(22)--InfectedActor2",
+        "kronograph_date": "1651903369.0",
+        "TC_DATE": "1655830452.0",
+        "Mbps": "597",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVSS2",
+      "to": "InfectedActor2",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "CVSS2-->(46456)-->TCP-->(22)--InfectedActor2",
+        "kronograph_date": "1652002135.0",
+        "TC_DATE": "1655932260.0",
+        "Mbps": "301",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "SDWANGateway",
+      "to": "RegionalNetwork",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "SDWANGateway-->(1477)-->TCP-->(22)--RegionalNetwork",
+        "kronograph_date": "1652050399.0",
+        "TC_DATE": "1655955642.0",
+        "Mbps": "817",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "SDWANGateway",
+      "to": "TransitSubnet2",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "SDWANGateway-->(1477)-->TCP-->(22)--TransitSubnet2",
+        "kronograph_date": "1651724119.0",
+        "TC_DATE": "1655473100.0",
+        "Mbps": "803",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "WAP",
+      "to": "TransitSubnet2",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "WAP-->(1477)-->TCP-->(22)--TransitSubnet2",
+        "kronograph_date": "1651903627.0",
+        "TC_DATE": "1655520390.0",
+        "Mbps": "149",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "LocalFileShare",
+      "to": "TransitSubnet2",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "LocalFileShare-->(1477)-->TCP-->(22)--TransitSubnet2",
+        "kronograph_date": "1651844283.0",
+        "TC_DATE": "1655736810.0",
+        "Mbps": "49",
+        "TC_THICKNESS": "2",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Printer",
+      "to": "TransitSubnet2",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "Printer-->(1477)-->TCP-->(22)--TransitSubnet2",
+        "kronograph_date": "1651621937.0",
+        "TC_DATE": "1655857776.0",
+        "Mbps": "727",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "EnvironmentalIoT",
+      "to": "TransitSubnet2",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "EnvironmentalIoT-->(1477)-->TCP-->(22)--TransitSubnet2",
+        "kronograph_date": "1651833181.0",
+        "TC_DATE": "1655778636.0",
+        "Mbps": "409",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVE3",
+      "to": "Printer",
+      "showname": "Against",
+      "type": "Against",
+      "properties": {
+        "uid": "CVE3-->(46456)-->TCP-->(22)--Printer",
+        "kronograph_date": "1652077911.0",
+        "TC_DATE": "1655686486.0",
+        "Mbps": "169",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVE3",
+      "to": "Laptop",
+      "showname": "Against",
+      "type": "Against",
+      "properties": {
+        "uid": "CVE3-->(46456)-->TCP-->(22)--Laptop",
+        "kronograph_date": "1651935019.0",
+        "TC_DATE": "1655675000.0",
+        "Mbps": "573",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVSS3",
+      "to": "Printer",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "CVSS3-->(46456)-->TCP-->(22)--Printer",
+        "kronograph_date": "1652157659.0",
+        "TC_DATE": "1655590372.0",
+        "Mbps": "659",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVSS3",
+      "to": "Laptop",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "CVSS3-->(46456)-->TCP-->(22)--Laptop",
+        "kronograph_date": "1651665573.0",
+        "TC_DATE": "1655977240.0",
+        "Mbps": "359",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "Laptop",
+      "to": "Printer",
+      "showname": "Use",
+      "type": "Use",
+      "properties": {
+        "uid": "Laptop-->(46456)-->TCP-->(22)--Printer",
+        "kronograph_date": "1652016755.0",
+        "TC_DATE": "1655791050.0",
+        "Mbps": "893",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-thermometer-full"
+      }
+    },
+    {
+      "from": "Laptop",
+      "to": "PersonalCloudStorage",
+      "showname": "Use",
+      "type": "Use",
+      "properties": {
+        "uid": "Laptop-->(46456)-->TCP-->(22)--PersonalCloudStorage",
+        "kronograph_date": "1652148107.0",
+        "TC_DATE": "1655841792.0",
+        "Mbps": "423",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Laptop",
+      "to": "WAP",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "Laptop-->(46456)-->TCP-->(22)--WAP",
+        "kronograph_date": "1651669735.0",
+        "TC_DATE": "1655991816.0",
+        "Mbps": "197",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "Laptop",
+      "to": "HotSpot",
+      "showname": "Access",
+      "type": "Access",
+      "properties": {
+        "uid": "Laptop-->(46456)-->TCP-->(22)--HotSpot",
+        "kronograph_date": "1651821411.0",
+        "TC_DATE": "1655720310.0",
+        "Mbps": "43",
+        "TC_THICKNESS": "2",
+        "TC_EDGE_ICON": "fa-thermometer-quarter"
+      }
+    },
+    {
+      "from": "Laptop",
+      "to": "LocalFileShare",
+      "showname": "Use",
+      "type": "Use",
+      "properties": {
+        "uid": "Laptop-->(46456)-->TCP-->(22)--LocalFileShare",
+        "kronograph_date": "1652199913.0",
+        "TC_DATE": "1655575316.0",
+        "Mbps": "861",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "HotSpot",
+      "to": "PersonalMobileDevice",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "HotSpot-->(46456)-->TCP-->(22)--PersonalMobileDevice",
+        "kronograph_date": "1651689813.0",
+        "TC_DATE": "1655965820.0",
+        "Mbps": "127",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "InfectedSystem",
+      "to": "Laptop",
+      "showname": "Launch",
+      "type": "Launch",
+      "properties": {
+        "uid": "InfectedSystem-->(46456)-->TCP-->(22)--Laptop",
+        "kronograph_date": "1651894581.0",
+        "TC_DATE": "1655553990.0",
+        "Mbps": "377",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "RegionalNetwork",
+      "to": "TransitSubnet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "RegionalNetwork-->(1477)-->TCP-->(22)--TransitSubnet",
+        "kronograph_date": "1651812129.0",
+        "TC_DATE": "1655687630.0",
+        "Mbps": "887",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "RegionalNetwork",
+      "to": "Internet",
+      "showname": "On",
+      "type": "On",
+      "properties": {
+        "uid": "RegionalNetwork-->(1477)-->TCP-->(22)--Internet",
+        "kronograph_date": "1651665615.0",
+        "TC_DATE": "1655843886.0",
+        "Mbps": "165",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-thermometer-three-quarters"
+      }
+    },
+    {
+      "from": "DATACENTER",
+      "to": "APPSERVER",
+      "type": "In",
+      "properties": {
+        "uid": "APP-TO-DC",
+        "Mbps": "3200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "APPSERVER",
+      "to": "DATACENTER",
+      "type": "Includes",
+      "properties": {
+        "uid": "DC-TO-APP",
+        "Mbps": "3200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "APPSERVER",
+      "to": "CMDB",
+      "type": "in",
+      "properties": {
+        "uid": "APP-TO-CMDB",
+        "Mbps": "1200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CMDB",
+      "to": "NAT",
+      "type": "uses",
+      "properties": {
+        "uid": "CMDB-TO-NAT",
+        "Mbps": "1200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[1] EXFIL-T2M - THREATACTOR01 to CMDB, [2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "APPSERVER",
+      "to": "NAT",
+      "type": "uses",
+      "properties": {
+        "uid": "APP-TO-NAT",
+        "Mbps": "1200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "NAT",
+      "to": "THREATACTOR01",
+      "type": "forwards",
+      "properties": {
+        "uid": "NAT-TO-TA",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[1] EXFIL-T2M - THREATACTOR01 to CMDB, [2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "NAT",
+      "to": "CMDB",
+      "type": "forwards",
+      "properties": {
+        "uid": "NAT-TO-CMDB",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "NAT",
+      "to": "APPSERVER",
+      "type": "forwards",
+      "properties": {
+        "uid": "NAT-TO-APP",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "DATACENTER",
+      "to": "TRANSITNETWORK",
+      "type": "True",
+      "properties": {
+        "uid": "DC-TO-TRANS",
+        "Mbps": "1200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "TRANSITNETWORK",
+      "to": "DATACENTER",
+      "type": "includes",
+      "properties": {
+        "uid": "TRANS-TO-DC",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "TRANSITNETWORK",
+      "to": "FIREWALL",
+      "type": "Sends",
+      "properties": {
+        "uid": "TRANS-TO-FW",
+        "Mbps": "444400",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "NAT",
+      "to": "FIREWALL",
+      "type": "in",
+      "properties": {
+        "uid": "NAT-TO-FW",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "FIREWALL",
+      "to": "TRANSITNETWORK",
+      "type": "on-",
+      "properties": {
+        "uid": "FW-TO-TN",
+        "Mbps": "561",
+        "TC_THICKNESS": "5",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "FIREWALL",
+      "to": "NAT",
+      "type": "Uses",
+      "properties": {
+        "uid": "FW-TO-NAT",
+        "Mbps": "4200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "EXCC",
+      "to": "Internet",
+      "type": "On-",
+      "properties": {
+        "uid": "EXCC-TO-INTERNET",
+        "Mbps": "3200"
+      }
+    },
+    {
+      "from": "THREATACTOR01",
+      "to": "EXCC",
+      "type": "In",
+      "properties": {
+        "uid": "TA-TO-EXCC",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Internet",
+      "to": "EXCC",
+      "type": "Sends",
+      "properties": {
+        "uid": "INTERNET-TO-EXCC",
+        "Mbps": "2201",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "FIREWALL",
+      "to": "Internet",
+      "type": "On-",
+      "properties": {
+        "uid": "FW-TO-INTERNET",
+        "Mbps": "3200"
+      }
+    },
+    {
+      "from": "Internet",
+      "to": "FIREWALL",
+      "type": "Communicates",
+      "properties": {
+        "uid": "INTERNET-TO-FW",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "PCS",
+      "to": "Internet",
+      "type": "on-",
+      "properties": {
+        "uid": "PCS-TO-INTERNET",
+        "Mbps": "1200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "PCS",
+      "to": "REGIONALLAPTOP",
+      "type": "Launches",
+      "properties": {
+        "uid": "PCS-TO-RL",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "REGIONALLAPTOP",
+      "to": "PCS",
+      "type": "Violation",
+      "properties": {
+        "uid": "RL-TO-PCS",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "CVE101",
+      "to": "APPSERVER",
+      "type": "Identified",
+      "properties": {
+        "uid": "CVE101-TO-APP",
+        "Mbps": "13",
+        "TC_THICKNESS": "2",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "APPSERVER",
+      "to": "CVE101",
+      "type": "Shares",
+      "properties": {
+        "uid": "APP-TO-CVE101",
+        "Mbps": "211",
+        "TC_THICKNESS": "4",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "THREATACTOR01",
+      "to": "Internet",
+      "type": "On-",
+      "properties": {
+        "uid": "TA-TO-INTERNET",
+        "Mbps": "1200"
+      }
+    },
+    {
+      "from": "THREATACTOR01",
+      "to": "NAT",
+      "type": "Communicates",
+      "properties": {
+        "uid": "TA-TO-NAT",
+        "Mbps": "4200"
+      }
+    },
+    {
+      "from": "THREATACTOR01",
+      "to": "PCS",
+      "type": "Launches",
+      "properties": {
+        "uid": "TA-TO-PCS",
+        "Mbps": "3200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "PCS",
+      "to": "THREATACTOR01",
+      "type": "Forwards",
+      "properties": {
+        "uid": "PCS-TO-TA",
+        "Mbps": "2200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[2] EXFIL-T2M - THREATACTOR01 to APPSERVER, [3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "from": "Internet",
+      "to": "THREATACTOR01",
+      "type": "Sends",
+      "properties": {
+        "uid": "INTERNET-TO-TA",
+        "Mbps": "1200",
+        "TC_FLASH": "1",
+        "TC_COLOR": "#A1000E",
+        "TC_EDGE_ICON_FLASH": "1",
+        "TC_EDGE_ICON_BG_COLOR": "#A1000E",
+        "TC_EDGE_ICON": "fa-user-secret",
+        "TC_THREAT_PATH": "[3] EXFIL-T2M - THREATACTOR01 to 172.26.15.115-OS, [4] EXFIL-T2M - THREATACTOR01 to REGIONALLAPTOP, [1] EXFIL-M2T - CMDB to THREATACTOR01, [2] EXFIL-M2T - APPSERVER to THREATACTOR01, [3] EXFIL-M2T - 172.26.15.115-OS to THREATACTOR01, [4] EXFIL-M2T - REGIONALLAPTOP to THREATACTOR01"
+      }
+    },
+    {
+      "showname": "Inhibit Response Function",
+      "to": "Database",
+      "from": "VPC-0-NODE",
+      "type": "Internal IP Connected",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "Database-0-EDGE",
+        "THREAT": "TECHNIQUES",
+        "TC_DATE": "1655786366.0",
+        "Name": "Rootkit",
+        "Tactics": "Inhibit Response Function",
+        "ID": "T0851",
+        "Description": ""
+      }
+    },
+    {
+      "showname": "Command and Control",
+      "to": "CRMServer",
+      "from": "VPC-0-NODE",
+      "type": "Against",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "CRMServer-0-EDGE",
+        "THREAT": "TECHNIQUES",
+        "TC_DATE": "1655743746.0",
+        "Name": "Commonly Used Port",
+        "Tactics": "Command and Control",
+        "ID": "T0885",
+        "Description": "TCP:49152-65535 (OPC on Vista and later)"
+      }
+    },
+    {
+      "showname": "Command and Control",
+      "to": "PCS",
+      "from": "PersonalCloudStorage-1-NODE",
+      "type": "Against",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "PCS-1-EDGE",
+        "THREAT": "TACTICS",
+        "TC_DATE": "1655869344.0",
+        "TacticName": "Command and Control",
+        "TacticDescription": "The adversary is trying to communicate with and control compromised systems, controllers, and platforms with access to your ICS environment.",
+        "Description": "The adversary is trying to communicate with and control compromised systems, controllers, and platforms with access to your ICS environment."
+      }
+    },
+    {
+      "showname": "Impair Process Control",
+      "to": "CVSS3",
+      "from": "PersonalCloudStorage-1-NODE",
+      "type": "Infected",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "CVSS3-1-EDGE",
+        "THREAT": "TECHNIQUES",
+        "TC_DATE": "1655601766.0",
+        "Name": "Modify Parameter",
+        "Tactics": "Impair Process Control",
+        "ID": "T0836",
+        "Description": "Adversaries may modify parameters used to instruct industrial control system devices. These devices operate via programs that dictate how and when to perform actions based on such parameters. Such parameters can determine the extent to which an action is performed and may specify additional options. For example, a program on a control system device dictating motor processes may take a parameter defining the total number of seconds to run that motor."
+      }
+    },
+    {
+      "showname": "Collection",
+      "to": "S3Bucket",
+      "from": "PrivateLinkEP-2-NODE",
+      "type": "Violation",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "S3Bucket-2-EDGE",
+        "THREAT": "TACTICS",
+        "TC_DATE": "1655768820.0",
+        "TacticName": "Collection",
+        "TacticDescription": "The adversary is trying to gather data of interest and domain knowledge on your ICS environment to inform their goal.",
+        "Description": "The adversary is trying to gather data of interest and domain knowledge on your ICS environment to inform their goal."
+      }
+    },
+    {
+      "showname": "Impact",
+      "to": "REGIONALLAPTOP",
+      "from": "PrivateLinkEP-2-NODE",
+      "type": "Infected",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "REGIONALLAPTOP-2-EDGE",
+        "THREAT": "TECHNIQUES",
+        "TC_DATE": "1655891156.0",
+        "Name": "Denial of View",
+        "Tactics": "Impact",
+        "ID": "T0815",
+        "Description": "Adversaries may cause a denial of view in attempt to disrupt and prevent operator oversight on the status of an ICS environment. This may manifest itself as a temporary communication failure between a device and its control source, where the interface recovers and becomes available once the interference ceases.192021"
+      }
+    },
+    {
+      "showname": "Impair Process Control",
+      "to": "GeneralServer",
+      "from": "EnvironmentalIoT-3-NODE",
+      "type": "Internal IP Connected",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "GeneralServer-3-EDGE",
+        "THREAT": "TACTICS",
+        "TC_DATE": "1655491370.0",
+        "TacticName": "Impair Process Control",
+        "TacticDescription": "The adversary is trying to manipulate, disable, or damage physical control processes.",
+        "Description": "The adversary is trying to manipulate, disable, or damage physical control processes."
+      }
+    },
+    {
+      "showname": "Collection",
+      "to": "VPC",
+      "from": "EnvironmentalIoT-3-NODE",
+      "type": "Exposes",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "VPC-3-EDGE",
+        "THREAT": "TECHNIQUES",
+        "TC_DATE": "1655859498.0",
+        "Name": "Data from Information Repositories",
+        "Tactics": "Collection",
+        "ID": "T0811",
+        "Description": "Adversaries may target and collect data from information repositories. This can include sensitive data such as specifications, schematics, or diagrams of control system layouts, devices, and processes. Examples of information repositories include reference databases or local machines in the process environment, as well as workstations and databases in the corporate network that might contain information about the ICS.�17�Information collected from these systems may provide the adversary with a better understanding of the operational environment, vendors used, processes, or procedures of the ICS."
+      }
+    },
+    {
+      "showname": "Collection",
+      "to": "PersonalCloudStorage",
+      "from": "PersonalCloudStorage-1-NODE-4-NODE",
+      "type": "External IP Connected",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "PersonalCloudStorage-4-EDGE",
+        "THREAT": "TECHNIQUES",
+        "TC_DATE": "1655665160.0",
+        "Name": "Automated Collection",
+        "Tactics": "Collection",
+        "ID": "T0802",
+        "Description": "Adversaries may automate collection of industrial environment information using tools or scripts. This automated collection may leverage native control protocols and tools available in the control systems environment. For example, the OPC protocol may be used to enumerate and gather information. Access to a system or interface with these native protocols may allow collection and enumeration of other attached, communicating servers and devices."
+      }
+    },
+    {
+      "showname": "Execution",
+      "to": "PrivateSubnet",
+      "from": "PersonalCloudStorage-1-NODE-4-NODE",
+      "type": "Infected",
+      "properties": {
+        "TC_TOP_EDGE_COUNT": "1",
+        "uid": "PrivateSubnet-4-EDGE",
+        "THREAT": "TACTICS",
+        "TC_DATE": "1655946136.0",
+        "TacticName": "Execution",
+        "TacticDescription": "The adversary is trying to run code or manipulate system functions, parameters, and data in an unauthorized way.",
+        "Description": "The adversary is trying to run code or manipulate system functions, parameters, and data in an unauthorized way."
+      }
+    }
+  ],
+  "types": []
+}

@@ -1,0 +1,944 @@
+{
+  "description": "Larger IT/OT network with extensive relationships forming long threat paths",
+  "name": "IT_OT_NETWORK_LARGE",
+  "nodes": [
+    {
+      "uid": "GLOBAL-REPO",
+      "showname": "Global Repository (Public)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "Global public software repo",
+        "sciID": "999"
+      }
+    },
+    {
+      "uid": "10.0.1.10",
+      "showname": "Workstation-A",
+      "type": "Device",
+      "properties": {
+        "MAC": "00:16:3e:00:00:a0",
+        "PATCH": "1622505600"
+      }
+    },
+    {
+      "uid": "10.0.1.10-OS",
+      "showname": "Windows 10 Pro Build 19041",
+      "type": "Machine",
+      "properties": {}
+    },
+    {
+      "uid": "10.0.1.10-REPO",
+      "showname": "Repo-A (Local)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "Local repo for workstation A",
+        "sciID": "110"
+      }
+    },
+    {
+      "uid": "10.0.1.10-PLUGIN-101",
+      "showname": "Plugin #101 (SMBv1 Enabled)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "101 (445/6) SMBv1",
+        "PLUGINDATE": "1610000000",
+        "PLUGINNAME": "SMBv1 Enabled"
+      }
+    },
+    {
+      "uid": "10.0.1.10-PLUGIN-102",
+      "showname": "Plugin #102 (Weak NTLMv1 Auth)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "102 (135/6) NTLMv1 Auth",
+        "PLUGINDATE": "1611000000",
+        "PLUGINNAME": "Weak NTLMv1 Authentication"
+      }
+    },
+    {
+      "uid": "10.0.1.10-VULN/EXPLOIT-101",
+      "showname": "EternalBlue Exploit",
+      "type": "Exploit",
+      "properties": {
+        "description": "Exploits SMBv1 to gain remote code execution"
+      }
+    },
+    {
+      "uid": "10.0.1.10-VULN/EXPLOIT-102",
+      "showname": "NTLM Relay Attack",
+      "type": "Exploit",
+      "properties": {
+        "description": "Relays NTLMv1 to escalate privileges"
+      }
+    },
+
+    {
+      "uid": "10.0.2.20",
+      "showname": "Server-B",
+      "type": "Device",
+      "properties": {
+        "MAC": "00:16:3e:00:00:b0",
+        "PATCH": "1615000000"
+      }
+    },
+    {
+      "uid": "10.0.2.20-OS",
+      "showname": "Windows Server 2019 Standard",
+      "type": "Machine",
+      "properties": {}
+    },
+    {
+      "uid": "10.0.2.20-REPO",
+      "showname": "Repo-B (Internal)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "Internal repo for Server B",
+        "sciID": "210"
+      }
+    },
+    {
+      "uid": "10.0.2.20-PLUGIN-201",
+      "showname": "Plugin #201 (RDP Weak Encryption)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "201 (3389/6) RDP Weak",
+        "PLUGINDATE": "1612000000",
+        "PLUGINNAME": "RDP Weak Encryption"
+      }
+    },
+    {
+      "uid": "10.0.2.20-PLUGIN-202",
+      "showname": "Plugin #202 (Old SSL Ciphers)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "202 (443/6) SSL Ciphers",
+        "PLUGINDATE": "1613000000",
+        "PLUGINNAME": "SSL Weak Ciphers"
+      }
+    },
+    {
+      "uid": "10.0.2.20-VULN/EXPLOIT-201",
+      "showname": "RDP Man-in-the-Middle",
+      "type": "Exploit",
+      "properties": {
+        "description": "Intercept RDP sessions"
+      }
+    },
+    {
+      "uid": "10.0.2.20-VULN/EXPLOIT-202",
+      "showname": "BEAST Attack",
+      "type": "Exploit",
+      "properties": {
+        "description": "Exploits old SSL ciphers"
+      }
+    },
+
+    {
+      "uid": "10.0.3.30",
+      "showname": "PLC-C",
+      "type": "Device",
+      "properties": {
+        "MAC": "00:16:3e:00:00:c0",
+        "PATCH": "-1"
+      }
+    },
+    {
+      "uid": "10.0.3.30-OS",
+      "showname": "Embedded RTOS v3.3",
+      "type": "Machine",
+      "properties": {}
+    },
+    {
+      "uid": "10.0.3.30-REPO",
+      "showname": "Repo-C (Firmware)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "Firmware repo for PLC-C",
+        "sciID": "310"
+      }
+    },
+    {
+      "uid": "10.0.3.30-PLUGIN-301",
+      "showname": "Plugin #301 (Modbus TCP Unencrypted)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "301 (502/17) Modbus",
+        "PLUGINDATE": "1617000000",
+        "PLUGINNAME": "Modbus TCP Unencrypted"
+      }
+    },
+    {
+      "uid": "10.0.3.30-PLUGIN-302",
+      "showname": "Plugin #302 (Telnet Enabled)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "302 (23/6) Telnet Enabled",
+        "PLUGINDATE": "1618000000",
+        "PLUGINNAME": "Telnet Enabled"
+      }
+    },
+    {
+      "uid": "10.0.3.30-VULN/EXPLOIT-301",
+      "showname": "Modbus Intercept Exploit",
+      "type": "Exploit",
+      "properties": {
+        "description": "Intercept and alter Modbus commands"
+      }
+    },
+    {
+      "uid": "10.0.3.30-VULN/EXPLOIT-302",
+      "showname": "Telnet Credential Sniffer",
+      "type": "Exploit",
+      "properties": {
+        "description": "Sniffs telnet credentials"
+      }
+    },
+
+    {
+      "uid": "10.0.4.40",
+      "showname": "Router-D",
+      "type": "Device",
+      "properties": {
+        "MAC": "00:16:3e:00:00:d0",
+        "PATCH": ""
+      }
+    },
+    {
+      "uid": "10.0.4.40-OS",
+      "showname": "RouterOS v6.46",
+      "type": "Machine",
+      "properties": {}
+    },
+    {
+      "uid": "10.0.4.40-REPO",
+      "showname": "Repo-D (Router Firmware)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "Router firmware source",
+        "sciID": "410"
+      }
+    },
+    {
+      "uid": "10.0.4.40-PLUGIN-401",
+      "showname": "Plugin #401 (SNMP Public Community)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "401 (161/17) SNMP Public",
+        "PLUGINDATE": "1619000000",
+        "PLUGINNAME": "SNMP Public Community String"
+      }
+    },
+    {
+      "uid": "10.0.4.40-PLUGIN-402",
+      "showname": "Plugin #402 (Old SSH Key Exchange)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "402 (22/6) SSH KEX",
+        "PLUGINDATE": "1620000000",
+        "PLUGINNAME": "Old SSH Key Exchange Methods"
+      }
+    },
+    {
+      "uid": "10.0.4.40-VULN/EXPLOIT-401",
+      "showname": "SNMP Community Guess",
+      "type": "Exploit",
+      "properties": {
+        "description": "Guess SNMP community strings"
+      }
+    },
+    {
+      "uid": "10.0.4.40-VULN/EXPLOIT-402",
+      "showname": "SSH Downgrade Attack",
+      "type": "Exploit",
+      "properties": {
+        "description": "Force use of weak SSH KEX"
+      }
+    },
+
+    {
+      "uid": "10.0.5.50",
+      "showname": "Database-Server-E",
+      "type": "Device",
+      "properties": {
+        "MAC": "00:16:3e:00:00:e0",
+        "PATCH": ""
+      }
+    },
+    {
+      "uid": "10.0.5.50-OS",
+      "showname": "Linux Kernel 5.4",
+      "type": "Machine",
+      "properties": {}
+    },
+    {
+      "uid": "10.0.5.50-REPO",
+      "showname": "Repo-E (DB Packages)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "Linux package repo for DB Server",
+        "sciID": "510"
+      }
+    },
+    {
+      "uid": "10.0.5.50-PLUGIN-501",
+      "showname": "Plugin #501 (MySQL Weak Passwords)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "501 (3306/6) MySQL Weak PW",
+        "PLUGINDATE": "1621000000",
+        "PLUGINNAME": "MySQL Weak Passwords"
+      }
+    },
+    {
+      "uid": "10.0.5.50-PLUGIN-502",
+      "showname": "Plugin #502 (Exposed DB Admin Interface)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "502 (8080/6) DB Admin",
+        "PLUGINDATE": "1622000000",
+        "PLUGINNAME": "Exposed DB Admin Interface"
+      }
+    },
+    {
+      "uid": "10.0.5.50-VULN/EXPLOIT-501",
+      "showname": "MySQL Brute Force",
+      "type": "Exploit",
+      "properties": {
+        "description": "Brute force MySQL credentials"
+      }
+    },
+    {
+      "uid": "10.0.5.50-VULN/EXPLOIT-502",
+      "showname": "HTTP Admin Panel Exploit",
+      "type": "Exploit",
+      "properties": {
+        "description": "Exploit DB admin panel to gain RCE"
+      }
+    },
+
+    {
+      "uid": "10.0.6.60",
+      "showname": "File-Server-F",
+      "type": "Device",
+      "properties": {
+        "MAC": "00:16:3e:00:00:f0",
+        "PATCH": "1625000000"
+      }
+    },
+    {
+      "uid": "10.0.6.60-OS",
+      "showname": "Linux Kernel 4.19",
+      "type": "Machine",
+      "properties": {}
+    },
+    {
+      "uid": "10.0.6.60-REPO",
+      "showname": "Repo-F (File Storage)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "File server package repo",
+        "sciID": "610"
+      }
+    },
+    {
+      "uid": "10.0.6.60-PLUGIN-601",
+      "showname": "Plugin #601 (FTP Anonymous Access)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "601 (21/6) FTP Anonymous",
+        "PLUGINDATE": "1623000000",
+        "PLUGINNAME": "FTP Anonymous Access"
+      }
+    },
+    {
+      "uid": "10.0.6.60-PLUGIN-602",
+      "showname": "Plugin #602 (NFS No_root_squash)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "602 (2049/17) NFS No_root_squash",
+        "PLUGINDATE": "1624000000",
+        "PLUGINNAME": "NFS No_root_squash"
+      }
+    },
+    {
+      "uid": "10.0.6.60-VULN/EXPLOIT-601",
+      "showname": "FTP Write Access Exploit",
+      "type": "Exploit",
+      "properties": {
+        "description": "Write malicious files via anonymous FTP"
+      }
+    },
+    {
+      "uid": "10.0.6.60-VULN/EXPLOIT-602",
+      "showname": "NFS Privilege Escalation",
+      "type": "Exploit",
+      "properties": {
+        "description": "Gain root via no_root_squash"
+      }
+    },
+
+    {
+      "uid": "10.0.7.70",
+      "showname": "SCADA-Server-G",
+      "type": "Device",
+      "properties": {
+        "MAC": "00:16:3e:00:01:00",
+        "PATCH": ""
+      }
+    },
+    {
+      "uid": "10.0.7.70-OS",
+      "showname": "Windows Server 2012 R2",
+      "type": "Machine",
+      "properties": {}
+    },
+    {
+      "uid": "10.0.7.70-REPO",
+      "showname": "Repo-G (SCADA Updates)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "SCADA software updates",
+        "sciID": "710"
+      }
+    },
+    {
+      "uid": "10.0.7.70-PLUGIN-701",
+      "showname": "Plugin #701 (DCE/RPC Oversights)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "701 (135/6) DCE/RPC Issues",
+        "PLUGINDATE": "1626000000",
+        "PLUGINNAME": "DCE/RPC Oversights"
+      }
+    },
+    {
+      "uid": "10.0.7.70-PLUGIN-702",
+      "showname": "Plugin #702 (WMI Readable by All)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "702 (135/17) WMI Public",
+        "PLUGINDATE": "1627000000",
+        "PLUGINNAME": "WMI Readable by All"
+      }
+    },
+    {
+      "uid": "10.0.7.70-VULN/EXPLOIT-701",
+      "showname": "DCE/RPC Privilege Escalation",
+      "type": "Exploit",
+      "properties": {
+        "description": "Use DCE/RPC flaw to escalate privileges"
+      }
+    },
+    {
+      "uid": "10.0.7.70-VULN/EXPLOIT-702",
+      "showname": "WMI Lateral Movement",
+      "type": "Exploit",
+      "properties": {
+        "description": "Leverage WMI for lateral movement"
+      }
+    },
+
+    {
+      "uid": "10.0.8.80",
+      "showname": "Final-Device-H",
+      "type": "Device",
+      "properties": {
+        "MAC": "00:16:3e:00:01:10",
+        "PATCH": "1628000000"
+      }
+    },
+    {
+      "uid": "10.0.8.80-OS",
+      "showname": "Linux Kernel 5.10",
+      "type": "Machine",
+      "properties": {}
+    },
+    {
+      "uid": "10.0.8.80-REPO",
+      "showname": "Repo-H (Final Node)",
+      "type": "References",
+      "properties": {
+        "data": "IPv4",
+        "description": "Final device repo",
+        "sciID": "810"
+      }
+    },
+    {
+      "uid": "10.0.8.80-PLUGIN-801",
+      "showname": "Plugin #801 (Unused Service Enabled)",
+      "type": "Vulnerability",
+      "properties": {
+        "PLUGININFO": "801 (1234/6) Unused Service",
+        "PLUGINDATE": "1629000000",
+        "PLUGINNAME": "Unused Service Enabled"
+      }
+    },
+    {
+      "uid": "10.0.8.80-VULN/EXPLOIT-801",
+      "showname": "Service Hijack Exploit",
+      "type": "Exploit",
+      "properties": {
+        "description": "Hijack unused service to gain access"
+      }
+    }
+  ],
+  "edges": [
+    /* Global Repo to first device's OS */
+    {
+      "from": "GLOBAL-REPO",
+      "to": "10.0.1.10-OS",
+      "uid": "GREP->AOS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.1.10-REPO",
+      "to": "10.0.1.10-OS",
+      "uid": "A-REP->A-OS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.1.10-OS",
+      "to": "10.0.1.10",
+      "uid": "A-OS->A-DEV",
+      "type": "LAUNCHES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.1.10-PLUGIN-101",
+      "to": "10.0.1.10-OS",
+      "uid": "A-PLG101->A-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.1.10-PLUGIN-102",
+      "to": "10.0.1.10-OS",
+      "uid": "A-PLG102->A-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.1.10-VULN/EXPLOIT-101",
+      "to": "10.0.1.10-PLUGIN-101",
+      "uid": "A-EXP101->PLG101",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.1.10-VULN/EXPLOIT-102",
+      "to": "10.0.1.10-PLUGIN-102",
+      "uid": "A-EXP102->PLG102",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    /* Exploits from device A lead to OS of device B (long chain) */
+    {
+      "from": "10.0.1.10-VULN/EXPLOIT-101",
+      "to": "10.0.2.20-OS",
+      "uid": "A-EXP101->B-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.1.10-VULN/EXPLOIT-102",
+      "to": "10.0.2.20-OS",
+      "uid": "A-EXP102->B-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    {
+      "from": "10.0.2.20-REPO",
+      "to": "10.0.2.20-OS",
+      "uid": "B-REP->B-OS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.2.20-OS",
+      "to": "10.0.2.20",
+      "uid": "B-OS->B-DEV",
+      "type": "LAUNCHES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.2.20-PLUGIN-201",
+      "to": "10.0.2.20-OS",
+      "uid": "B-PLG201->B-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.2.20-PLUGIN-202",
+      "to": "10.0.2.20-OS",
+      "uid": "B-PLG202->B-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.2.20-VULN/EXPLOIT-201",
+      "to": "10.0.2.20-PLUGIN-201",
+      "uid": "B-EXP201->PLG201",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.2.20-VULN/EXPLOIT-202",
+      "to": "10.0.2.20-PLUGIN-202",
+      "uid": "B-EXP202->PLG202",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    /* Exploits from B lead to OS of C */
+    {
+      "from": "10.0.2.20-VULN/EXPLOIT-201",
+      "to": "10.0.3.30-OS",
+      "uid": "B-EXP201->C-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.2.20-VULN/EXPLOIT-202",
+      "to": "10.0.3.30-OS",
+      "uid": "B-EXP202->C-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    {
+      "from": "10.0.3.30-REPO",
+      "to": "10.0.3.30-OS",
+      "uid": "C-REP->C-OS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.3.30-OS",
+      "to": "10.0.3.30",
+      "uid": "C-OS->C-DEV",
+      "type": "LAUNCHES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.3.30-PLUGIN-301",
+      "to": "10.0.3.30-OS",
+      "uid": "C-PLG301->C-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.3.30-PLUGIN-302",
+      "to": "10.0.3.30-OS",
+      "uid": "C-PLG302->C-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.3.30-VULN/EXPLOIT-301",
+      "to": "10.0.3.30-PLUGIN-301",
+      "uid": "C-EXP301->PLG301",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.3.30-VULN/EXPLOIT-302",
+      "to": "10.0.3.30-PLUGIN-302",
+      "uid": "C-EXP302->PLG302",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    /* Exploits from C lead to OS of D */
+    {
+      "from": "10.0.3.30-VULN/EXPLOIT-301",
+      "to": "10.0.4.40-OS",
+      "uid": "C-EXP301->D-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.3.30-VULN/EXPLOIT-302",
+      "to": "10.0.4.40-OS",
+      "uid": "C-EXP302->D-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    {
+      "from": "10.0.4.40-REPO",
+      "to": "10.0.4.40-OS",
+      "uid": "D-REP->D-OS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.4.40-OS",
+      "to": "10.0.4.40",
+      "uid": "D-OS->D-DEV",
+      "type": "LAUNCHES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.4.40-PLUGIN-401",
+      "to": "10.0.4.40-OS",
+      "uid": "D-PLG401->D-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.4.40-PLUGIN-402",
+      "to": "10.0.4.40-OS",
+      "uid": "D-PLG402->D-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.4.40-VULN/EXPLOIT-401",
+      "to": "10.0.4.40-PLUGIN-401",
+      "uid": "D-EXP401->PLG401",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.4.40-VULN/EXPLOIT-402",
+      "to": "10.0.4.40-PLUGIN-402",
+      "uid": "D-EXP402->PLG402",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    /* Exploits from D lead to OS of E */
+    {
+      "from": "10.0.4.40-VULN/EXPLOIT-401",
+      "to": "10.0.5.50-OS",
+      "uid": "D-EXP401->E-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.4.40-VULN/EXPLOIT-402",
+      "to": "10.0.5.50-OS",
+      "uid": "D-EXP402->E-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    {
+      "from": "10.0.5.50-REPO",
+      "to": "10.0.5.50-OS",
+      "uid": "E-REP->E-OS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.5.50-OS",
+      "to": "10.0.5.50",
+      "uid": "E-OS->E-DEV",
+      "type": "LAUNCHES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.5.50-PLUGIN-501",
+      "to": "10.0.5.50-OS",
+      "uid": "E-PLG501->E-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.5.50-PLUGIN-502",
+      "to": "10.0.5.50-OS",
+      "uid": "E-PLG502->E-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.5.50-VULN/EXPLOIT-501",
+      "to": "10.0.5.50-PLUGIN-501",
+      "uid": "E-EXP501->PLG501",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.5.50-VULN/EXPLOIT-502",
+      "to": "10.0.5.50-PLUGIN-502",
+      "uid": "E-EXP502->PLG502",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    /* Exploits from E lead to OS of F */
+    {
+      "from": "10.0.5.50-VULN/EXPLOIT-501",
+      "to": "10.0.6.60-OS",
+      "uid": "E-EXP501->F-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.5.50-VULN/EXPLOIT-502",
+      "to": "10.0.6.60-OS",
+      "uid": "E-EXP502->F-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    {
+      "from": "10.0.6.60-REPO",
+      "to": "10.0.6.60-OS",
+      "uid": "F-REP->F-OS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.6.60-OS",
+      "to": "10.0.6.60",
+      "uid": "F-OS->F-DEV",
+      "type": "LAUNCHES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.6.60-PLUGIN-601",
+      "to": "10.0.6.60-OS",
+      "uid": "F-PLG601->F-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.6.60-PLUGIN-602",
+      "to": "10.0.6.60-OS",
+      "uid": "F-PLG602->F-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.6.60-VULN/EXPLOIT-601",
+      "to": "10.0.6.60-PLUGIN-601",
+      "uid": "F-EXP601->PLG601",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.6.60-VULN/EXPLOIT-602",
+      "to": "10.0.6.60-PLUGIN-602",
+      "uid": "F-EXP602->PLG602",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    /* Exploits from F lead to OS of G */
+    {
+      "from": "10.0.6.60-VULN/EXPLOIT-601",
+      "to": "10.0.7.70-OS",
+      "uid": "F-EXP601->G-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.6.60-VULN/EXPLOIT-602",
+      "to": "10.0.7.70-OS",
+      "uid": "F-EXP602->G-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    {
+      "from": "10.0.7.70-REPO",
+      "to": "10.0.7.70-OS",
+      "uid": "G-REP->G-OS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.7.70-OS",
+      "to": "10.0.7.70",
+      "uid": "G-OS->G-DEV",
+      "type": "LAUNCHES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.7.70-PLUGIN-701",
+      "to": "10.0.7.70-OS",
+      "uid": "G-PLG701->G-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.7.70-PLUGIN-702",
+      "to": "10.0.7.70-OS",
+      "uid": "G-PLG702->G-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.7.70-VULN/EXPLOIT-701",
+      "to": "10.0.7.70-PLUGIN-701",
+      "uid": "G-EXP701->PLG701",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.7.70-VULN/EXPLOIT-702",
+      "to": "10.0.7.70-PLUGIN-702",
+      "uid": "G-EXP702->PLG702",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    /* Exploits from G lead to OS of H (final device) */
+    {
+      "from": "10.0.7.70-VULN/EXPLOIT-701",
+      "to": "10.0.8.80-OS",
+      "uid": "G-EXP701->H-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.7.70-VULN/EXPLOIT-702",
+      "to": "10.0.8.80-OS",
+      "uid": "G-EXP702->H-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+
+    {
+      "from": "10.0.8.80-REPO",
+      "to": "10.0.8.80-OS",
+      "uid": "H-REP->H-OS",
+      "type": "REFERENCES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.8.80-OS",
+      "to": "10.0.8.80",
+      "uid": "H-OS->H-DEV",
+      "type": "LAUNCHES",
+      "properties": {}
+    },
+    {
+      "from": "10.0.8.80-PLUGIN-801",
+      "to": "10.0.8.80-OS",
+      "uid": "H-PLG801->H-OS",
+      "type": "SOFTWARE",
+      "properties": {}
+    },
+    {
+      "from": "10.0.8.80-VULN/EXPLOIT-801",
+      "to": "10.0.8.80-PLUGIN-801",
+      "uid": "H-EXP801->PLG801",
+      "type": "SOFTWARE",
+      "properties": {}
+    }
+  ]
+}
