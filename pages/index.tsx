@@ -24,6 +24,11 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
   Button,
   Spacer,
   chakra,
@@ -34,6 +39,7 @@ import { ChevronUpIcon, ChevronDownIcon, HamburgerIcon, InfoIcon, AttachmentIcon
 import Head from 'next/head'
 import Header from '../components/Header'
 import FileUpload from '../components/FileUpload'
+import DatasetManager from '../components/DatasetManager'
 import EnhancedGraphVisualization from '../components/EnhancedGraphVisualization'
 import PageTransition from '../components/PageTransition'
 
@@ -44,6 +50,7 @@ const MotionIconButton = motion(IconButton)
 const HomePage: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [showHeader, setShowHeader] = useState(true)
+  const [currentGraphData, setCurrentGraphData] = useState<{ nodes: any[], edges: any[] } | null>(null)
   const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure()
   const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
   
@@ -56,6 +63,15 @@ const HomePage: React.FC = () => {
   const handleUploadSuccess = () => {
     setRefreshTrigger(prev => prev + 1)
     onUploadClose() // Auto-close upload panel after successful upload
+  }
+
+  const handleDatasetLoaded = () => {
+    setRefreshTrigger(prev => prev + 1)
+    onUploadClose() // Auto-close upload panel after successful dataset load
+  }
+
+  const handleGraphDataLoad = (data: { nodes: any[], edges: any[] }) => {
+    setCurrentGraphData(data)
   }
 
   const gridColumns = useBreakpointValue({ base: 1, xl: 2 })
@@ -189,7 +205,7 @@ const HomePage: React.FC = () => {
                     whileHover={buttonHover}
                     whileTap={buttonTap}
                   >
-                    Upload Dataset
+                    Manage Datasets
                   </MotionButton>
                 </motion.div>
                 
@@ -243,7 +259,10 @@ const HomePage: React.FC = () => {
                   </motion.div>
                 </Box>
                 <Box height="calc(100% - 60px)">
-                  <EnhancedGraphVisualization refreshTrigger={refreshTrigger} />
+                  <EnhancedGraphVisualization
+                    refreshTrigger={refreshTrigger}
+                    onGraphDataLoad={handleGraphDataLoad}
+                  />
                 </Box>
               </MotionBox>
             </Box>
@@ -270,7 +289,7 @@ const HomePage: React.FC = () => {
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.2 }}
                     >
-                      Dataset Upload
+                      Dataset Management
                     </motion.div>
                   </DrawerHeader>
                   <DrawerBody>
@@ -279,73 +298,93 @@ const HomePage: React.FC = () => {
                       initial="initial"
                       animate="animate"
                     >
-                      <VStack spacing={6} align="stretch" py={4}>
-                        <motion.div variants={slideIn}>
-                          <Box>
-                            <Text fontSize="sm" color={textColor} mb={4}>
-                              Upload a JSON file containing nodes, edges, and stored queries to visualize your network topology.
-                            </Text>
-                            <FileUpload onUploadSuccess={handleUploadSuccess} />
-                          </Box>
-                        </motion.div>
+                      <Tabs isFitted variant="enclosed" colorScheme="blue">
+                        <TabList mb={4}>
+                          <Tab>Upload JSON</Tab>
+                          <Tab>Saved Datasets</Tab>
+                        </TabList>
 
-                        <motion.div variants={slideIn}>
-                          <Accordion allowToggle>
-                            <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md" mb={2}>
-                              <h2>
-                                <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
-                                  <Box flex="1" textAlign="left" fontWeight="medium">
-                                    Dataset Format Requirements
-                                  </Box>
-                                  <AccordionIcon />
-                                </AccordionButton>
-                              </h2>
-                              <AccordionPanel pb={4}>
-                                <VStack align="start" spacing={3} fontSize="sm" color={textColor}>
-                                  <Box>
-                                    <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Nodes Structure:</Text>
-                                    <Text>• uid: Unique identifier</Text>
-                                    <Text>• type: Node type (Server, Application, Database, etc.)</Text>
-                                    <Text>• showname: Display name</Text>
-                                    <Text>• properties: Additional metadata</Text>
-                                  </Box>
-                                  <Box>
-                                    <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Edges Structure:</Text>
-                                    <Text>• from: Source node UID</Text>
-                                    <Text>• to: Target node UID</Text>
-                                    <Text>• type: Relationship type</Text>
-                                    <Text>• properties: Additional metadata</Text>
-                                  </Box>
-                                  <Box>
-                                    <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Auto-Generated:</Text>
-                                    <Text>• Timestamps (Dec 30-31, 2023)</Text>
-                                    <Text>• Geolocation coordinates</Text>
-                                  </Box>
-                                </VStack>
-                              </AccordionPanel>
-                            </AccordionItem>
+                        <TabPanels>
+                          <TabPanel px={0}>
+                            <VStack spacing={6} align="stretch">
+                              <motion.div variants={slideIn}>
+                                <Box>
+                                  <Text fontSize="sm" color={textColor} mb={4}>
+                                    Upload a JSON file containing nodes, edges, and stored queries to visualize your network topology.
+                                  </Text>
+                                  <FileUpload onUploadSuccess={handleUploadSuccess} />
+                                </Box>
+                              </motion.div>
 
-                            <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md">
-                              <h2>
-                                <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
-                                  <Box flex="1" textAlign="left" fontWeight="medium">
-                                    Sample Dataset
-                                  </Box>
-                                  <AccordionIcon />
-                                </AccordionButton>
-                              </h2>
-                              <AccordionPanel pb={4}>
-                                <Text fontSize="sm" color={textColor} mb={2}>
-                                  A sample dataset file (sample-dataset.json) is available in the project root for testing.
-                                </Text>
-                                <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
-                                  This sample contains a network topology with servers, applications, databases, and security vulnerabilities.
-                                </Text>
-                              </AccordionPanel>
-                            </AccordionItem>
-                          </Accordion>
-                        </motion.div>
-                      </VStack>
+                              <motion.div variants={slideIn}>
+                                <Accordion allowToggle>
+                                  <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md" mb={2}>
+                                    <h2>
+                                      <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
+                                        <Box flex="1" textAlign="left" fontWeight="medium">
+                                          Dataset Format Requirements
+                                        </Box>
+                                        <AccordionIcon />
+                                      </AccordionButton>
+                                    </h2>
+                                    <AccordionPanel pb={4}>
+                                      <VStack align="start" spacing={3} fontSize="sm" color={textColor}>
+                                        <Box>
+                                          <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Nodes Structure:</Text>
+                                          <Text>• uid: Unique identifier</Text>
+                                          <Text>• type: Node type (Server, Application, Database, etc.)</Text>
+                                          <Text>• showname: Display name</Text>
+                                          <Text>• properties: Additional metadata</Text>
+                                        </Box>
+                                        <Box>
+                                          <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Edges Structure:</Text>
+                                          <Text>• from: Source node UID</Text>
+                                          <Text>• to: Target node UID</Text>
+                                          <Text>• type: Relationship type</Text>
+                                          <Text>• properties: Additional metadata</Text>
+                                        </Box>
+                                        <Box>
+                                          <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Auto-Generated:</Text>
+                                          <Text>• Timestamps (Dec 30-31, 2023)</Text>
+                                          <Text>• Geolocation coordinates</Text>
+                                        </Box>
+                                      </VStack>
+                                    </AccordionPanel>
+                                  </AccordionItem>
+
+                                  <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md">
+                                    <h2>
+                                      <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
+                                        <Box flex="1" textAlign="left" fontWeight="medium">
+                                          Sample Dataset
+                                        </Box>
+                                        <AccordionIcon />
+                                      </AccordionButton>
+                                    </h2>
+                                    <AccordionPanel pb={4}>
+                                      <Text fontSize="sm" color={textColor} mb={2}>
+                                        A sample dataset file (sample-dataset.json) is available in the project root for testing.
+                                      </Text>
+                                      <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                                        This sample contains a network topology with servers, applications, databases, and security vulnerabilities.
+                                      </Text>
+                                    </AccordionPanel>
+                                  </AccordionItem>
+                                </Accordion>
+                              </motion.div>
+                            </VStack>
+                          </TabPanel>
+
+                          <TabPanel px={0}>
+                            <motion.div variants={slideIn}>
+                              <DatasetManager
+                                onDatasetLoaded={handleDatasetLoaded}
+                                currentGraphData={currentGraphData}
+                              />
+                            </motion.div>
+                          </TabPanel>
+                        </TabPanels>
+                      </Tabs>
                     </motion.div>
                   </DrawerBody>
                 </MotionBox>

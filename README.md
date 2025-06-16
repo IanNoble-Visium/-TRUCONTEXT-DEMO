@@ -1,9 +1,10 @@
 # TruContext Demo - Graph Analytics Platform
 
-A cutting-edge Next.js application that enables users to upload JSON datasets, import them into a Neo4j Aura cloud database, and visualize them as interactive graph topologies using Cytoscape.js. Features a modern, graph-focused responsive design with advanced animations, mobile gesture support, interactive tooltips, and dynamic grouping capabilities.
+A cutting-edge Next.js application that enables users to upload JSON datasets, save them to a PostgreSQL database, and visualize them as interactive graph topologies using Cytoscape.js. Features persistent dataset storage, seamless data management, modern graph-focused responsive design with advanced animations, mobile gesture support, interactive tooltips, and dynamic grouping capabilities.
 
 ![TruContext Demo](https://img.shields.io/badge/TruContext-Demo-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14.0.0-black)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-blue)
 ![Neo4j](https://img.shields.io/badge/Neo4j-Aura-green)
 ![Cytoscape.js](https://img.shields.io/badge/Cytoscape.js-3.26.0-orange)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-blue)
@@ -13,7 +14,10 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, i
 
 ### 📤 Data Management
 - **JSON Dataset Upload**: Drag-and-drop interface with real-time validation
-- **Neo4j Integration**: Automatic import into Neo4j Aura cloud database
+- **PostgreSQL Persistence**: Save and load datasets from Neon PostgreSQL cloud database
+- **Dataset Library**: Manage multiple saved datasets with metadata and descriptions
+- **Seamless Integration**: Switch between JSON files and database storage
+- **Neo4j Visualization**: Automatic import into Neo4j Aura for graph rendering
 - **Data Processing**: Auto-generation of timestamps and geolocation data
 - **Format Validation**: Comprehensive JSON structure checking
 
@@ -77,13 +81,15 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, i
 - **Animations**: Framer Motion 10.0.0 + Lottie React for advanced animations
 - **Graph Visualization**: Cytoscape.js with multiple layout algorithms
 - **Mobile Gestures**: @use-gesture/react for touch interactions
-- **Database**: Neo4j Aura (Cloud) with Cypher queries
+- **Persistent Storage**: PostgreSQL with Neon hosting for dataset management
+- **Visualization Database**: Neo4j Aura (Cloud) with Cypher queries
 - **Icons**: Custom SVG icon system with vector graphics
 - **Deployment**: Vercel-ready with environment configuration
 
 ## 📋 Prerequisites
 
 - Node.js 18+ and npm
+- PostgreSQL database (Neon hosted - credentials provided)
 - Neo4j Aura database instance (credentials provided)
 
 ## 🔧 Installation
@@ -102,6 +108,10 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, i
 3. **Set up environment variables**
    Create a `.env.local` file in the root directory:
    ```env
+   # PostgreSQL Database (Neon)
+   POSTGRES_URL=postgresql://neondb_owner:npg_cOSiwT1eE6Fn@ep-cold-haze-a8fhh5uh-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
+
+   # Neo4j Database (Aura)
    NEO4J_URI=neo4j+s://ebd05d7f.databases.neo4j.io
    NEO4J_USERNAME=neo4j
    NEO4J_PASSWORD=RX8GYHKu9fH4vrpiZ7UGC0y8HbIJudrJg0ovqbeNdLM
@@ -337,27 +347,58 @@ The application features a comprehensive SVG icon system that provides consisten
 - Group Nodes: Gold accent (`#ffcc00`)
 - Background: Clean white and light gray
 
+## 💾 Dataset Management
+
+### Persistent Storage Features
+- **Save Current Dataset**: Save the currently loaded graph data to PostgreSQL with custom name and description
+- **Dataset Library**: Browse all saved datasets with metadata (creation date, node/edge counts)
+- **One-Click Loading**: Load any saved dataset directly into the visualization
+- **Dataset Deletion**: Remove unwanted datasets from the database
+- **Seamless Integration**: Switch between JSON file uploads and database storage
+
+### Dataset Management Interface
+- **Tabbed Interface**: "Upload JSON" and "Saved Datasets" tabs in the management drawer
+- **Save Dialog**: Modal form for naming and describing datasets before saving
+- **Dataset List**: Visual cards showing dataset information with action buttons
+- **Real-time Updates**: Immediate UI updates after save/load/delete operations
+- **Data Validation**: Comprehensive validation before saving to ensure data integrity
+
+### Database Schema
+- **Datasets Table**: Stores metadata (name, description, timestamps, counts)
+- **Nodes Table**: Stores node data with JSONB properties for flexibility
+- **Edges Table**: Stores relationships with proper foreign key constraints
+- **Automatic Schema**: Database tables created automatically on first use
+
 ## 🔄 API Routes
 
-### POST `/api/upload`
-Handles JSON dataset upload and Neo4j import.
+### Dataset Management
+- **GET `/api/datasets`**: List all saved datasets
+- **POST `/api/datasets`**: Save current dataset to PostgreSQL
+- **GET `/api/datasets/[id]`**: Get specific dataset details
+- **DELETE `/api/datasets/[id]`**: Delete a saved dataset
+- **POST `/api/datasets/load/[id]`**: Load dataset into Neo4j for visualization
 
-**Request Body**: JSON dataset
-**Response**: Success message with node/edge counts
-
-### GET `/api/graph`
-Fetches all graph data from Neo4j for visualization.
-
-**Response**: Cytoscape.js formatted nodes and edges
+### Legacy Routes
+- **POST `/api/upload`**: Upload JSON dataset and import to Neo4j
+- **GET `/api/graph`**: Fetch current graph data from Neo4j
 
 ## 🎯 Usage Guide
 
 ### Basic Workflow
-1. **Upload Dataset**: Click "Upload Dataset" → drag/drop JSON file
-2. **Automatic Processing**: System validates and imports data
-3. **Multi-View Visualization**: Choose from 5 different visualization modes
-4. **Data Exploration**: Use appropriate view for your analysis needs
-5. **Interactive Analysis**: Click, filter, sort, and explore your data
+1. **Manage Datasets**: Click "Manage Datasets" to open the data management drawer
+2. **Upload or Load**: Either upload a new JSON file or load a saved dataset
+3. **Automatic Processing**: System validates and imports data into visualization
+4. **Save Dataset**: Optionally save your current dataset to the database for future use
+5. **Multi-View Visualization**: Choose from 6 different visualization modes
+6. **Data Exploration**: Use appropriate view for your analysis needs
+7. **Interactive Analysis**: Click, filter, sort, and explore your data
+
+### Dataset Management Workflow
+1. **Upload New Data**: Use "Upload JSON" tab to import new datasets from files
+2. **Save Current Dataset**: Click "Save Current Dataset" to store in PostgreSQL database
+3. **Browse Saved Datasets**: Use "Saved Datasets" tab to view your dataset library
+4. **Load Previous Work**: Click the download icon to load any saved dataset
+5. **Manage Storage**: Delete unwanted datasets to keep your library organized
 
 ### View-Specific Features
 
@@ -445,6 +486,10 @@ Fetches all graph data from Neo4j for visualization.
 
 ### Environment Variables for Production
 ```env
+# PostgreSQL Database (Neon)
+POSTGRES_URL=postgresql://neondb_owner:npg_cOSiwT1eE6Fn@ep-cold-haze-a8fhh5uh-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
+
+# Neo4j Database (Aura)
 NEO4J_URI=neo4j+s://ebd05d7f.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=RX8GYHKu9fH4vrpiZ7UGC0y8HbIJudrJg0ovqbeNdLM
@@ -462,10 +507,13 @@ A sample dataset (`sample-dataset.json`) is included with:
 ## 🛡️ Security Considerations
 
 - Environment variables are used for database credentials
-- Input validation on uploaded JSON files
+- Input validation on uploaded JSON files and saved datasets
 - Error handling for malformed data
+- PostgreSQL parameterized queries to prevent SQL injection
 - Neo4j parameterized queries to prevent injection
+- Database transactions for atomic operations
 - Secure icon loading with fallback system
+- SSL connections to both PostgreSQL and Neo4j databases
 
 ## 🐛 Troubleshooting
 
@@ -479,9 +527,15 @@ A sample dataset (`sample-dataset.json`) is included with:
 2. **Graph Not Loading**
    - Check Neo4j connection in browser console
    - Verify environment variables are set
-   - Ensure database is accessible
+   - Ensure both PostgreSQL and Neo4j databases are accessible
 
-3. **Icons Not Displaying Across Views**
+3. **Dataset Save/Load Issues**
+   - Check PostgreSQL connection in browser console
+   - Verify POSTGRES_URL environment variable is set correctly
+   - Ensure dataset names are unique when saving
+   - Check browser network tab for API errors
+
+4. **Icons Not Displaying Across Views**
    - Check if SVG files exist in `/public/icons-svg/`
    - Verify node types match SVG filenames (lowercase)
    - Unknown.svg will be used as fallback for unrecognized types
@@ -490,13 +544,13 @@ A sample dataset (`sample-dataset.json`) is included with:
    - Verify NodeIcon component is rendering properly in each view
    - Test fallback system by using unrecognized node types
 
-4. **Animation Performance Issues**
+5. **Animation Performance Issues**
    - Disable hardware acceleration if animations are choppy
    - Check browser's animation preferences (reduced motion settings)
    - Reduce dataset size for complex graphs (>100 nodes may impact performance)
    - Close other browser tabs consuming GPU resources
 
-5. **Mobile Gesture Problems**
+6. **Mobile Gesture Problems**
    - Ensure device supports multi-touch (most modern devices do)
    - Check if browser zoom is interfering with gesture recognition
    - Try refreshing the page if gestures become unresponsive

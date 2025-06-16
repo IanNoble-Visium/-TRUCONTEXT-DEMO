@@ -5,9 +5,13 @@ import { ViewSwitcher, ViewType } from './DataViews'
 
 interface EnhancedGraphVisualizationProps {
   refreshTrigger: number
+  onGraphDataLoad?: (data: { nodes: any[], edges: any[] }) => void
 }
 
-const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({ refreshTrigger }) => {
+const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
+  refreshTrigger,
+  onGraphDataLoad
+}) => {
   const [currentView, setCurrentView] = useState<ViewType>('graph')
   const [graphData, setGraphData] = useState<{ nodes: any[], edges: any[] } | null>(null)
   const [selectedNodes, setSelectedNodes] = useState<string[]>([])
@@ -16,7 +20,11 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
   const handleDataLoad = useCallback((data: { nodes: any[], edges: any[] }) => {
     console.log('EnhancedGraphVisualization: Received data from GraphVisualization:', data)
     setGraphData(data)
-  }, [])
+    // Pass data up to parent component
+    if (onGraphDataLoad) {
+      onGraphDataLoad(data)
+    }
+  }, [onGraphDataLoad])
 
   // Handle selected nodes change from graph
   const handleSelectedNodesChange = useCallback((nodes: string[]) => {
