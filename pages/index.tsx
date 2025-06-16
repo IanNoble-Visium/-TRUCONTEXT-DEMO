@@ -50,7 +50,7 @@ const MotionIconButton = motion(IconButton)
 const HomePage: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [showHeader, setShowHeader] = useState(true)
-  const [currentGraphData, setCurrentGraphData] = useState<{ nodes: any[], edges: any[] } | null>(null)
+  const [currentGraphData, setCurrentGraphData] = useState<{ nodes: any[], edges: any[] } | undefined>(undefined)
   const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure()
   const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
   
