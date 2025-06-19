@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {
+      "uid": "1",
+      "showname": "Web Server",
+      "properties": {
+        "ip": "192.168.1.10",
+        "os": "Linux"
+      }
+    },
+    {
+      "type": "Application",
+      "showname": "CRM System",
+      "properties": {
+        "version": "3.2.1",
+        "vendor": "SalesForce"
+      }
+    },
+    {
+      "uid": "3",
+      "type": "Database",
+      "properties": "invalid-properties-should-be-object"
+    }
+  ],
+  "edges": [
+    {
+      "from": "1",
+      "to": "2",
+      "type": "HOSTS",
+      "properties": {
+        "port": 8080
+      }
+    },
+    {
+      "from": "1",
+      "to": "nonexistent-node",
+      "type": "CONNECTS_TO",
+      "properties": {}
+    }
+  ],
+  "storedQueries": "should-be-array"
+}
