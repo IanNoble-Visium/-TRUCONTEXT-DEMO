@@ -16,16 +16,154 @@ import {
 } from '@chakra-ui/icons'
 import cytoscape, { Core, NodeSingular, Collection } from 'cytoscape'
 // @ts-ignore
+import cola from 'cytoscape-cola'
+// @ts-ignore
 import { NodeTooltip, EdgeTooltip } from './GraphTooltip'
 import { createRoot } from 'react-dom/client'
 import { useGesture } from '@use-gesture/react'
 import { motion } from 'framer-motion'
+
+// Register cytoscape-cola extension
+cytoscape.use(cola)
 
 interface GraphVisualizationProps {
   refreshTrigger: number
   onDataLoad?: (data: { nodes: any[], edges: any[] }) => void
   onSelectedNodesChange?: (nodes: string[]) => void
   externalSelectedNodes?: string[]
+}
+
+// Layout configuration with human-readable labels and descriptions
+interface LayoutOption {
+  value: string
+  label: string
+  description: string
+}
+
+const LAYOUT_OPTIONS: LayoutOption[] = [
+  {
+    value: 'grid',
+    label: 'Grid Layout',
+    description: 'Arranges nodes in a regular, square grid. Simple and useful for quickly displaying all nodes.'
+  },
+  {
+    value: 'random',
+    label: 'Random Layout',
+    description: 'Places nodes at random positions within the viewport. Useful for initial, unstructured views.'
+  },
+  {
+    value: 'circle',
+    label: 'Circle Layout',
+    description: 'Positions nodes evenly spaced around a circle, highlighting groups or cycles.'
+  },
+  {
+    value: 'concentric',
+    label: 'Concentric Layout',
+    description: 'Arranges nodes in concentric circles based on node properties (e.g., degree), often used to show hierarchies or importance.'
+  },
+  {
+    value: 'breadthfirst',
+    label: 'Hierarchical (Breadth-First) Layout',
+    description: 'Creates hierarchical layers from a root node. Select a single node first to use as root, or the system will auto-select the most connected node.'
+  },
+  {
+    value: 'hierarchical-tree',
+    label: 'Multi-Level Hierarchical Tree',
+    description: 'Creates a true multi-level tree hierarchy with proper vertical layering and horizontal spacing. Select a root node or the system will auto-select one.'
+  },
+  {
+    value: 'cose',
+    label: 'Force-Directed (CoSE) Layout',
+    description: 'Uses a physics simulation to position nodes, where edges act like springs and nodes repel each other; good for organic, visually balanced layouts.'
+  },
+  {
+    value: 'preset',
+    label: 'Preset Layout',
+    description: 'Uses manually specified node positions from the data, allowing for custom or saved layouts.'
+  }
+]
+
+// Enhanced Layout Selector Component with Tooltips
+interface LayoutSelectorProps {
+  currentLayout: string
+  onLayoutChange: (layoutName: string) => void
+  size?: 'sm' | 'md'
+  width?: string
+}
+
+const LayoutSelector: React.FC<LayoutSelectorProps> = ({
+  currentLayout,
+  onLayoutChange,
+  size = 'sm',
+  width = '280px' // Increased from 180px to accommodate longer layout names
+}) => {
+  const borderColor = useColorModeValue('gray.200', 'gray.600')
+  const hoverBg = useColorModeValue('gray.50', 'gray.700')
+
+  const currentLayoutOption = LAYOUT_OPTIONS.find(option => option.value === currentLayout)
+
+  return (
+    <Menu>
+      <Tooltip
+        label={currentLayoutOption?.description || 'Select a layout algorithm'}
+        placement="bottom"
+        hasArrow
+        openDelay={500}
+      >
+        <MenuButton
+          as={Button}
+          rightIcon={<ChevronDownIcon />}
+          size={size}
+          width={width}
+          minWidth={width} // Ensure minimum width is maintained
+          variant="outline"
+          textAlign="left"
+          justifyContent="space-between"
+          fontWeight="normal"
+          whiteSpace="nowrap" // Prevent text wrapping in button
+          overflow="hidden" // Hide overflow
+          textOverflow="ellipsis" // Show ellipsis for very long text
+        >
+          {currentLayoutOption?.label || 'Select Layout'}
+        </MenuButton>
+      </Tooltip>
+      <MenuList
+        minW={{ base: "280px", md: "320px" }} // Responsive minimum width
+        maxW={{ base: "90vw", md: "500px" }} // Responsive maximum width
+        zIndex={1500}
+        maxH="400px" // Add max height to prevent very tall dropdowns
+        overflowY="auto" // Allow scrolling if needed
+      >
+        {LAYOUT_OPTIONS.map((option) => (
+          <Tooltip
+            key={option.value}
+            label={option.description}
+            placement="left"
+            hasArrow
+            openDelay={300}
+          >
+            <MenuItem
+              onClick={() => onLayoutChange(option.value)}
+              bg={currentLayout === option.value ? hoverBg : 'transparent'}
+              fontWeight={currentLayout === option.value ? 'semibold' : 'normal'}
+              _hover={{ bg: hoverBg }}
+              minH="60px" // Ensure adequate height for two-line content
+              py={3} // Add vertical padding
+            >
+              <VStack align="start" spacing={1} w="100%">
+                <Text fontSize="sm" fontWeight="medium" whiteSpace="normal">
+                  {option.label}
+                </Text>
+                <Text fontSize="xs" color="gray.500" noOfLines={3} whiteSpace="normal">
+                  {option.description}
+                </Text>
+              </VStack>
+            </MenuItem>
+          </Tooltip>
+        ))}
+      </MenuList>
+    </Menu>
+  )
 }
 
 // Enhanced Group interface
@@ -392,7 +530,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }))
 
     // Re-run layout
-    setTimeout(() => runLayout(), 100)
+    setTimeout(() => runLayout(currentLayout), 100)
     
     // Note: Users can now manually use Center & Fit or Reset View to reposition
   }
@@ -790,7 +928,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       // Run initial layout
       setTimeout(() => {
         console.log('Starting layout with:', currentLayout)
-        runLayout()
+        runLayout(currentLayout)
         setNodeCount(cy.nodes().length)
         setEdgeCount(cy.edges().length)
         console.log('Layout and counts set')
@@ -888,8 +1026,178 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
   }
 
+  // Custom hierarchical tree layout algorithm
+  const createHierarchicalTreeLayout = (cy: Core, rootNodeId: string) => {
+    console.log('Creating hierarchical tree layout with root:', rootNodeId)
+
+    // Debug: Log graph structure
+    const graphNodes = cy.nodes().filter(n => n.data('type') !== 'Group')
+    const allEdges = cy.edges()
+    console.log('Graph structure:', {
+      totalNodes: graphNodes.length,
+      totalEdges: allEdges.length,
+      nodeIds: graphNodes.map(n => n.id()),
+      edges: allEdges.map(e => ({ id: e.id(), source: e.source().id(), target: e.target().id() }))
+    })
+
+    // Build hierarchy levels using BFS
+    const visited = new Set<string>()
+    const levels: string[][] = []
+    const queue: { nodeId: string, level: number }[] = [{ nodeId: rootNodeId, level: 0 }]
+
+    visited.add(rootNodeId)
+
+    while (queue.length > 0) {
+      const { nodeId, level } = queue.shift()!
+
+      // Initialize level array if needed
+      if (!levels[level]) {
+        levels[level] = []
+      }
+      levels[level].push(nodeId)
+
+      console.log(`Processing node ${nodeId} at level ${level}`)
+
+      // Find connected nodes that haven't been visited
+      const node = cy.nodes(`[id = "${nodeId}"]`)
+      if (node.length > 0) {
+        // Get all connected edges for this node
+        const connectedEdges = node.connectedEdges()
+        console.log(`Node ${nodeId} has ${connectedEdges.length} connected edges`)
+
+        // Debug: Log edge details
+        connectedEdges.forEach((edge, index) => {
+          console.log(`  Edge ${index}: ${edge.id()}, source: ${edge.source().id()}, target: ${edge.target().id()}, type: ${edge.data('type')}`)
+        })
+
+        // Get neighbors through edges (both incoming and outgoing)
+        const neighbors = new Set<string>()
+        connectedEdges.forEach(edge => {
+          const sourceId = edge.source().id()
+          const targetId = edge.target().id()
+
+          console.log(`  Checking edge: ${sourceId} -> ${targetId}`)
+
+          // Add the other node (not the current one)
+          if (sourceId === nodeId && targetId !== nodeId) {
+            const targetNode = cy.nodes(`[id = "${targetId}"]`)
+            console.log(`    Found outgoing neighbor: ${targetId}, exists: ${targetNode.length > 0}, type: ${targetNode.data('type')}`)
+            if (targetNode.length > 0 && targetNode.data('type') !== 'Group') {
+              neighbors.add(targetId)
+              console.log(`    Added neighbor: ${targetId}`)
+            }
+          } else if (targetId === nodeId && sourceId !== nodeId) {
+            const sourceNode = cy.nodes(`[id = "${sourceId}"]`)
+            console.log(`    Found incoming neighbor: ${sourceId}, exists: ${sourceNode.length > 0}, type: ${sourceNode.data('type')}`)
+            if (sourceNode.length > 0 && sourceNode.data('type') !== 'Group') {
+              neighbors.add(sourceId)
+              console.log(`    Added neighbor: ${sourceId}`)
+            }
+          }
+        })
+
+        console.log(`Node ${nodeId} has ${neighbors.size} valid neighbors:`, Array.from(neighbors))
+
+        neighbors.forEach(neighborId => {
+          if (!visited.has(neighborId)) {
+            console.log(`Adding neighbor ${neighborId} to level ${level + 1}`)
+            visited.add(neighborId)
+            queue.push({ nodeId: neighborId, level: level + 1 })
+          } else {
+            console.log(`Neighbor ${neighborId} already visited, skipping`)
+          }
+        })
+      } else {
+        console.log(`Node ${nodeId} not found in graph`)
+      }
+    }
+
+    console.log('Hierarchy levels built:', levels.map((level, i) => `Level ${i}: ${level.length} nodes`))
+
+    // Calculate positions
+    const container = cy.container()
+    const containerWidth = container ? container.clientWidth : 800
+    const containerHeight = container ? container.clientHeight : 600
+
+    const levelHeight = Math.max(120, containerHeight / Math.max(levels.length, 3))
+    const positions: { [nodeId: string]: { x: number, y: number } } = {}
+
+    levels.forEach((levelNodes, levelIndex) => {
+      const y = levelIndex * levelHeight + 100 // Start from top with padding
+      const levelWidth = containerWidth - 100 // Leave padding on sides
+      const nodeSpacing = levelNodes.length > 1 ? levelWidth / (levelNodes.length - 1) : 0
+
+      levelNodes.forEach((nodeId, nodeIndex) => {
+        let x: number
+        if (levelNodes.length === 1) {
+          x = containerWidth / 2 // Center single nodes
+        } else {
+          x = 50 + (nodeIndex * nodeSpacing) // Distribute across width
+        }
+
+        positions[nodeId] = { x, y }
+      })
+    })
+
+    // Handle any unconnected nodes (place them at the bottom)
+    const allNodes = cy.nodes().filter(n => n.data('type') !== 'Group')
+    const unconnectedNodes = allNodes.filter(node => !visited.has(node.id()))
+
+    if (unconnectedNodes.length > 0) {
+      const bottomY = levels.length * levelHeight + 150
+      const bottomWidth = containerWidth - 100
+      const bottomSpacing = unconnectedNodes.length > 1 ? bottomWidth / (unconnectedNodes.length - 1) : 0
+
+      unconnectedNodes.forEach((node, index) => {
+        let x: number
+        if (unconnectedNodes.length === 1) {
+          x = containerWidth / 2
+        } else {
+          x = 50 + (index * bottomSpacing)
+        }
+        positions[node.id()] = { x, y: bottomY }
+      })
+    }
+
+    console.log('Calculated positions for', Object.keys(positions).length, 'nodes')
+    return positions
+  }
+
+  // Helper function to determine the best root node for hierarchical layouts
+  const determineRootNode = (cy: Core): string | undefined => {
+    // If exactly one node is selected, use it as root
+    if (selectedNodes.length === 1) {
+      const selectedNodeId = selectedNodes[0]
+      const selectedNode = cy.nodes(`[id = "${selectedNodeId}"]`)
+      if (selectedNode.length > 0) {
+        console.log('Using selected node as root:', selectedNodeId)
+        return selectedNodeId
+      }
+    }
+
+    // Auto-select root based on node characteristics
+    const visibleNodes = cy.nodes(':visible').filter(node => node.data('type') !== 'Group')
+    if (visibleNodes.length === 0) return undefined
+
+    // Strategy 1: Node with highest degree (most connections)
+    let bestNode = visibleNodes[0]
+    let maxDegree = bestNode.degree()
+
+    visibleNodes.forEach(node => {
+      const degree = node.degree()
+      if (degree > maxDegree) {
+        maxDegree = degree
+        bestNode = node
+      }
+    })
+
+    const rootId = bestNode.id()
+    console.log('Auto-selected root node:', rootId, 'with degree:', maxDegree)
+    return rootId
+  }
+
   // Enhanced layout with smooth transitions
-  const runLayout = () => {
+  const runLayout = (layoutName?: string) => {
     if (!cyRef.current) {
       console.log('No cytoscape instance available for layout')
       return
@@ -901,7 +1209,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
 
     const cy = cyRef.current
-    console.log('Running layout:', currentLayout, 'on', cy.nodes().length, 'nodes')
+    const activeLayout = layoutName || currentLayout
+    console.log('Running layout:', activeLayout, 'on', cy.nodes().length, 'nodes')
     
     setLayoutRunning(true)
     
@@ -927,6 +1236,89 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         animationDuration: 500,
         animationEasing: 'ease-out'
       },
+      random: {
+        name: 'random',
+        fit: true,
+        padding: 30,
+        animate: true,
+        animationDuration: 500,
+        animationEasing: 'ease-out'
+      },
+      circle: {
+        name: 'circle',
+        // Calculate radius dynamically based on container and node count
+        radius: (() => {
+          const container = cy.container()
+          if (container && container.clientWidth > 0) {
+            const containerWidth = container.clientWidth
+            const containerHeight = container.clientHeight
+            const minDimension = Math.min(containerWidth, containerHeight)
+            const calculatedRadius = Math.max(100, Math.min(300, minDimension / 4))
+            console.log('Circle layout radius calculation:', {
+              containerWidth,
+              containerHeight,
+              minDimension,
+              calculatedRadius,
+              nodeCount: visibleNodes.length
+            })
+            return calculatedRadius
+          }
+          // Fallback radius based on number of nodes
+          const fallbackRadius = Math.max(100, Math.min(300, visibleNodes.length * 15))
+          console.log('Circle layout using fallback radius:', fallbackRadius, 'for', visibleNodes.length, 'nodes')
+          return fallbackRadius
+        })(),
+        fit: true,
+        padding: 30,
+        animate: true,
+        animationDuration: 500,
+        animationEasing: 'ease-out'
+      },
+      concentric: {
+        name: 'concentric',
+        concentric: (node: any) => node.degree(),
+        levelWidth: () => 2,
+        padding: 30,
+        animate: true,
+        animationDuration: 500,
+        animationEasing: 'ease-out'
+      },
+      breadthfirst: {
+        name: 'breadthfirst',
+        directed: false,
+        roots: (() => {
+          if (activeLayout === 'breadthfirst') {
+            const rootNodeId = determineRootNode(cy)
+            if (rootNodeId) {
+              // Return the actual node collection, not just the ID
+              return cy.nodes(`[id = "${rootNodeId}"]`)
+            }
+          }
+          return undefined
+        })(),
+        padding: 30,
+        spacingFactor: 1.75,
+        animate: true,
+        animationDuration: 500,
+        animationEasing: 'ease-out'
+      },
+      'hierarchical-tree': {
+        name: 'preset',
+        positions: (() => {
+          if (activeLayout === 'hierarchical-tree') {
+            const rootNodeId = determineRootNode(cy)
+            if (rootNodeId) {
+              return createHierarchicalTreeLayout(cy, rootNodeId)
+            }
+          }
+          return undefined
+        })(),
+        fit: true,
+        padding: 50,
+        animate: true,
+        animationDuration: 500,
+        animationEasing: 'ease-out'
+      },
       cose: {
         name: 'cose',
         idealEdgeLength: 100,
@@ -948,38 +1340,32 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         animationDuration: 500,
         animationEasing: 'ease-out'
       },
-      circle: {
-        name: 'circle',
-        radius: Math.min(400, cy.container()?.clientWidth ? cy.container()!.clientWidth / 3 : 300),
+      preset: {
+        name: 'preset',
+        positions: undefined, // Will use node positions from data
+        fit: true,
         padding: 30,
-        animate: true,
-        animationDuration: 500,
-        animationEasing: 'ease-out'
-      },
-      concentric: {
-        name: 'concentric',
-        concentric: (node: any) => node.degree(),
-        levelWidth: () => 2,
-        padding: 30,
-        animate: true,
-        animationDuration: 500,
-        animationEasing: 'ease-out'
-      },
-      breadthfirst: {
-        name: 'breadthfirst',
-        directed: false,
-        roots: undefined,
-        padding: 30,
-        spacingFactor: 1.75,
         animate: true,
         animationDuration: 500,
         animationEasing: 'ease-out'
       }
     }
 
-    const config = layoutConfigs[currentLayout] || layoutConfigs.grid
-    console.log('Using layout config:', config)
-    
+    const config = layoutConfigs[activeLayout] || layoutConfigs.grid
+    console.log('Using layout config for', activeLayout + ':', config)
+
+    // Enhanced debugging for circle layout
+    if (activeLayout === 'circle') {
+      const container = cy.container()
+      console.log('Circle layout debugging:', {
+        containerExists: !!container,
+        containerWidth: container?.clientWidth,
+        containerHeight: container?.clientHeight,
+        calculatedRadius: config.radius,
+        visibleNodesCount: visibleNodes.length
+      })
+    }
+
     // Simplified layout without nested animations to prevent infinite loops
     console.log('Starting layout with group preservation')
     
@@ -989,8 +1375,56 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       
       // Use one-time event listeners to avoid multiple callbacks and cleanup properly
       layout.one('layoutstop', () => {
-        console.log('Layout completed, restoring group state')
-        
+        console.log(`${activeLayout} layout completed successfully, restoring group state`)
+
+        // Special handling for hierarchical layouts - highlight root node
+        if ((activeLayout === 'breadthfirst' && config.roots && config.roots.length > 0) ||
+            (activeLayout === 'hierarchical-tree')) {
+          let rootNode: any = null
+          let rootNodeId: string = ''
+
+          if (activeLayout === 'breadthfirst' && config.roots) {
+            rootNode = config.roots
+            rootNodeId = rootNode.id()
+          } else if (activeLayout === 'hierarchical-tree') {
+            rootNodeId = determineRootNode(cy) || ''
+            if (rootNodeId) {
+              rootNode = cy.nodes(`[id = "${rootNodeId}"]`)
+            }
+          }
+
+          if (rootNode && rootNode.length > 0) {
+            // Temporarily highlight the root node
+            rootNode.style({
+              'border-width': '4px',
+              'border-color': '#3182ce',
+              'border-style': 'solid'
+            })
+
+            // Remove highlight after 3 seconds
+            setTimeout(() => {
+              if (rootNode.length > 0) {
+                rootNode.style({
+                  'border-width': '2px',
+                  'border-color': '#e2e8f0',
+                  'border-style': 'solid'
+                })
+              }
+            }, 3000)
+
+            console.log('Highlighted root node:', rootNodeId)
+          }
+        }
+
+        // Verify layout results for debugging
+        if (activeLayout === 'circle') {
+          const nodePositions = visibleNodes.map(node => ({
+            id: node.id(),
+            position: node.position()
+          }))
+          console.log('Circle layout node positions:', nodePositions.slice(0, 3)) // Log first 3 positions
+        }
+
         try {
           // Ensure group visibility state is maintained after layout
           Object.entries(groups).forEach(([groupId, groupData]) => {
@@ -1004,9 +1438,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               })
             }
           })
-          
+
           console.log('Group state preserved successfully')
-          
+
         } catch (error) {
           console.error('Error preserving group state:', error)
         } finally {
@@ -1015,7 +1449,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       })
       
       layout.one('layouterror', (error: any) => {
-        console.error('Layout error:', error)
+        console.error(`${activeLayout} layout error:`, error)
+        console.error('Layout config that failed:', config)
         setLayoutRunning(false)
       })
       
@@ -1028,25 +1463,52 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
   // Change layout with smooth transition
   const changeLayout = (layoutName: string) => {
+    console.log('changeLayout called with:', layoutName)
+
     if (layoutRunning) {
       console.log('Layout currently running, deferring layout change...')
       setTimeout(() => changeLayout(layoutName), 100)
       return
     }
 
+    console.log('Setting current layout to:', layoutName)
     setCurrentLayout(layoutName)
-    
+
     setTimeout(() => {
-      runLayout()
-      
-      toast({
-        title: 'Layout Changed',
-        description: `Switched to ${layoutName} layout`,
-        status: 'info',
-        duration: 2000,
-        isClosable: true
-      })
-      
+      console.log('About to run layout:', layoutName)
+      runLayout(layoutName)
+
+      // Get human-readable layout name for toast
+      const layoutOption = LAYOUT_OPTIONS.find(option => option.value === layoutName)
+      const displayName = layoutOption?.label || layoutName
+
+      // Special handling for hierarchical layouts
+      if (layoutName === 'breadthfirst' || layoutName === 'hierarchical-tree') {
+        let description = `Switched to ${displayName}`
+
+        if (selectedNodes.length === 1) {
+          description += ` using selected node as root`
+        } else {
+          description += ` using auto-selected root node`
+        }
+
+        toast({
+          title: 'Hierarchical Layout Applied',
+          description: description,
+          status: 'info',
+          duration: 3000,
+          isClosable: true
+        })
+      } else {
+        toast({
+          title: 'Layout Changed',
+          description: `Switched to ${displayName}`,
+          status: 'info',
+          duration: 2000,
+          isClosable: true
+        })
+      }
+
       // Note: Users can now manually use Center & Fit or Reset View to apply layout and reposition
     }, 100)
   }
@@ -1071,18 +1533,45 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         
         // Apply the current layout to reorganize the graph
         console.log('Applying current layout:', currentLayout)
-        const layoutConfig = {
-          name: currentLayout,
-          fit: true,
-          padding: 50,
-          animate: false, // No animation for immediate positioning
-          stop: () => {
+        let layoutConfig: any
+
+        if (currentLayout === 'hierarchical-tree') {
+          // Handle custom hierarchical tree layout
+          const rootNodeId = determineRootNode(cyRef.current)
+          if (rootNodeId) {
+            const positions = createHierarchicalTreeLayout(cyRef.current, rootNodeId)
+            layoutConfig = {
+              name: 'preset',
+              positions: positions,
+              fit: true,
+              padding: 50,
+              animate: false
+            }
+          } else {
+            // Fallback to grid if no root found
+            layoutConfig = {
+              name: 'grid',
+              fit: true,
+              padding: 50,
+              animate: false
+            }
+          }
+        } else {
+          layoutConfig = {
+            name: currentLayout,
+            fit: true,
+            padding: 50,
+            animate: false
+          }
+        }
+
+        layoutConfig.stop = () => {
             // After layout completes, do the fitting
             setTimeout(() => {
               if (!cyRef.current) return
-              
+
               console.log('Layout completed, now fitting to view...')
-              
+
               // Get all elements (should all be visible now)
               const allElements = cyRef.current.elements()
               console.log('Elements to fit:', {
@@ -1090,17 +1579,17 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 edges: cyRef.current.edges().length,
                 total: allElements.length
               })
-              
+
               // Reset zoom and pan first
               cyRef.current.zoom(1)
               cyRef.current.pan({ x: 0, y: 0 })
-              
+
               // Get container dimensions for zoom calculation
               const container = cyRef.current.container()
               if (container) {
                 const containerRect = container.getBoundingClientRect()
                 const nodeCount = cyRef.current.nodes().length
-                
+
                 console.log('Container bounds check:', {
                   containerWidth: containerRect.width,
                   containerHeight: containerRect.height,
@@ -1108,12 +1597,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                   viewportHeight: window.innerHeight,
                   nodeCount: nodeCount
                 })
-                
+
                 // Ensure container is actually visible in viewport
                 const containerTop = containerRect.top
                 const containerBottom = containerRect.bottom
                 const viewportHeight = window.innerHeight
-                
+
                 if (containerBottom > viewportHeight) {
                   console.warn('Container extends beyond viewport:', {
                     containerBottom,
@@ -1121,47 +1610,50 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                     overflow: containerBottom - viewportHeight
                   })
                 }
-                
+
                 // Calculate zoom based on visible container area only
                 const effectiveHeight = Math.min(containerRect.height, viewportHeight - containerTop - 20)
                 const effectiveWidth = containerRect.width
-                
+
                 // Calculate a conservative zoom based on effective dimensions
                 const baseZoom = Math.min(
                   effectiveWidth / (nodeCount * 120),   // More conservative width calculation
                   effectiveHeight / (nodeCount * 120),  // More conservative height calculation
                   1.0 // Lower maximum zoom
                 )
-                
+
                 const finalZoom = Math.max(0.3, Math.min(1.0, baseZoom))
                 console.log('Setting calculated zoom:', finalZoom, 'based on effective dimensions:', {
-                  effectiveWidth, 
+                  effectiveWidth,
                   effectiveHeight,
                   nodeCount
                 })
                 cyRef.current.zoom(finalZoom)
               }
-              
+
               // Fit with conservative padding to visible area
               cyRef.current.fit(allElements, 60)
-              
+
               // Center the graph
               cyRef.current.center()
-              
+
               const finalZoom = cyRef.current.zoom()
               console.log('Graph centered and fitted. Final zoom level:', finalZoom)
-              
+
+              // Get human-readable layout name for toast
+              const layoutOption = LAYOUT_OPTIONS.find(option => option.value === currentLayout)
+              const displayName = layoutOption?.label || currentLayout
+
               toast({
                 title: 'Graph Centered',
-                description: `Applied ${currentLayout} layout and fitted ${cyRef.current.nodes().length} nodes (zoom: ${finalZoom.toFixed(2)}x)`,
+                description: `Applied ${displayName} and fitted ${cyRef.current.nodes().length} nodes (zoom: ${finalZoom.toFixed(2)}x)`,
                 status: 'success',
                 duration: 2000,
                 isClosable: true
               })
             }, 100)
           }
-        }
-        
+
         // Run the layout
         cyRef.current.layout(layoutConfig).run()
         
@@ -1221,22 +1713,49 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       
       // Apply the current layout
       console.log('Applying layout for reset:', currentLayout)
-      const layoutConfig = {
-        name: currentLayout,
-        fit: true,
-        padding: 100,
-        animate: false,
-        stop: () => {
+      let layoutConfig: any
+
+      if (currentLayout === 'hierarchical-tree') {
+        // Handle custom hierarchical tree layout
+        const rootNodeId = determineRootNode(cyRef.current)
+        if (rootNodeId) {
+          const positions = createHierarchicalTreeLayout(cyRef.current, rootNodeId)
+          layoutConfig = {
+            name: 'preset',
+            positions: positions,
+            fit: true,
+            padding: 100,
+            animate: false
+          }
+        } else {
+          // Fallback to grid if no root found
+          layoutConfig = {
+            name: 'grid',
+            fit: true,
+            padding: 100,
+            animate: false
+          }
+        }
+      } else {
+        layoutConfig = {
+          name: currentLayout,
+          fit: true,
+          padding: 100,
+          animate: false
+        }
+      }
+
+      layoutConfig.stop = () => {
           // After layout, ensure proper fitting with viewport constraints
           setTimeout(() => {
             if (!cyRef.current) return
-            
+
             const container = cyRef.current.container()
             if (container) {
               const containerRect = container.getBoundingClientRect()
               const viewportHeight = window.innerHeight
               const containerTop = containerRect.top
-              
+
               console.log('Reset view container check:', {
                 containerHeight: containerRect.height,
                 viewportHeight,
@@ -1244,14 +1763,14 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 containerBottom: containerRect.bottom,
                 isFullyVisible: containerRect.bottom <= viewportHeight
               })
-              
+
               // Calculate effective viewing area
               const effectiveHeight = Math.min(containerRect.height, viewportHeight - containerTop - 20)
-              
+
               // Reset zoom and pan first
               cyRef.current.zoom(1)
               cyRef.current.pan({ x: 0, y: 0 })
-              
+
               // Apply conservative zoom based on effective area
               const nodeCount = cyRef.current.nodes().length
               const conservativeZoom = Math.min(
@@ -1259,14 +1778,14 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 effectiveHeight / (nodeCount * 150),
                 0.8 // Very conservative maximum
               )
-              
+
               const finalZoom = Math.max(0.3, conservativeZoom)
               cyRef.current.zoom(finalZoom)
-              
+
               // Fit to visible area with generous padding
               cyRef.current.fit(cyRef.current.elements(), 80)
               cyRef.current.center()
-              
+
               console.log('Reset complete. Final zoom:', finalZoom, 'Effective height:', effectiveHeight)
             } else {
               // Fallback without container info
@@ -1274,17 +1793,20 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               cyRef.current.center()
               cyRef.current.fit(cyRef.current.elements(), 100)
             }
-            
+
+            // Get human-readable layout name for toast
+            const layoutOption = LAYOUT_OPTIONS.find(option => option.value === currentLayout)
+            const displayName = layoutOption?.label || currentLayout
+
             toast({
               title: 'View Reset Complete',
-              description: `Applied ${currentLayout} layout and reset view for ${cyRef.current.nodes().length} nodes`,
+              description: `Applied ${displayName} and reset view for ${cyRef.current.nodes().length} nodes`,
               status: 'info',
               duration: 2000,
               isClosable: true
             })
           }, 100)
         }
-      }
       
       cyRef.current.layout(layoutConfig).run()
       
@@ -1386,7 +1908,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     })
 
     setGroups(newGroups)
-    runLayout()
+    runLayout(currentLayout)
 
     toast({
       title: 'Grouped by Type',
@@ -1454,7 +1976,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         return newGroups
       })
 
-      runLayout()
+      runLayout(currentLayout)
 
       toast({
         title: 'Group Removed',
@@ -1578,7 +2100,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       }
     }))
 
-    runLayout()
+    runLayout(currentLayout)
 
     toast({
       title: 'Group Created',
@@ -1694,8 +2216,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     setSelectedNodes([])
     setGroupName('')
     onGroupModalClose()
-    
-    runLayout()
+
+    runLayout(currentLayout)
 
     toast({
       title: 'Custom Group Created',
@@ -1778,7 +2300,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     
     // Force a re-render to update the Available Types display
     setTimeout(() => {
-      runLayout()
+      runLayout(currentLayout)
     }, 50)
 
     if (ungroupedCount > 0) {
@@ -1835,7 +2357,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     
     // Force a re-render to update the Available Types display
     setTimeout(() => {
-      runLayout()
+      runLayout(currentLayout)
     }, 50)
 
     toast({
@@ -1996,18 +2518,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           {/* Primary controls */}
           <HStack justify="space-between" align="center">
             <HStack spacing={isMobile ? 2 : 3}>
-              <Select 
+              <LayoutSelector
+                currentLayout={currentLayout}
+                onLayoutChange={changeLayout}
                 size={isMobile ? "md" : "sm"}
-                width={isMobile ? "160px" : "140px"}
-                value={currentLayout}
-                onChange={(e) => changeLayout(e.target.value)}
-              >
-                <option value="grid">Grid Layout</option>
-                <option value="cose">Cose Layout</option>
-                <option value="circle">Circle Layout</option>
-                <option value="concentric">Concentric</option>
-                <option value="breadthfirst">Breadth-First</option>
-              </Select>
+                width={isMobile ? "250px" : "280px"}
+              />
 
               <Tooltip label="Toggle grouping controls">
                 <IconButton

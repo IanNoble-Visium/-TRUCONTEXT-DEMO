@@ -232,7 +232,7 @@ The application features a comprehensive SVG icon system that provides consisten
 
 ### Graph View (Default)
 - **Interactive Network Topology**: Primary visualization using Cytoscape.js
-- **Multiple Layout Algorithms**: Grid, Circle, Concentric, Breadth First, and Cose layouts
+- **Advanced Layout Algorithms**: 8 different layout options including the new Multi-Level Hierarchical Tree
 - **Node Grouping**: Auto-group by type or create custom groups
 - **Dynamic Icons**: SVG-based node icons with type-based styling
 - **Real-time Interactions**: Click selection, hover tooltips, and smooth animations
@@ -302,11 +302,143 @@ The application features a comprehensive SVG icon system that provides consisten
 ## 🎛️ Graph Controls
 
 ### Layout Options
-- **Grid Layout**: Organized grid arrangement
-- **Circle Layout**: Circular node arrangement
-- **Concentric Layout**: Concentric circles based on node degree
-- **Breadth First Layout**: Hierarchical tree-like structure
-- **Cose Layout**: Force-directed physics simulation
+
+The TruContext Demo offers 8 sophisticated layout algorithms, each optimized for different types of graph analysis and visualization needs:
+
+![Layout Options](public/images/layout-grid.png)
+*Grid Layout - Organized square grid arrangement*
+
+![Layout Options](public/images/layout-circle.png)
+*Circle Layout - Nodes evenly spaced around a circle*
+
+![Layout Options](public/images/layout-concentric.png)
+*Concentric Layout - Concentric circles based on node properties*
+
+![Layout Options](public/images/layout-hierarchicl_breath-first.png)
+*Hierarchical (Breadth-First) Layout - Tree-like hierarchical structure*
+
+![Layout Options](public/images/layout-multi-level_hierarchical_tree.png)
+*Multi-Level Hierarchical Tree - Advanced multi-level tree hierarchy*
+
+![Layout Options](public/images/layout-force-directed_cose.png)
+*Force-Directed (CoSE) Layout - Physics-based organic positioning*
+
+![Layout Options](public/images/layout-random.png)
+*Random Layout - Random positioning for initial views*
+
+#### Available Layout Algorithms
+
+1. **Grid Layout**
+   - Arranges nodes in a regular, square grid
+   - Simple and useful for quickly displaying all nodes
+   - Best for: Structured data inspection, equal node importance
+
+2. **Random Layout**
+   - Places nodes at random positions within the viewport
+   - Useful for initial, unstructured views
+   - Best for: Starting point before applying other layouts
+
+3. **Circle Layout**
+   - Positions nodes evenly spaced around a circle
+   - Highlights groups or cycles in the data
+   - Best for: Showing relationships, small to medium datasets
+
+4. **Concentric Layout**
+   - Arranges nodes in concentric circles based on node properties (e.g., degree)
+   - Often used to show hierarchies or importance levels
+   - Best for: Highlighting node importance, centrality analysis
+
+5. **Hierarchical (Breadth-First) Layout**
+   - Creates hierarchical layers from a root node using breadth-first traversal
+   - Select a single node first to use as root, or the system will auto-select the most connected node
+   - Best for: Tree structures, organizational charts, dependency analysis
+
+6. **Multi-Level Hierarchical Tree** ⭐ *New Feature*
+   - Creates a true multi-level tree hierarchy with proper vertical layering and horizontal spacing
+   - Advanced breadth-first search (BFS) algorithm builds multiple hierarchy levels
+   - Select a root node or the system will auto-select one based on highest degree
+   - Best for: Complex hierarchical data, multi-level organizational structures, detailed tree analysis
+
+7. **Force-Directed (CoSE) Layout**
+   - Uses a physics simulation to position nodes where edges act like springs and nodes repel each other
+   - Good for organic, visually balanced layouts
+   - Best for: General-purpose visualization, relationship discovery, natural clustering
+
+8. **Preset Layout**
+   - Uses manually specified node positions from the data
+   - Allows for custom or saved layouts
+   - Best for: Maintaining specific positioning, custom arrangements
+
+### Multi-Level Hierarchical Tree Layout - Detailed Features
+
+The Multi-Level Hierarchical Tree layout is an advanced visualization algorithm that creates true hierarchical structures with multiple levels of depth. This layout is particularly powerful for analyzing complex organizational structures, dependency trees, and multi-level relationships.
+
+#### Key Features
+
+**Root Node Selection**
+- **Manual Selection**: Click any node to select it as the hierarchy root before applying the layout
+- **Auto-Selection**: If no node is selected, the system automatically chooses the node with the highest degree (most connections)
+- **Visual Feedback**: The selected root node is highlighted with a distinct border color for easy identification
+
+**Multi-Level Hierarchy Building**
+- **Breadth-First Search (BFS) Algorithm**: Uses an enhanced BFS traversal to build hierarchy levels
+- **Level Distribution**: Nodes are organized into distinct levels (Level 0, Level 1, Level 2, etc.)
+- **Connected Node Discovery**: Advanced edge traversal ensures all connected nodes are properly discovered and placed
+- **Group Filtering**: Automatically excludes group nodes from hierarchy building to maintain clean structure
+
+**Visual Representation**
+- **Distinct Vertical Layers**: Each hierarchy level is positioned at a different vertical position
+- **Horizontal Spacing**: Nodes within each level are evenly distributed horizontally
+- **Adaptive Positioning**: Layout automatically adjusts to container size and node count
+- **Level Separation**: Configurable spacing between levels for optimal readability
+
+**Technical Implementation**
+- **Enhanced BFS Traversal**: Fixed algorithm that properly discovers neighbors through edge connections
+- **Edge Validation**: Validates both incoming and outgoing edges for comprehensive neighbor discovery
+- **Debugging Support**: Comprehensive console logging for troubleshooting hierarchy building
+- **Performance Optimized**: Efficient traversal algorithm suitable for large graphs
+
+#### Usage Instructions
+
+1. **Select Root Node** (Optional)
+   - Click on any node in the graph to select it as the hierarchy root
+   - The selected node will be highlighted with a colored border
+   - If no node is selected, the system will auto-select the most connected node
+
+2. **Apply Layout**
+   - Open the layout selector dropdown
+   - Choose "Multi-Level Hierarchical Tree" from the options
+   - The layout will automatically build the hierarchy starting from the root node
+
+3. **Interpret Results**
+   - **Level 0**: Contains only the root node
+   - **Level 1**: Contains nodes directly connected to the root
+   - **Level 2**: Contains nodes connected to Level 1 nodes
+   - **Subsequent Levels**: Continue the pattern based on graph connectivity
+
+4. **Layout Controls**
+   - Use "Center & Fit" to optimize the view of the hierarchy
+   - Zoom in/out to examine specific levels in detail
+   - Switch to other layouts for different perspectives of the same data
+
+#### When to Use This Layout
+
+- **Organizational Charts**: Visualize company hierarchies, reporting structures
+- **Dependency Analysis**: Show software dependencies, system architectures
+- **Family Trees**: Display genealogical relationships and lineage
+- **Network Topologies**: Analyze network infrastructure and routing paths
+- **Decision Trees**: Visualize decision-making processes and outcomes
+- **Taxonomies**: Display classification systems and category hierarchies
+
+#### Technical Notes
+
+The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved issues with the BFS algorithm not properly traversing connected nodes. The enhanced implementation now correctly:
+
+- Discovers all connected nodes through manual edge traversal
+- Builds multiple hierarchy levels instead of just Level 0
+- Provides detailed debugging output for troubleshooting
+- Handles both directed and undirected graph structures
+- Maintains proper node positioning across different screen sizes
 
 ### Grouping Features
 
@@ -403,11 +535,27 @@ The application features a comprehensive SVG icon system that provides consisten
 ### View-Specific Features
 
 #### Graph View
-1. **Layout Selection**: Choose optimal layout from dropdown (Grid, Circle, Cose, etc.)
-2. **Node Interaction**: Click nodes to select, hover for details
-3. **Grouping by Type**: Click "Group by Type" for automatic organization
-4. **Custom Groups**: Select nodes → "Group Selected" → name group
-5. **Group Navigation**: Click group nodes to show/hide contents
+1. **Layout Selection**: Choose optimal layout from dropdown with 8 available options
+   - **Grid**: Structured analysis and equal node importance
+   - **Circle**: Relationship overview and small datasets
+   - **Concentric**: Node importance and centrality analysis
+   - **Hierarchical (Breadth-First)**: Basic tree structures
+   - **Multi-Level Hierarchical Tree**: Advanced multi-level hierarchies ⭐
+   - **Force-Directed (CoSE)**: General-purpose organic layouts
+   - **Random**: Initial unstructured views
+   - **Preset**: Custom positioning from data
+
+2. **Hierarchical Tree Layout Usage**:
+   - **Step 1**: Click any node to select it as hierarchy root (optional)
+   - **Step 2**: Choose "Multi-Level Hierarchical Tree" from layout dropdown
+   - **Step 3**: View the multi-level hierarchy with distinct vertical layers
+   - **Step 4**: Use "Center & Fit" to optimize the hierarchy view
+   - **Auto-Selection**: System automatically selects highest-degree node if none selected
+
+3. **Node Interaction**: Click nodes to select, hover for details
+4. **Grouping by Type**: Click "Group by Type" for automatic organization
+5. **Custom Groups**: Select nodes → "Group Selected" → name group
+6. **Group Navigation**: Click group nodes to show/hide contents
 
 #### Table View
 1. **Data Sorting**: Click column headers to sort nodes/edges
@@ -431,11 +579,28 @@ The application features a comprehensive SVG icon system that provides consisten
 3. **Export Reports**: Download analysis results and metrics
 
 ### Pro Tips
-- **Graph View**: Use Grid layout for structured analysis, Circle for relationship overview
+
+#### Layout Selection Strategy
+- **Grid Layout**: Use for structured analysis and when all nodes have equal importance
+- **Circle Layout**: Perfect for relationship overview and small to medium datasets
+- **Concentric Layout**: Ideal for highlighting node importance and centrality analysis
+- **Hierarchical (Breadth-First)**: Good for basic tree structures and simple hierarchies
+- **Multi-Level Hierarchical Tree**: ⭐ Best for complex organizational structures, dependency trees, and detailed hierarchical analysis
+- **Force-Directed (CoSE)**: Excellent general-purpose layout for relationship discovery
+- **Random Layout**: Use as starting point before applying more structured layouts
+
+#### Hierarchical Tree Layout Tips
+- **Root Selection**: Choose nodes with high connectivity as roots for better hierarchy visualization
+- **Level Analysis**: Pay attention to the number of nodes at each level - balanced trees often indicate well-structured data
+- **Zoom Strategy**: Use zoom controls to focus on specific hierarchy levels for detailed analysis
+- **Comparison**: Switch between Breadth-First and Multi-Level Hierarchical Tree to compare hierarchy representations
+
+#### View-Specific Tips
 - **Table View**: Great for detailed data inspection and property comparison
 - **Timeline View**: Perfect for temporal analysis and event sequencing
 - **Cards View**: Best for browsing and detailed individual node examination
 - **Dashboard View**: Ideal for presentations and high-level data understanding
+- **Geographic Map**: Use when nodes have location data for spatial analysis
 - **View Switching**: Each view maintains your selections - switch freely for different perspectives
 
 ## 📱 Responsive Design & Mobile Support
@@ -631,7 +796,17 @@ TruContext is powered by Visium Technologies, a leader in graph analytics and cy
 
 ## 🌟 Recent Updates & Improvements
 
-### ✅ Unified SVG Icon System Across All Views (Latest)
+### ✅ Multi-Level Hierarchical Tree Layout Implementation (Latest)
+- **Advanced BFS Algorithm**: Implemented sophisticated breadth-first search traversal for building true multi-level hierarchies
+- **Root Node Selection**: Support for manual root node selection or automatic selection based on highest degree connectivity
+- **Multi-Level Visualization**: Creates distinct vertical layers (Level 0, Level 1, Level 2, etc.) with proper horizontal spacing
+- **Enhanced Edge Traversal**: Fixed BFS algorithm to properly discover connected nodes through manual edge inspection
+- **Visual Hierarchy Representation**: Nodes positioned in clear hierarchical structure with adaptive container sizing
+- **Debugging & Troubleshooting**: Comprehensive console logging for hierarchy building process and edge discovery
+- **Performance Optimized**: Efficient algorithm suitable for complex graphs with multiple hierarchy levels
+- **User-Friendly Interface**: Human-readable layout names and descriptive tooltips for better user experience
+
+### ✅ Unified SVG Icon System Across All Views
 - **Cross-View Icon Consistency**: SVG icons implemented in ALL 6 visualization views
 - **Table View Icons**: Dedicated Icon column with 24px SVG icons for type identification
 - **Cards View Icons**: SVG icons in card headers (24px) replacing emoji icons
