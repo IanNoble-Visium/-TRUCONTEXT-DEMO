@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react'
-import { 
-  Box, Alert, AlertIcon, Spinner, Text, VStack, HStack, 
-  Select, Button, Modal, ModalOverlay, ModalContent, ModalHeader, 
-  ModalCloseButton, ModalBody, ModalFooter, Input, FormControl, 
+import {
+  Box, Alert, AlertIcon, Spinner, Text, VStack, HStack,
+  Select, Button, Modal, ModalOverlay, ModalContent, ModalHeader,
+  ModalCloseButton, ModalBody, ModalFooter, Input, FormControl,
   FormLabel, useToast, Collapse, IconButton, Wrap, WrapItem,
   Badge, Menu, MenuButton, MenuList, MenuItem, Divider,
   Tooltip, useDisclosure, useColorModeValue, Portal, List,
   ListItem, UnorderedList, Accordion, AccordionItem,
   AccordionButton, AccordionPanel, AccordionIcon
 } from '@chakra-ui/react'
-import { 
-  ChevronDownIcon, ChevronUpIcon, SettingsIcon, 
+import {
+  ChevronDownIcon, ChevronUpIcon, SettingsIcon,
   ArrowUpIcon, ArrowDownIcon, ViewIcon, ViewOffIcon,
   RepeatIcon
 } from '@chakra-ui/icons'
@@ -205,6 +205,15 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     data: any
     position: { x: number; y: number }
   } | null>(null)
+  const [contextMenu, setContextMenu] = useState<{
+    isOpen: boolean
+    nodeId: string | null
+    position: { x: number; y: number }
+  }>({
+    isOpen: false,
+    nodeId: null,
+    position: { x: 0, y: 0 }
+  })
   const [isMobile, setIsMobile] = useState(false)
   const [isTouch, setIsTouch] = useState(false)
   const [controlsCollapsed, setControlsCollapsed] = useState(false)
@@ -222,6 +231,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   const textColor = useColorModeValue("gray.600", "gray.300")
   const controlsBg = useColorModeValue("white", "gray.700")
   const hoverBg = useColorModeValue("gray.50", "gray.600")
+  const contextMenuBg = useColorModeValue('white', 'gray.700')
 
   // Optimized tooltip position update function
   const updateTooltipPosition = useCallback((mouseX: number, mouseY: number) => {
@@ -248,6 +258,60 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       tooltipTimeoutRef.current = null
     }
   }, [])
+
+
+
+  // Handle context menu close
+  const closeContextMenu = useCallback(() => {
+    setContextMenu({ isOpen: false, nodeId: null, position: { x: 0, y: 0 } })
+  }, [])
+
+  // Add keyboard support and global click handler for closing context menu
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && contextMenu.isOpen) {
+        closeContextMenu()
+      }
+    }
+
+    const handleGlobalClick = (event: MouseEvent) => {
+      if (contextMenu.isOpen) {
+        // Check if click is outside the context menu
+        const target = event.target as Element
+        const contextMenuElement = document.querySelector('[data-context-menu]')
+        if (contextMenuElement && !contextMenuElement.contains(target)) {
+          closeContextMenu()
+        }
+      }
+    }
+
+    // Global context menu prevention for the graph area
+    const handleGlobalContextMenu = (event: MouseEvent) => {
+      const target = event.target as Element
+      const graphContainer = document.querySelector('[data-graph-container]')
+
+      if (graphContainer && graphContainer.contains(target)) {
+        event.preventDefault()
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+        return false
+      }
+    }
+
+    if (contextMenu.isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      document.addEventListener('click', handleGlobalClick, true)
+    }
+
+    // Always prevent context menu in graph area
+    document.addEventListener('contextmenu', handleGlobalContextMenu, true)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('click', handleGlobalClick, true)
+      document.removeEventListener('contextmenu', handleGlobalContextMenu, true)
+    }
+  }, [contextMenu.isOpen, closeContextMenu])
 
   // Mobile and touch detection
   useEffect(() => {
@@ -725,6 +789,15 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             }
           },
           {
+            selector: 'node.hierarchy-root',
+            style: {
+              'border-width': 5,
+              'border-color': '#ff6600',
+              'background-color': '#fff0e6',
+              'border-style': 'double'
+            }
+          },
+          {
             selector: 'node[type = "Group"]',
             style: {
               'border-width': 3,
@@ -907,15 +980,123 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
       cy.on('mousemove', 'edge', (event) => {
         if (!tooltipData || tooltipData.type !== 'edge') return
-        
+
         const mouseEvent = event.originalEvent
         if (!mouseEvent) return
-        
+
         const mouseX = mouseEvent.pageX
         const mouseY = mouseEvent.pageY
-        
+
         updateTooltipPosition(mouseX, mouseY)
       })
+
+      // Right-click context menu for nodes
+      cy.on('cxttap', 'node', (event) => {
+        const node = event.target
+        const nodeId = node.id()
+        const isGroupNode = node.data('type') === 'Group'
+        const mouseEvent = event.originalEvent
+
+        // Comprehensive event prevention
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+
+        // Prevent default browser context menu with multiple approaches
+        if (mouseEvent) {
+          mouseEvent.preventDefault()
+          mouseEvent.stopPropagation()
+          mouseEvent.stopImmediatePropagation()
+
+          // Additional prevention for stubborn browsers
+          if (mouseEvent.type === 'contextmenu') {
+            mouseEvent.returnValue = false
+          }
+        }
+
+        // Don't show context menu for group nodes
+        if (isGroupNode) {
+          // Still prevent default menu even for group nodes
+          return false
+        }
+
+        // Get mouse position for context menu
+        if (mouseEvent) {
+          const mouseX = mouseEvent.pageX || mouseEvent.clientX
+          const mouseY = mouseEvent.pageY || mouseEvent.clientY
+
+          // Close any existing context menu first
+          setContextMenu({ isOpen: false, nodeId: null, position: { x: 0, y: 0 } })
+
+          // Small delay to ensure clean state transition
+          setTimeout(() => {
+            setContextMenu({
+              isOpen: true,
+              nodeId: nodeId,
+              position: { x: mouseX, y: mouseY }
+            })
+          }, 10)
+
+          // Hide tooltip when context menu opens
+          setTooltipData(null)
+        }
+
+        return false
+      })
+
+      // Close context menu on background click or right-click
+      cy.on('cxttap', (event) => {
+        if (event.target === cy) {
+          closeContextMenu()
+        }
+      })
+
+      cy.on('tap', (event) => {
+        if (event.target === cy) {
+          closeContextMenu()
+        }
+      })
+
+      // Comprehensive context menu prevention
+      const container = cy.container()
+      if (container) {
+        const preventContextMenu = (e: MouseEvent) => {
+          e.preventDefault()
+          e.stopPropagation()
+          e.stopImmediatePropagation()
+          return false
+        }
+
+        const preventContextMenuCapture = (e: MouseEvent) => {
+          e.preventDefault()
+          e.stopPropagation()
+          e.stopImmediatePropagation()
+          return false
+        }
+
+        // Add listeners for both capture and bubble phases
+        container.addEventListener('contextmenu', preventContextMenu, false)
+        container.addEventListener('contextmenu', preventContextMenuCapture, true)
+
+        // Also prevent on the parent container to be extra sure
+        const parentContainer = container.parentElement
+        if (parentContainer) {
+          parentContainer.addEventListener('contextmenu', preventContextMenu, false)
+          parentContainer.addEventListener('contextmenu', preventContextMenuCapture, true)
+        }
+
+        // Store the cleanup function
+        const cleanup = () => {
+          container.removeEventListener('contextmenu', preventContextMenu, false)
+          container.removeEventListener('contextmenu', preventContextMenuCapture, true)
+          if (parentContainer) {
+            parentContainer.removeEventListener('contextmenu', preventContextMenu, false)
+            parentContainer.removeEventListener('contextmenu', preventContextMenuCapture, true)
+          }
+        }
+
+        // Add cleanup to cytoscape instance for later removal
+        cy.data('contextMenuCleanup', cleanup)
+      }
 
       cyRef.current = cy
       console.log('Cytoscape instance created successfully:', cy)
@@ -1164,12 +1345,21 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   }
 
   // Helper function to determine the best root node for hierarchical layouts
-  const determineRootNode = (cy: Core): string | undefined => {
+  const determineRootNode = (cy: Core, explicitRootId?: string): string | undefined => {
+    // If an explicit root is provided, use it (highest priority)
+    if (explicitRootId) {
+      const explicitNode = cy.nodes(`[id = "${explicitRootId}"]`)
+      if (explicitNode.length > 0 && explicitNode.data('type') !== 'Group') {
+        console.log('Using explicit root node:', explicitRootId)
+        return explicitRootId
+      }
+    }
+
     // If exactly one node is selected, use it as root
     if (selectedNodes.length === 1) {
       const selectedNodeId = selectedNodes[0]
       const selectedNode = cy.nodes(`[id = "${selectedNodeId}"]`)
-      if (selectedNode.length > 0) {
+      if (selectedNode.length > 0 && selectedNode.data('type') !== 'Group') {
         console.log('Using selected node as root:', selectedNodeId)
         return selectedNodeId
       }
@@ -1512,6 +1702,91 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       // Note: Users can now manually use Center & Fit or Reset View to apply layout and reposition
     }, 100)
   }
+
+  // Handle setting a node as hierarchy root
+  const setNodeAsHierarchyRoot = useCallback((nodeId: string) => {
+    if (!cyRef.current) {
+      console.error('No cytoscape instance available for setNodeAsHierarchyRoot')
+      return
+    }
+
+    console.log('Setting node as hierarchy root:', nodeId)
+
+    const cy = cyRef.current
+    const node = cy.nodes(`[id = "${nodeId}"]`)
+
+    if (node.length === 0) {
+      console.error('Node not found:', nodeId)
+      toast({
+        title: 'Error',
+        description: `Node "${nodeId}" not found`,
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      })
+      return
+    }
+
+    // Get node data for display name
+    const nodeData = node.data()
+    const nodeName = nodeData?.showname || nodeData?.name || nodeId
+    console.log('Node data for hierarchy root:', { nodeId, nodeName, nodeData })
+
+    // Clear all selections and select the new root node
+    cy.nodes().unselect()
+    setSelectedNodes([nodeId])
+    node.select()
+
+    // Close context menu immediately
+    setContextMenu({ isOpen: false, nodeId: null, position: { x: 0, y: 0 } })
+
+    // Switch to hierarchical tree layout if not already
+    setCurrentLayout('hierarchical-tree')
+
+    // Force immediate layout refresh with the new root
+    setTimeout(() => {
+      console.log('Running hierarchical tree layout with new root:', nodeId)
+
+      // Create the hierarchical layout with the specific root
+      const positions = createHierarchicalTreeLayout(cy, nodeId)
+
+      const layoutConfig = {
+        name: 'preset',
+        positions: positions,
+        fit: true,
+        padding: 50,
+        animate: true,
+        animationDuration: 500,
+        animationEasing: 'ease-out'
+      }
+
+      const layout = cy.layout(layoutConfig)
+
+      layout.one('layoutstop', () => {
+        console.log('Hierarchy root layout completed for node:', nodeId)
+
+        // Highlight the root node
+        cy.nodes().removeClass('hierarchy-root')
+        node.addClass('hierarchy-root')
+
+        // Center and fit the graph
+        setTimeout(() => {
+          cy.fit(cy.elements(), 60)
+          cy.center()
+
+          toast({
+            title: 'Hierarchy Root Set',
+            description: `Set "${nodeName}" as hierarchy root and refreshed Multi-Level Hierarchical Tree layout`,
+            status: 'success',
+            duration: 3000,
+            isClosable: true
+          })
+        }, 100)
+      })
+
+      layout.run()
+    }, 50)
+  }, [toast, createHierarchicalTreeLayout])
 
   // Center and fit the graph to screen with layout application and visibility reset
   const centerAndFitGraph = useCallback(() => {
@@ -2431,6 +2706,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       setLayoutRunning(false)
       if (cyRef.current) {
         try {
+          // Clean up context menu event listener
+          const cleanup = cyRef.current.data('contextMenuCleanup')
+          if (cleanup && typeof cleanup === 'function') {
+            cleanup()
+          }
+
           // Stop any running operations
           cyRef.current.elements().stop()
           cyRef.current.removeAllListeners()
@@ -2478,26 +2759,28 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
   }, [showControls, showGroupPanel, groups])
 
+  // Render loading state
   if (loading) {
     return (
-      <Box 
-        height="100%" 
-        display="flex" 
-        alignItems="center" 
+      <Box
+        height="100%"
+        display="flex"
+        alignItems="center"
         justifyContent="center"
-        bg="white"
+        bg={bgColor}
         borderRadius="lg"
         border="1px solid"
-        borderColor="gray.200"
+        borderColor={borderColor}
       >
         <VStack spacing={4}>
           <Spinner size="xl" color="visium.500" />
-          <Text color="gray.600">Loading graph data...</Text>
+          <Text color={textColor}>Loading graph data...</Text>
         </VStack>
       </Box>
     )
   }
 
+  // Render error state
   if (error) {
     return (
       <Alert status="error" borderRadius="lg" height="100%">
@@ -2870,6 +3153,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         bg={bgColor}
         position="relative"
         overflow="hidden" // Ensure content doesn't extend beyond container
+        data-graph-container
       >
         {nodeCount === 0 && edgeCount === 0 && (
           <Box
@@ -2960,6 +3244,72 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             ) : (
               <EdgeTooltip edge={tooltipData.data} />
             )}
+          </Box>
+        </Portal>
+      )}
+
+      {/* Context Menu */}
+      {contextMenu.isOpen && contextMenu.nodeId && (
+        <Portal>
+          {/* Invisible overlay to capture clicks outside the menu */}
+          <Box
+            position="fixed"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            zIndex={99998}
+            onClick={closeContextMenu}
+            onContextMenu={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              closeContextMenu()
+            }}
+          />
+          <Box
+            position="fixed"
+            top={Math.max(10, Math.min(window.innerHeight - 100, contextMenu.position.y))}
+            left={Math.max(10, Math.min(window.innerWidth - 250, contextMenu.position.x))}
+            zIndex={99999}
+            data-context-menu
+            onContextMenu={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+            }}
+          >
+            <Menu isOpen={true} onClose={closeContextMenu}>
+              <MenuList
+                minW="200px"
+                bg={contextMenuBg}
+                border="1px solid"
+                borderColor={borderColor}
+                boxShadow="lg"
+              >
+                <MenuItem
+                  icon={<RepeatIcon />}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    console.log('Context menu clicked for node:', contextMenu.nodeId)
+                    setNodeAsHierarchyRoot(contextMenu.nodeId!)
+                  }}
+                  _hover={{ bg: hoverBg }}
+                  onContextMenu={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                >
+                  <VStack align="start" spacing={0}>
+                    <Text fontSize="sm" fontWeight="medium">
+                      Set as Hierarchy Root
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      Use this node as root for Multi-Level Hierarchical Tree layout
+                    </Text>
+                  </VStack>
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </Box>
         </Portal>
       )}
