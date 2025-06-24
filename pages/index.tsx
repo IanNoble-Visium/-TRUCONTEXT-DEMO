@@ -59,6 +59,9 @@ const HomePage: React.FC = () => {
   const cardBg = useColorModeValue("white", "gray.800")
   const borderColor = useColorModeValue("gray.200", "gray.700")
   const textColor = useColorModeValue("gray.600", "gray.300")
+  const hoverBg = useColorModeValue("gray.50", "gray.700")
+  const boldTextColor = useColorModeValue("gray.700", "gray.200")
+  const lightTextColor = useColorModeValue("gray.500", "gray.400")
   
   const handleUploadSuccess = () => {
     setRefreshTrigger(prev => prev + 1)
@@ -320,7 +323,7 @@ const HomePage: React.FC = () => {
                                 <Accordion allowToggle>
                                   <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md" mb={2}>
                                     <h2>
-                                      <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
+                                      <AccordionButton _hover={{ bg: hoverBg }}>
                                         <Box flex="1" textAlign="left" fontWeight="medium">
                                           Dataset Format Requirements
                                         </Box>
@@ -330,21 +333,21 @@ const HomePage: React.FC = () => {
                                     <AccordionPanel pb={4}>
                                       <VStack align="start" spacing={3} fontSize="sm" color={textColor}>
                                         <Box>
-                                          <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Nodes Structure:</Text>
+                                          <Text fontWeight="bold" color={boldTextColor} mb={1}>Nodes Structure:</Text>
                                           <Text>• uid: Unique identifier</Text>
                                           <Text>• type: Node type (Server, Application, Database, etc.)</Text>
                                           <Text>• showname: Display name</Text>
                                           <Text>• properties: Additional metadata</Text>
                                         </Box>
                                         <Box>
-                                          <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Edges Structure:</Text>
+                                          <Text fontWeight="bold" color={boldTextColor} mb={1}>Edges Structure:</Text>
                                           <Text>• from: Source node UID</Text>
                                           <Text>• to: Target node UID</Text>
                                           <Text>• type: Relationship type</Text>
                                           <Text>• properties: Additional metadata</Text>
                                         </Box>
                                         <Box>
-                                          <Text fontWeight="bold" color={useColorModeValue("gray.700", "gray.200")} mb={1}>Auto-Generated:</Text>
+                                          <Text fontWeight="bold" color={boldTextColor} mb={1}>Auto-Generated:</Text>
                                           <Text>• Timestamps (Dec 30-31, 2023)</Text>
                                           <Text>• Geolocation coordinates</Text>
                                         </Box>
@@ -354,7 +357,7 @@ const HomePage: React.FC = () => {
 
                                   <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md">
                                     <h2>
-                                      <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
+                                      <AccordionButton _hover={{ bg: hoverBg }}>
                                         <Box flex="1" textAlign="left" fontWeight="medium">
                                           Sample Dataset
                                         </Box>
@@ -365,7 +368,7 @@ const HomePage: React.FC = () => {
                                       <Text fontSize="sm" color={textColor} mb={2}>
                                         A sample dataset file (sample-dataset.json) is available in the project root for testing.
                                       </Text>
-                                      <Text fontSize="xs" color={useColorModeValue("gray.500", "gray.400")}>
+                                      <Text fontSize="xs" color={lightTextColor}>
                                         This sample contains a network topology with servers, applications, databases, and security vulnerabilities.
                                       </Text>
                                     </AccordionPanel>
@@ -427,7 +430,7 @@ const HomePage: React.FC = () => {
                           <motion.div variants={slideIn}>
                             <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md" mb={2}>
                               <h2>
-                                <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
+                                <AccordionButton _hover={{ bg: hoverBg }}>
                                   <Box flex="1" textAlign="left" fontWeight="medium">
                                     How to Use
                                   </Box>
@@ -451,7 +454,7 @@ const HomePage: React.FC = () => {
                                     >
                                       1
                                     </Box>
-                                    <Text>Click "Upload Dataset" to open the upload panel</Text>
+                                    <Text>Click &quot;Upload Dataset&quot; to open the upload panel</Text>
                                   </HStack>
                                   <HStack>
                                     <Box 
@@ -495,7 +498,7 @@ const HomePage: React.FC = () => {
                           <motion.div variants={slideIn}>
                             <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md">
                               <h2>
-                                <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
+                                <AccordionButton _hover={{ bg: hoverBg }}>
                                   <Box flex="1" textAlign="left" fontWeight="medium">
                                     Graph Interactions
                                   </Box>
@@ -517,7 +520,7 @@ const HomePage: React.FC = () => {
                           <motion.div variants={slideIn}>
                             <AccordionItem border="1px solid" borderColor={borderColor} borderRadius="md">
                               <h2>
-                                <AccordionButton _hover={{ bg: useColorModeValue("gray.50", "gray.700") }}>
+                                <AccordionButton _hover={{ bg: hoverBg }}>
                                   <Box flex="1" textAlign="left" fontWeight="medium">
                                     Technical Stack
                                   </Box>

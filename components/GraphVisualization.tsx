@@ -2853,7 +2853,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               </Accordion>
             ) : (
               <Text fontSize="sm" color={textColor} textAlign="center" py={2}>
-                No groups created yet. Use "Group by Type" or select nodes and "Group Selected".
+                No groups created yet. Use &quot;Group by Type&quot; or select nodes and &quot;Group Selected&quot;.
               </Text>
             )}
           </Box>

@@ -37,6 +37,7 @@ const JSONErrorDisplay: React.FC<JSONErrorDisplayProps> = ({
   const codeBackground = useColorModeValue('gray.50', 'gray.900')
   const errorLineColor = useColorModeValue('red.50', 'red.900')
   const warningLineColor = useColorModeValue('yellow.50', 'yellow.900')
+  const suggestionBg = useColorModeValue('blue.50', 'blue.900')
 
   const { errors, warnings } = validationResult
 
@@ -148,7 +149,7 @@ const JSONErrorDisplay: React.FC<JSONErrorDisplayProps> = ({
     <Box
       mt={2}
       p={3}
-      bg={useColorModeValue('blue.50', 'blue.900')}
+      bg={suggestionBg}
       borderLeft="4px solid"
       borderLeftColor="blue.400"
       borderRadius="md"
