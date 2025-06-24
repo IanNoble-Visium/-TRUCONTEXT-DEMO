@@ -1181,10 +1181,10 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
     // Strategy 1: Node with highest degree (most connections)
     let bestNode = visibleNodes[0]
-    let maxDegree = bestNode.degree()
+    let maxDegree = bestNode.degree(false) // false = count all edges (undirected)
 
     visibleNodes.forEach(node => {
-      const degree = node.degree()
+      const degree = node.degree(false) // false = count all edges (undirected)
       if (degree > maxDegree) {
         maxDegree = degree
         bestNode = node
@@ -1276,7 +1276,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       },
       concentric: {
         name: 'concentric',
-        concentric: (node: any) => node.degree(),
+        concentric: (node: any) => node.degree(false), // false = count all edges (undirected)
         levelWidth: () => 2,
         padding: 30,
         animate: true,
