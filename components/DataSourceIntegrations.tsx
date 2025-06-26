@@ -315,8 +315,8 @@ const DataSourceIntegrations: React.FC = () => {
           </Text>
         </HStack>
         <Text fontSize="xs" color={textColor}>
-          Settings are automatically saved to your browser's local storage. 
-          Enabled integrations will be available for data import and real-time synchronization 
+          Settings are automatically saved to your browser&apos;s local storage.
+          Enabled integrations will be available for data import and real-time synchronization
           once the corresponding API credentials are configured.
         </Text>
       </MotionBox>
