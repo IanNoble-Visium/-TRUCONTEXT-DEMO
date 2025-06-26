@@ -16,6 +16,8 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **JSON Dataset Upload**: Drag-and-drop interface with real-time validation
 - **PostgreSQL Persistence**: Save and load datasets from Neon PostgreSQL cloud database
 - **Dataset Library**: Manage multiple saved datasets with metadata and descriptions
+- **Data Source Integrations**: Configure connections to 10+ external platforms (DataDog, Tenable, Splunk, Kafka, etc.)
+- **Integration Management**: Centralized settings for security tools, messaging systems, analytics platforms, and AI services
 - **Seamless Integration**: Switch between JSON files and database storage
 - **Neo4j Visualization**: Automatic import into Neo4j Aura for graph rendering
 - **Data Processing**: Auto-generation of timestamps and geolocation data
@@ -58,7 +60,8 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Dark/Light Mode Toggle**: Animated theme switching with smooth transitions
 - **Collapsible Controls**: Grouping controls hidden by default to maximize graph space
 - **Collapsible Header**: Optional header hiding for full-screen graph view
-- **Side Panel Navigation**: Upload and help panels accessible via slide-out drawers
+- **Enhanced Side Panel Navigation**: Three-tab drawer system for dataset management and integrations
+- **Data Source Configuration**: Dedicated interface for managing external platform connections
 - **Page Transitions**: Smooth enter/exit animations with staggered effects
 - **Micro-interactions**: Enhanced button hover effects and visual feedback
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
@@ -68,6 +71,8 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Dynamic Type Detection**: Automatically discovers and displays all node types in dataset
 - **Context-Aware Interactions**: Different behaviors for regular nodes vs group nodes
 - **State Management**: Proper tracking of selections, groups, and visibility states
+- **Integration Configuration**: Persistent settings management with localStorage for data source connections
+- **Modular Architecture**: Separate components for different integration categories and types
 - **Error Handling**: Graceful handling of missing icons and malformed data
 - **Performance Optimized**: Efficient re-layout and rendering with 60fps animations
 - **Advanced Animation System**: Framer Motion + Lottie React for smooth UX
@@ -82,6 +87,7 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Graph Visualization**: Cytoscape.js with multiple layout algorithms
 - **Mobile Gestures**: @use-gesture/react for touch interactions
 - **Persistent Storage**: PostgreSQL with Neon hosting for dataset management
+- **Configuration Management**: Browser localStorage for integration settings persistence
 - **Visualization Database**: Neo4j Aura (Cloud) with Cypher queries
 - **Icons**: Custom SVG icon system with vector graphics
 - **Deployment**: Vercel-ready with environment configuration
@@ -489,7 +495,10 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 - **Seamless Integration**: Switch between JSON file uploads and database storage
 
 ### Dataset Management Interface
-- **Tabbed Interface**: "Upload JSON" and "Saved Datasets" tabs in the management drawer
+- **Enhanced Tabbed Interface**: Three tabs in the management drawer:
+  - **Upload JSON**: Drag-and-drop interface with format validation
+  - **Saved Datasets**: Browse and manage stored datasets
+  - **Manage Datasets**: Configure data source integrations and settings
 - **Save Dialog**: Modal form for naming and describing datasets before saving
 - **Dataset List**: Visual cards showing dataset information with action buttons
 - **Real-time Updates**: Immediate UI updates after save/load/delete operations
@@ -500,6 +509,45 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 - **Nodes Table**: Stores node data with JSONB properties for flexibility
 - **Edges Table**: Stores relationships with proper foreign key constraints
 - **Automatic Schema**: Database tables created automatically on first use
+
+## ⚙️ Data Source Integrations
+
+### Integration Management
+- **Centralized Configuration**: Manage all external data source connections from a single interface
+- **Category Organization**: Integrations grouped by type (Security, Messaging, Analytics, Storage, AI)
+- **Toggle Controls**: Enable/disable integrations with visual switch controls
+- **Persistent Settings**: Configuration automatically saved to browser local storage
+- **Real-time Status**: Live status indicators showing enabled/disabled state
+
+### Supported Integrations
+
+#### Security Tools
+- **Tenable**: Vulnerability management and security scanning platform integration
+- **PCAP**: Network packet capture and analysis file processing
+
+#### Messaging Systems
+- **Kafka Bus**: Real-time data streaming and message queuing integration
+- **Web Hooks**: HTTP callbacks for real-time event notifications
+- **Google Cloud Pub/Sub**: Managed messaging service for event-driven systems
+
+#### Analytics Platforms
+- **DataDog**: Application performance monitoring and log aggregation
+- **Splunk**: Enterprise search, monitoring, and analytics platform
+
+#### Data Storage
+- **Unified Data Lake**: Centralized repository for structured and unstructured data
+- **Apache Iceberg**: Table format for large analytic datasets (staging area)
+
+#### AI & Machine Learning
+- **AI MCP (Model Context Protocol)**: AI model integration and context management
+
+### Integration Features
+- **Smart Categorization**: Color-coded badges and logical grouping by integration type
+- **Detailed Descriptions**: Comprehensive explanations of each integration's purpose
+- **Visual Feedback**: Hover effects, status badges, and smooth animations
+- **Responsive Design**: Mobile-optimized interface with touch-friendly controls
+- **Expandable Sections**: Collapsible categories for organized navigation
+- **Configuration Summary**: Real-time count of enabled integrations with status overview
 
 ## 🔄 API Routes
 
@@ -529,8 +577,17 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 1. **Upload New Data**: Use "Upload JSON" tab to import new datasets from files
 2. **Save Current Dataset**: Click "Save Current Dataset" to store in PostgreSQL database
 3. **Browse Saved Datasets**: Use "Saved Datasets" tab to view your dataset library
-4. **Load Previous Work**: Click the download icon to load any saved dataset
-5. **Manage Storage**: Delete unwanted datasets to keep your library organized
+4. **Configure Integrations**: Use "Manage Datasets" tab to set up external data source connections
+5. **Load Previous Work**: Click the download icon to load any saved dataset
+6. **Manage Storage**: Delete unwanted datasets to keep your library organized
+
+### Data Source Integration Workflow
+1. **Access Settings**: Click "Manage Datasets" button to open the management drawer
+2. **Navigate to Integrations**: Select the "Manage Datasets" tab (third tab)
+3. **Browse Categories**: Expand integration categories (Security, Messaging, Analytics, Storage, AI)
+4. **Enable Integrations**: Toggle switches to enable desired data source connections
+5. **Review Configuration**: Check the summary section for enabled integration count
+6. **Automatic Persistence**: Settings are automatically saved to browser storage
 
 ### View-Specific Features
 
