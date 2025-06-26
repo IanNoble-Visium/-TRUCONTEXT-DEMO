@@ -40,6 +40,7 @@ import Head from 'next/head'
 import Header from '../components/Header'
 import FileUpload from '../components/FileUpload'
 import DatasetManager from '../components/DatasetManager'
+import DataSourceIntegrations from '../components/DataSourceIntegrations'
 import EnhancedGraphVisualization from '../components/EnhancedGraphVisualization'
 import PageTransition from '../components/PageTransition'
 
@@ -305,6 +306,7 @@ const HomePage: React.FC = () => {
                         <TabList mb={4}>
                           <Tab>Upload JSON</Tab>
                           <Tab>Saved Datasets</Tab>
+                          <Tab>Manage Datasets</Tab>
                         </TabList>
 
                         <TabPanels>
@@ -384,6 +386,12 @@ const HomePage: React.FC = () => {
                                 onDatasetLoaded={handleDatasetLoaded}
                                 currentGraphData={currentGraphData}
                               />
+                            </motion.div>
+                          </TabPanel>
+
+                          <TabPanel px={0}>
+                            <motion.div variants={slideIn}>
+                              <DataSourceIntegrations />
                             </motion.div>
                           </TabPanel>
                         </TabPanels>
