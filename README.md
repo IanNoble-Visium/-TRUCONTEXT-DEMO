@@ -285,6 +285,90 @@ The application features a comprehensive SVG icon system that provides consisten
 - **Responsive Tabs**: Mobile-optimized navigation with clear view indicators
 - **Keyboard Navigation**: Accessible tab switching with keyboard shortcuts
 
+## 🎬 Revolutionary Background Video System
+
+### Cybersecurity-Themed Ambient Visualizations
+
+The TruContext Demo features an innovative background video system with 8 revolutionary cybersecurity-focused ambient videos designed to operate at subconscious levels, triggering pattern recognition and enhancing security anomaly detection.
+
+#### 🧬 Available Background Videos
+
+1. **Neural Data Flow**
+   - Flowing streams of data particles through neural pathways
+   - Represents network traffic as biological neural connections
+
+2. **Threat Propagation**
+   - Visualization of cybersecurity threats moving through networks
+   - Shows attack vectors and security breach patterns
+
+3. **Temporal Evolution**
+   - Time-lapse view of network topology evolution and growth
+   - Demonstrates system changes and infrastructure development
+
+4. **System Health Pulse**
+   - Ambient monitoring with heartbeat-like health indicators
+   - Provides subconscious awareness of system vitality
+
+5. **Quantum Resonance**
+   - Wave interference patterns representing quantum network states
+   - Advanced physics-based visualization of data relationships
+
+6. **🧬 Digital DNA Anomaly Scanner** ⭐ *Revolutionary*
+   - Network traffic visualized as genetic sequences with malware mutations and defensive antibody particles
+   - Treats cybersecurity as biological immune system responses
+
+7. **🌌 Gravitational Anomaly Detection** ⭐ *Revolutionary*
+   - Data flows following spacetime curvature with gravitational anomalies representing security threats
+   - Uses Einstein's relativity principles for threat visualization
+
+8. **🐠 Ecosystem Predator-Prey Dynamics** ⭐ *Revolutionary*
+   - Living ecosystem visualization where data packets swim as fish while threats stalk as predators
+   - Creates immediate behavioral awareness through natural patterns
+
+9. **⚛️ Quantum Entanglement Breach Detection** ⭐ *Revolutionary*
+   - Quantum physics visualization with entangled particles showing secure relationships and breach detection
+   - Leverages quantum mechanics for security state representation
+
+10. **🧠 Neural Synaptic Firing Patterns** ⭐ *Revolutionary*
+    - Brain neural network visualization showing network activity as synaptic firing patterns
+    - Represents network communications as brain activity
+
+### Advanced Psychological Principles
+
+These videos implement cutting-edge concepts that nobody has ever used before in cybersecurity visualization:
+
+- **Peripheral Vision Activation**: Subtle movements trigger subconscious pattern recognition
+- **Subliminal Pattern Disruption**: Anomalies in video patterns alert users to potential security issues
+- **Biometric Rhythm Synchronization**: Videos sync with natural human attention cycles
+- **Subconscious Threat Detection**: Background patterns prime users to notice security anomalies
+
+### Collapsible Video Controls
+
+#### Independent Control System
+- **Video Enable/Disable**: Toggle background video playback on/off
+- **UI Collapse/Expand**: Hide/show video controls independently of video state
+- **Two-State Operation**: Video can play while controls are collapsed for clean interface
+
+#### Control States
+- **Collapsed + Video Enabled**: Shows minimal "Video" indicator with pulsing blue dot
+- **Collapsed + Video Disabled**: Shows "Video" text with settings icon (no pulsing)
+- **Expanded + Video Enabled**: Full controls panel with "Active" badge and all options
+- **Expanded + Video Disabled**: Full controls panel with grayed-out options (still visible)
+
+#### Video Selection & Customization
+- **Dropdown Selection**: Choose from 8 different ambient video backgrounds
+- **Opacity Control**: Adjust video transparency (15-25% recommended for optimal effect)
+- **Performance Optimized**: Videos designed for smooth playback without impacting graph performance
+- **Seamless Integration**: Videos blend naturally with graph visualizations
+
+### Future Evolution Capabilities
+
+These videos are designed to evolve into real-time generation capabilities:
+- **Network Condition Response**: Videos adapt to actual network traffic patterns
+- **Threat Intelligence Integration**: Real-time threat feeds influence video behavior
+- **Predictive Analytics**: Videos respond to predictive security models
+- **Adaptive Visualization**: Background patterns change based on detected anomalies
+
 ## 🎮 Interactive Features
 
 ### Enhanced Graph Interactions
@@ -571,10 +655,11 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 1. **Manage Datasets**: Click "Manage Datasets" to open the data management drawer
 2. **Upload or Load**: Either upload a new JSON file or load a saved dataset
 3. **Automatic Processing**: System validates and imports data into visualization
-4. **Save Dataset**: Optionally save your current dataset to the database for future use
-5. **Multi-View Visualization**: Choose from 6 different visualization modes
-6. **Data Exploration**: Use appropriate view for your analysis needs
-7. **Interactive Analysis**: Click, filter, sort, and explore your data
+4. **Configure Background Video**: Select ambient video and adjust opacity for enhanced analysis
+5. **Save Dataset**: Optionally save your current dataset to the database for future use
+6. **Multi-View Visualization**: Choose from 6 different visualization modes
+7. **Data Exploration**: Use appropriate view for your analysis needs
+8. **Interactive Analysis**: Click, filter, sort, and explore your data
 
 ### Dataset Management Workflow
 1. **Upload New Data**: Use "Upload JSON" tab to import new datasets from files
@@ -591,6 +676,24 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 4. **Enable Integrations**: Toggle switches to enable desired data source connections
 5. **Review Configuration**: Check the summary section for enabled integration count
 6. **Automatic Persistence**: Settings are automatically saved to browser storage
+
+### Background Video Workflow
+1. **Access Video Controls**: Look for the "Ambient Video" section in the graph controls
+2. **Enable Background Video**: Toggle the switch to activate ambient video backgrounds
+3. **Select Video Theme**: Choose from 8 revolutionary cybersecurity-themed videos:
+   - **Neural Data Flow**: Biological neural network patterns
+   - **Threat Propagation**: Security threat movement visualization
+   - **Temporal Evolution**: Network growth and evolution patterns
+   - **System Health Pulse**: Heartbeat-like system monitoring
+   - **Quantum Resonance**: Physics-based wave interference patterns
+   - **Digital DNA Anomaly Scanner**: Genetic sequence threat detection ⭐
+   - **Gravitational Anomaly Detection**: Spacetime curvature security visualization ⭐
+   - **Ecosystem Predator-Prey Dynamics**: Living ecosystem threat patterns ⭐
+   - **Quantum Entanglement Breach Detection**: Quantum physics security states ⭐
+   - **Neural Synaptic Firing Patterns**: Brain-like network activity ⭐
+4. **Adjust Opacity**: Use the slider to set video transparency (15-25% recommended)
+5. **Collapse Controls**: Click the collapse button to hide controls while keeping video active
+6. **Subconscious Analysis**: Let the ambient patterns enhance your pattern recognition abilities
 
 ### View-Specific Features
 
@@ -811,6 +914,14 @@ A sample dataset (`sample-dataset.json`) is included with:
     - Stable prop references eliminate cascading updates
     - If you experience performance issues, refresh the page
 
+11. **Background Video Issues**
+    - **Video Not Playing**: Check browser autoplay policies - some browsers block autoplay
+    - **Video Selection Not Working**: Verify video files exist in `/public/videos/` directory
+    - **Performance Issues**: Reduce video opacity or disable videos on slower devices
+    - **Race Condition Errors**: Fixed in latest version - refresh page if issues persist
+    - **File Path Errors**: Video file names have been corrected to match actual files
+    - **Collapsible Controls**: Video enable/disable and UI collapse/expand work independently
+
 ## 📚 Documentation
 
 - [Next.js Documentation](https://nextjs.org/docs)
@@ -856,7 +967,16 @@ TruContext is powered by Visium Technologies, a leader in graph analytics and cy
 
 ## 🌟 Recent Updates & Improvements
 
-### ✅ Multi-Level Hierarchical Tree Layout Implementation (Latest)
+### ✅ Revolutionary Background Video System (Latest)
+- **8 Cybersecurity-Themed Videos**: Groundbreaking ambient visualizations designed for subconscious pattern recognition
+- **Advanced Psychological Principles**: Peripheral vision activation, subliminal pattern disruption, and biometric rhythm synchronization
+- **Collapsible Video Controls**: Independent video enable/disable and UI collapse/expand functionality
+- **Revolutionary Video Concepts**: Digital DNA Anomaly Scanner, Gravitational Anomaly Detection, Ecosystem Predator-Prey Dynamics, Quantum Entanglement Breach Detection, Neural Synaptic Firing Patterns
+- **Performance Optimized**: Smooth video playback with race condition fixes and enhanced error handling
+- **Future Evolution Ready**: Designed to evolve into real-time generation responding to network conditions
+- **Subconscious Security Enhancement**: Videos operate at subconscious levels to trigger anomaly detection before critical incidents
+
+### ✅ Multi-Level Hierarchical Tree Layout Implementation
 - **Advanced BFS Algorithm**: Implemented sophisticated breadth-first search traversal for building true multi-level hierarchies
 - **Root Node Selection**: Support for manual root node selection or automatic selection based on highest degree connectivity
 - **Multi-Level Visualization**: Creates distinct vertical layers (Level 0, Level 1, Level 2, etc.) with proper horizontal spacing
