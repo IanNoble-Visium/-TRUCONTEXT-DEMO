@@ -19,6 +19,8 @@ import cytoscape, { Core, NodeSingular, Collection } from 'cytoscape'
 import cola from 'cytoscape-cola'
 // @ts-ignore
 import { NodeTooltip, EdgeTooltip } from './GraphTooltip'
+import PropertiesPanel from './PropertiesPanel'
+import { BackgroundVideo, VideoControls } from './BackgroundVideo'
 import { createRoot } from 'react-dom/client'
 import { useGesture } from '@use-gesture/react'
 import { motion } from 'framer-motion'
@@ -225,6 +227,26 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   const controlsRef = useRef<HTMLDivElement>(null)
   const [controlsHeight, setControlsHeight] = useState(80)
 
+  // Properties panel state
+  const [propertiesPanel, setPropertiesPanel] = useState<{
+    isOpen: boolean
+    selectedElement: {
+      type: 'node' | 'edge'
+      data: any
+    } | null
+  }>({
+    isOpen: false,
+    selectedElement: null
+  })
+
+  // Background video state
+  const [videoSettings, setVideoSettings] = useState({
+    isEnabled: false,
+    selectedVideo: 'neural_data_flow',
+    opacity: 20,
+    controlsExpanded: false // Start collapsed for cleaner interface
+  })
+
   // Color mode values
   const bgColor = useColorModeValue("white", "gray.800")
   const borderColor = useColorModeValue("gray.200", "gray.600")
@@ -266,11 +288,47 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     setContextMenu({ isOpen: false, nodeId: null, position: { x: 0, y: 0 } })
   }, [])
 
+  // Handle properties panel
+  const openPropertiesPanel = useCallback((type: 'node' | 'edge', data: any) => {
+    setPropertiesPanel({
+      isOpen: true,
+      selectedElement: { type, data }
+    })
+  }, [])
+
+  const closePropertiesPanel = useCallback(() => {
+    setPropertiesPanel({
+      isOpen: false,
+      selectedElement: null
+    })
+  }, [])
+
+  // Handle background video controls
+  const toggleVideo = useCallback((enabled: boolean) => {
+    setVideoSettings(prev => ({ ...prev, isEnabled: enabled }))
+  }, [])
+
+  const changeVideo = useCallback((video: string) => {
+    setVideoSettings(prev => ({ ...prev, selectedVideo: video }))
+  }, [])
+
+  const changeOpacity = useCallback((opacity: number) => {
+    setVideoSettings(prev => ({ ...prev, opacity }))
+  }, [])
+
+  const toggleVideoControls = useCallback(() => {
+    setVideoSettings(prev => ({ ...prev, controlsExpanded: !prev.controlsExpanded }))
+  }, [])
+
   // Add keyboard support and global click handler for closing context menu
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && contextMenu.isOpen) {
-        closeContextMenu()
+      if (event.key === 'Escape') {
+        if (propertiesPanel.isOpen) {
+          closePropertiesPanel()
+        } else if (contextMenu.isOpen) {
+          closeContextMenu()
+        }
       }
     }
 
@@ -298,8 +356,11 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       }
     }
 
-    if (contextMenu.isOpen) {
+    if (contextMenu.isOpen || propertiesPanel.isOpen) {
       document.addEventListener('keydown', handleKeyDown)
+    }
+
+    if (contextMenu.isOpen) {
       document.addEventListener('click', handleGlobalClick, true)
     }
 
@@ -311,7 +372,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       document.removeEventListener('click', handleGlobalClick, true)
       document.removeEventListener('contextmenu', handleGlobalContextMenu, true)
     }
-  }, [contextMenu.isOpen, closeContextMenu])
+  }, [contextMenu.isOpen, propertiesPanel.isOpen, closeContextMenu, closePropertiesPanel])
 
   // Mobile and touch detection
   useEffect(() => {
@@ -677,6 +738,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     console.log('Sample edge:', elements.find(e => e.group === 'edges'))
 
     try {
+      // Ensure the container has proper z-index for video layering
+      if (containerRef.current) {
+        containerRef.current.style.position = 'relative'
+        containerRef.current.style.zIndex = '1'
+      }
+
       const cy = cytoscape({
         container: containerRef.current,
         elements: elements,
@@ -903,7 +970,19 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             setSelectedNodes([nodeId])
             node.select()
           }
+
+          // Open properties panel for the clicked node
+          openPropertiesPanel('node', node.data())
         }
+      })
+
+      // Enhanced event handlers for edges
+      cy.on('tap', 'edge', (event) => {
+        const edge = event.target
+        event.stopPropagation()
+
+        // Open properties panel for the clicked edge
+        openPropertiesPanel('edge', edge.data())
       })
 
       // Clear selection on background tap
@@ -911,6 +990,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         if (event.target === cy) {
           cy.nodes().unselect()
           setSelectedNodes([])
+          closePropertiesPanel()
         }
       })
 
@@ -2912,6 +2992,18 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               </Button>
             </HStack>
           )}
+
+          {/* Video Controls - now available on mobile with collapsible interface */}
+          <VideoControls
+            isEnabled={videoSettings.isEnabled}
+            onToggle={toggleVideo}
+            selectedVideo={videoSettings.selectedVideo}
+            onVideoChange={changeVideo}
+            opacity={videoSettings.opacity}
+            onOpacityChange={changeOpacity}
+            isExpanded={videoSettings.controlsExpanded}
+            onToggleExpanded={toggleVideoControls}
+          />
         </VStack>
 
         <Collapse in={showControls} animateOpacity>
@@ -3155,6 +3247,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         overflow="hidden" // Ensure content doesn't extend beyond container
         data-graph-container
       >
+        {/* Background Video */}
+        <BackgroundVideo
+          isEnabled={videoSettings.isEnabled}
+          onToggle={toggleVideo}
+          selectedVideo={videoSettings.selectedVideo}
+          opacity={videoSettings.opacity}
+        />
         {nodeCount === 0 && edgeCount === 0 && (
           <Box
             position="absolute"
@@ -3313,6 +3412,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           </Box>
         </Portal>
       )}
+
+      {/* Properties Panel */}
+      <PropertiesPanel
+        isOpen={propertiesPanel.isOpen}
+        onClose={closePropertiesPanel}
+        selectedElement={propertiesPanel.selectedElement}
+      />
     </Box>
   )
 }
