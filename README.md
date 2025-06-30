@@ -61,6 +61,7 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 ### 🎛️ Modern User Interface
 - **Dark/Light Mode Toggle**: Animated theme switching with smooth transitions
 - **Collapsible Controls**: Grouping controls hidden by default to maximize graph space
+- **Collapsible Video Controls**: Independent video functionality and UI visibility controls
 - **Collapsible Header**: Optional header hiding for full-screen graph view
 - **Enhanced Side Panel Navigation**: Three-tab drawer system for dataset management and integrations
 - **Data Source Configuration**: Dedicated interface for managing external platform connections
