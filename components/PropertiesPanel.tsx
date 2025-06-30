@@ -411,10 +411,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                       key={key}
                       label={key}
                       value={value}
-                      isSearchMatch={searchTerm && (
+                      isSearchMatch={Boolean(searchTerm && (
                         key.toLowerCase().includes(searchTerm.toLowerCase()) ||
                         String(value).toLowerCase().includes(searchTerm.toLowerCase())
-                      )}
+                      ))}
                     />
                   ))
                 )}
