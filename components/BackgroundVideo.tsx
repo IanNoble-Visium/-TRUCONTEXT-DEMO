@@ -89,6 +89,36 @@ const VIDEO_OPTIONS: VideoOption[] = [
     label: 'Quantum Resonance',
     description: 'Wave interference patterns representing quantum network states',
     file: '/videos/quantum_resonance.mp4'
+  },
+  {
+    value: 'digital_dna_anomaly_scanner',
+    label: 'Digital DNA Anomaly Scanner',
+    description: 'Network traffic visualized as genetic sequences with malware mutations and defensive antibody particles',
+    file: '/videos/digital_dna_anomaly_scanner.mp4'
+  },
+  {
+    value: 'gravitational_anomaly_detection',
+    label: 'Gravitational Anomaly Detection',
+    description: 'Data flows following spacetime curvature with gravitational anomalies representing security threats',
+    file: '/videos/gravitational_anomaly_detection.mp4'
+  },
+  {
+    value: 'ecosystem_predator_prey_dynamics',
+    label: 'Ecosystem Predator-Prey Dynamics',
+    description: 'Living ecosystem visualization where data packets swim as fish while threats stalk as predators',
+    file: '/videos/ecosystem_predator_prey_dynamics.mp4'
+  },
+  {
+    value: 'quantum_entanglement_breach_detection',
+    label: 'Quantum Entanglement Breach Detection',
+    description: 'Quantum physics visualization with entangled particles showing secure relationships and breach detection',
+    file: '/videos/quantum_entanglement_breach_detection.mp4'
+  },
+  {
+    value: 'neural_synaptic_firing_patterns',
+    label: 'Neural Synaptic Firing Patterns',
+    description: 'Brain neural network visualization showing network activity as synaptic firing patterns',
+    file: '/videos/neural_synaptic_firing_patterns.mp4'
   }
 ]
 
