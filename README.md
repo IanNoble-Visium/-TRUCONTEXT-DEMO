@@ -34,6 +34,8 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 
 ### 🎨 Advanced Visualization & Animations
 - **Graph-Focused Layout**: Maximum screen space dedicated to graph visualization
+- **Revolutionary Background Videos**: 8 cybersecurity-themed ambient videos operating at subconscious levels
+- **Collapsible Video Controls**: Independent video enable/disable and UI collapse/expand functionality
 - **Unified SVG Icon System**: Dynamic vector icons across ALL views with intelligent fallback
 - **Cross-View Icon Consistency**: Same icon loading system used in all 6 visualization modes
 - **Smooth Layout Transitions**: 800ms animated transitions between layout algorithms
