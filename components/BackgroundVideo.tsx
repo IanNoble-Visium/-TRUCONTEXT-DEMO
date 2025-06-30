@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import {
   Box,
   VStack,
@@ -94,31 +94,31 @@ const VIDEO_OPTIONS: VideoOption[] = [
     value: 'digital_dna_anomaly_scanner',
     label: 'Digital DNA Anomaly Scanner',
     description: 'Network traffic visualized as genetic sequences with malware mutations and defensive antibody particles',
-    file: '/videos/digital_dna_anomaly_scanner.mp4'
+    file: '/videos/dna_anomaly_scanner.mp4'
   },
   {
     value: 'gravitational_anomaly_detection',
     label: 'Gravitational Anomaly Detection',
     description: 'Data flows following spacetime curvature with gravitational anomalies representing security threats',
-    file: '/videos/gravitational_anomaly_detection.mp4'
+    file: '/videos/gravitational_anomaly.mp4'
   },
   {
     value: 'ecosystem_predator_prey_dynamics',
     label: 'Ecosystem Predator-Prey Dynamics',
     description: 'Living ecosystem visualization where data packets swim as fish while threats stalk as predators',
-    file: '/videos/ecosystem_predator_prey_dynamics.mp4'
+    file: '/videos/ecosystem_predator_prey.mp4'
   },
   {
     value: 'quantum_entanglement_breach_detection',
     label: 'Quantum Entanglement Breach Detection',
     description: 'Quantum physics visualization with entangled particles showing secure relationships and breach detection',
-    file: '/videos/quantum_entanglement_breach_detection.mp4'
+    file: '/videos/quantum_entanglement_breach.mp4'
   },
   {
     value: 'neural_synaptic_firing_patterns',
     label: 'Neural Synaptic Firing Patterns',
     description: 'Brain neural network visualization showing network activity as synaptic firing patterns',
-    file: '/videos/neural_synaptic_firing_patterns.mp4'
+    file: '/videos/neural_synaptic_patterns.mp4'
   }
 ]
 
@@ -154,8 +154,11 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
     setOpacity(propOpacity)
   }, [propOpacity])
 
-  // Get current video option
-  const currentVideoOption = VIDEO_OPTIONS.find(option => option.value === selectedVideo) || VIDEO_OPTIONS[0]
+  // Get current video option with memoization to prevent unnecessary re-renders
+  const currentVideoOption = useMemo(() =>
+    VIDEO_OPTIONS.find(option => option.value === selectedVideo) || VIDEO_OPTIONS[0],
+    [selectedVideo]
+  )
 
   // Handle video loading with performance optimizations
   useEffect(() => {
@@ -164,18 +167,30 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
       setHasError(false)
 
       const video = videoRef.current
+      let isCurrentEffect = true // Flag to prevent race conditions
 
-      const handleLoadStart = () => setIsLoading(true)
-      const handleCanPlay = () => {
-        setIsLoading(false)
-        // Ensure video is properly configured for performance
-        video.playbackRate = 1.0
-        video.volume = 0 // Ensure muted for performance
+      const handleLoadStart = () => {
+        if (isCurrentEffect) setIsLoading(true)
       }
-      const handleError = () => {
-        setIsLoading(false)
-        setHasError(true)
-        console.error('Background video failed to load:', currentVideoOption.file)
+      const handleCanPlay = () => {
+        if (isCurrentEffect) {
+          setIsLoading(false)
+          // Ensure video is properly configured for performance
+          video.playbackRate = 1.0
+          video.volume = 0 // Ensure muted for performance
+        }
+      }
+      const handleError = (event: Event) => {
+        if (isCurrentEffect) {
+          setIsLoading(false)
+          setHasError(true)
+          console.error('Background video failed to load:', {
+            file: currentVideoOption.file,
+            label: currentVideoOption.label,
+            error: event,
+            videoElement: video
+          })
+        }
       }
 
       // Performance optimization: preload metadata only
@@ -184,21 +199,29 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
       video.addEventListener('canplay', handleCanPlay)
       video.addEventListener('error', handleError)
 
+      // Check if video file exists before loading
+      console.log('Loading background video:', {
+        file: currentVideoOption.file,
+        label: currentVideoOption.label,
+        isEnabled
+      })
+
       // Load and play the video with error handling
       video.load()
 
       // Use requestAnimationFrame for smoother playback start
       requestAnimationFrame(() => {
-        video.play().catch(error => {
-          console.warn('Background video autoplay failed:', error)
-          // This is expected in some browsers due to autoplay policies
-          // Video will still be available for manual play
-        })
+        if (isCurrentEffect && video.readyState >= 2) { // HAVE_CURRENT_DATA
+          video.play().catch(error => {
+            console.warn('Background video autoplay failed:', error)
+            // This is expected in some browsers due to autoplay policies
+            // Video will still be available for manual play
+          })
+        }
       })
 
-
-
       return () => {
+        isCurrentEffect = false // Mark this effect as stale
         video.removeEventListener('loadstart', handleLoadStart)
         video.removeEventListener('canplay', handleCanPlay)
         video.removeEventListener('error', handleError)
