@@ -359,7 +359,7 @@ export const VideoControls: React.FC<VideoControlsProps> = ({
           transition="all 0.2s"
         >
           <HStack spacing={2} justify="center">
-            <SettingsIcon size="sm" color={textColor} />
+            <SettingsIcon boxSize={3} color={textColor} />
             <Text fontSize="xs" fontWeight="medium" color={textColor}>
               Video
             </Text>
