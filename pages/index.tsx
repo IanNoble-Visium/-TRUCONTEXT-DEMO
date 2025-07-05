@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Container,
@@ -35,7 +35,7 @@ import {
   useColorModeValue
 } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronUpIcon, ChevronDownIcon, HamburgerIcon, InfoIcon, AttachmentIcon } from '@chakra-ui/icons'
+import { ChevronUpIcon, ChevronDownIcon, HamburgerIcon, InfoIcon, AttachmentIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import Head from 'next/head'
 import Header from '../components/Header'
 import FileUpload from '../components/FileUpload'
@@ -54,6 +54,17 @@ const HomePage: React.FC = () => {
   const [currentGraphData, setCurrentGraphData] = useState<{ nodes: any[], edges: any[] } | undefined>(undefined)
   const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure()
   const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
+
+  // Fullscreen state management
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [previousState, setPreviousState] = useState({
+    showHeader: true,
+    isUploadOpen: false,
+    isInfoOpen: false
+  })
+
+  // Track if we're transitioning to/from fullscreen to prevent unwanted state changes
+  const [isTransitioning, setIsTransitioning] = useState(false)
   
   // Color mode values
   const bgColor = useColorModeValue("gray.50", "gray.900")
@@ -77,6 +88,48 @@ const HomePage: React.FC = () => {
   const handleGraphDataLoad = (data: { nodes: any[], edges: any[] }) => {
     setCurrentGraphData(data)
   }
+
+  // Fullscreen functionality
+  const toggleFullscreen = () => {
+    setIsTransitioning(true)
+
+    if (!isFullscreen) {
+      // Entering fullscreen - save current state
+      setPreviousState({
+        showHeader,
+        isUploadOpen,
+        isInfoOpen
+      })
+      // Close all panels and hide header
+      setShowHeader(false)
+      onUploadClose()
+      onInfoClose()
+      setIsFullscreen(true)
+    } else {
+      // Exiting fullscreen - restore previous state
+      setShowHeader(previousState.showHeader)
+      if (previousState.isUploadOpen) onUploadOpen()
+      if (previousState.isInfoOpen) onInfoOpen()
+      setIsFullscreen(false)
+    }
+
+    // Reset transition flag after a short delay
+    setTimeout(() => setIsTransitioning(false), 300)
+  }
+
+  // Keyboard support for fullscreen
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isFullscreen) {
+        toggleFullscreen()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isFullscreen, toggleFullscreen])
 
   const gridColumns = useBreakpointValue({ base: 1, xl: 2 })
   const containerPadding = useBreakpointValue({ base: 4, md: 6 })
@@ -168,13 +221,21 @@ const HomePage: React.FC = () => {
 
       <PageTransition animationKey="home" direction="up" duration={0.5}>
         <Box height="100dvh" bg={bgColor} overflow="hidden">
-          {/* Animated Header */}
-          <MotionBox variants={headerVariants}>
-            <Header />
-          </MotionBox>
+          {/* Animated Header - Hidden in fullscreen mode */}
+          {!isFullscreen && (
+            <MotionBox variants={headerVariants}>
+              <Header />
+            </MotionBox>
+          )}
 
           {/* Main Graph Area with enhanced animation */}
-          <Flex direction="column" height={showHeader ? "calc(100dvh - 80px)" : "100dvh"}>
+          <Flex direction="column" height={
+            isFullscreen
+              ? "100dvh"
+              : showHeader
+                ? "calc(100dvh - 80px)"
+                : "100dvh"
+          }>
             {/* Top Toolbar */}
             <MotionBox 
               bg={cardBg} 
@@ -187,85 +248,126 @@ const HomePage: React.FC = () => {
               transition={{ duration: 0.4 }}
             >
               <Flex align="center">
+                {/* Always show fullscreen toggle */}
                 <MotionIconButton
-                  icon={showHeader ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                  aria-label="Toggle header"
+                  icon={isFullscreen ? <ViewOffIcon /> : <ViewIcon />}
+                  aria-label={isFullscreen ? "Exit fullscreen (ESC)" : "Enter fullscreen"}
                   size="sm"
                   variant="ghost"
-                  onClick={() => setShowHeader(!showHeader)}
+                  onClick={toggleFullscreen}
                   mr={2}
                   whileHover={buttonHover}
                   whileTap={buttonTap}
+                  colorScheme={isFullscreen ? "orange" : "blue"}
                 />
-                
-                <motion.div variants={slideIn}>
-                  <MotionButton
-                    leftIcon={<AttachmentIcon />}
-                    colorScheme="blue"
-                    variant="outline"
-                    size="sm"
-                    onClick={onUploadOpen}
-                    mr={2}
-                    whileHover={buttonHover}
-                    whileTap={buttonTap}
-                  >
-                    Manage Datasets
-                  </MotionButton>
-                </motion.div>
-                
-                <motion.div variants={slideIn}>
-                  <MotionButton
-                    leftIcon={<InfoIcon />}
-                    variant="ghost"
-                    size="sm"
-                    onClick={onInfoOpen}
-                    mr={4}
-                    whileHover={buttonHover}
-                    whileTap={buttonTap}
-                  >
-                    Help
-                  </MotionButton>
-                </motion.div>
+
+                {/* Hide other controls in fullscreen mode */}
+                {!isFullscreen && (
+                  <>
+                    <MotionIconButton
+                      icon={showHeader ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                      aria-label="Toggle header"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowHeader(!showHeader)}
+                      mr={2}
+                      whileHover={buttonHover}
+                      whileTap={buttonTap}
+                    />
+
+                    <motion.div variants={slideIn}>
+                      <MotionButton
+                        leftIcon={<AttachmentIcon />}
+                        colorScheme="blue"
+                        variant="outline"
+                        size="sm"
+                        onClick={onUploadOpen}
+                        mr={2}
+                        whileHover={buttonHover}
+                        whileTap={buttonTap}
+                      >
+                        Manage Datasets
+                      </MotionButton>
+                    </motion.div>
+                  </>
+                )}
+
+                {/* Help button - hide in fullscreen */}
+                {!isFullscreen && (
+                  <motion.div variants={slideIn}>
+                    <MotionButton
+                      leftIcon={<InfoIcon />}
+                      variant="ghost"
+                      size="sm"
+                      onClick={onInfoOpen}
+                      mr={4}
+                      whileHover={buttonHover}
+                      whileTap={buttonTap}
+                    >
+                      Help
+                    </MotionButton>
+                  </motion.div>
+                )}
 
                 <Spacer />
 
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.3 }}
-                >
-                  <Text fontSize="sm" color={textColor} fontWeight="medium">
-                    Graph Analytics Platform
-                  </Text>
-                </motion.div>
+                {/* Platform text - hide in fullscreen */}
+                {!isFullscreen && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 0.3 }}
+                  >
+                    <Text fontSize="sm" color={textColor} fontWeight="medium">
+                      Graph Analytics Platform
+                    </Text>
+                  </motion.div>
+                )}
+
+                {/* Fullscreen indicator */}
+                {isFullscreen && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                  >
+                    <Text fontSize="sm" color={textColor} fontWeight="medium">
+                      Fullscreen Mode (Press ESC to exit)
+                    </Text>
+                  </motion.div>
+                )}
               </Flex>
             </MotionBox>
 
             {/* Graph Visualization - Full remaining space */}
-            <Box flex={1} p={4}>
-              <MotionBox 
-                bg={cardBg} 
-                borderRadius="lg" 
-                shadow="md" 
-                height="100%" 
+            <Box flex={1} p={isFullscreen ? 0 : 4}>
+              <MotionBox
+                bg={isFullscreen ? "transparent" : cardBg}
+                borderRadius={isFullscreen ? "none" : "lg"}
+                shadow={isFullscreen ? "none" : "md"}
+                height="100%"
                 overflow="hidden"
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Box p={4} borderBottom="1px solid" borderColor={borderColor}>
-                  <motion.div
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.4, delay: 0.3 }}
-                  >
-                    <Heading size="md" color="visium.500">Interactive Graph Topology</Heading>
-                  </motion.div>
-                </Box>
-                <Box height="calc(100% - 60px)">
+                {/* Hide title in fullscreen mode */}
+                {!isFullscreen && (
+                  <Box p={4} borderBottom="1px solid" borderColor={borderColor}>
+                    <motion.div
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ duration: 0.4, delay: 0.3 }}
+                    >
+                      <Heading size="md" color="visium.500">Interactive Graph Topology</Heading>
+                    </motion.div>
+                  </Box>
+                )}
+                <Box height={isFullscreen ? "100%" : "calc(100% - 60px)"}>
                   <EnhancedGraphVisualization
                     refreshTrigger={refreshTrigger}
                     onGraphDataLoad={handleGraphDataLoad}
+                    isFullscreen={isFullscreen}
                   />
                 </Box>
               </MotionBox>

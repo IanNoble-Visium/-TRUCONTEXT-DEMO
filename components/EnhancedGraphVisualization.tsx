@@ -6,11 +6,13 @@ import { ViewSwitcher, ViewType } from './DataViews'
 interface EnhancedGraphVisualizationProps {
   refreshTrigger: number
   onGraphDataLoad?: (data: { nodes: any[], edges: any[] }) => void
+  isFullscreen?: boolean
 }
 
 const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
   refreshTrigger,
-  onGraphDataLoad
+  onGraphDataLoad,
+  isFullscreen = false
 }) => {
   const [currentView, setCurrentView] = useState<ViewType>('graph')
   const [graphData, setGraphData] = useState<{ nodes: any[], edges: any[] } | null>(null)
@@ -55,8 +57,9 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
       onDataLoad={handleDataLoad}
       selectedNodes={selectedNodes}
       onSelectedNodesChange={handleSelectedNodesChange}
+      isFullscreen={isFullscreen}
     />
-  ), [refreshTrigger, handleDataLoad])
+  ), [refreshTrigger, handleDataLoad, isFullscreen])
 
   // Debug current state
   console.log('EnhancedGraphVisualization: Current state:', {
@@ -88,13 +91,15 @@ interface GraphVisualizationWrapperProps {
   onDataLoad: (data: { nodes: any[], edges: any[] }) => void
   selectedNodes: string[]
   onSelectedNodesChange: (nodes: string[]) => void
+  isFullscreen?: boolean
 }
 
 const GraphVisualizationWrapper: React.FC<GraphVisualizationWrapperProps> = ({
   refreshTrigger,
   onDataLoad,
   selectedNodes,
-  onSelectedNodesChange
+  onSelectedNodesChange,
+  isFullscreen = false
 }) => {
   console.log('GraphVisualizationWrapper: Rendering with refreshTrigger:', refreshTrigger)
   return (
@@ -103,6 +108,7 @@ const GraphVisualizationWrapper: React.FC<GraphVisualizationWrapperProps> = ({
       onDataLoad={onDataLoad}
       onSelectedNodesChange={onSelectedNodesChange}
       externalSelectedNodes={selectedNodes}
+      isFullscreen={isFullscreen}
     />
   )
 }

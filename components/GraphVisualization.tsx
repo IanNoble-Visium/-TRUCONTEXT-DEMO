@@ -33,6 +33,7 @@ interface GraphVisualizationProps {
   onDataLoad?: (data: { nodes: any[], edges: any[] }) => void
   onSelectedNodesChange?: (nodes: string[]) => void
   externalSelectedNodes?: string[]
+  isFullscreen?: boolean
 }
 
 // Layout configuration with human-readable labels and descriptions
@@ -180,11 +181,12 @@ interface GroupData {
   sourceType?: string
 }
 
-const GraphVisualization: React.FC<GraphVisualizationProps> = ({ 
-  refreshTrigger, 
-  onDataLoad, 
+const GraphVisualization: React.FC<GraphVisualizationProps> = ({
+  refreshTrigger,
+  onDataLoad,
   onSelectedNodesChange,
-  externalSelectedNodes 
+  externalSelectedNodes,
+  isFullscreen = false
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const cyRef = useRef<Core | null>(null)
@@ -2875,8 +2877,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
   return (
     <Box height="100%">
-      {/* Graph Controls */}
-      <Box ref={controlsRef} bg={controlsBg} borderBottom="1px solid" borderColor={borderColor} p={isMobile ? 2 : 3}>
+      {/* Graph Controls - Hidden in fullscreen mode */}
+      {!isFullscreen && (
+        <Box ref={controlsRef} bg={controlsBg} borderBottom="1px solid" borderColor={borderColor} p={isMobile ? 2 : 3}>
         <VStack spacing={2} align="stretch">
           {/* Primary controls */}
           <HStack justify="space-between" align="center">
@@ -3234,12 +3237,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           </Box>
         </Collapse>
       </Box>
+      )}
 
       {/* Graph Container */}
       <Box
         ref={containerRef}
-        height={`calc(100vh - ${controlsHeight + 140}px)`} // More conservative calculation
-        maxHeight={`calc(100vh - ${controlsHeight + 140}px)`} // Enforce maximum height
+        height={isFullscreen ? "100%" : `calc(100vh - ${controlsHeight + 140}px)`} // Full height in fullscreen
+        maxHeight={isFullscreen ? "100%" : `calc(100vh - ${controlsHeight + 140}px)`} // Full height in fullscreen
         minHeight="300px" // Reduced minimum height
         width="100%"
         bg={bgColor}
