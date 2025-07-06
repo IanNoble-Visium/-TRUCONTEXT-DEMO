@@ -51,12 +51,17 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Touch-Friendly Animations**: Optimized animation timings for mobile performance
 - **Adaptive Interface**: Controls automatically collapse on mobile for maximum graph space
 
-### 🔗 Dynamic Grouping System
-- **Auto-Group by Type**: One-click grouping of nodes by their type attribute
-- **Manual Grouping**: Select multiple nodes to create custom groups
-- **Group Management**: Toggle visibility, ungroup, and reset operations
-- **Smart Group Naming**: Automatic naming with node counts (e.g., "Server (3)")
-- **Visual Feedback**: Toast notifications for all grouping operations
+### 🔗 Advanced Dynamic Grouping System
+- **Auto-Group by Type**: One-click grouping of nodes by their type attribute with intelligent type detection
+- **Manual Grouping**: Select multiple nodes to create custom groups with user-defined names
+- **Robust Ungrouping**: Comprehensive ungrouping functionality with proper node visibility restoration
+- **Group State Management**: Advanced state tracking prevents layout conflicts and ensures visual consistency
+- **Smart Group Naming**: Automatic naming with node counts (e.g., "Machine (6)", "Server (3)")
+- **Meta-Edge System**: Automatic creation and management of group-to-external connections
+- **Edge Preservation**: Original edge relationships stored and restored during ungrouping operations
+- **Layout Stability**: Grouping/ungrouping operations maintain graph layout positions
+- **Visual Feedback**: Toast notifications and detailed console logging for all grouping operations
+- **Type-Based Operations**: Intelligent handling of existing groups when creating new type-based groups
 
 ### 🎛️ Modern User Interface
 - **Dark/Light Mode Toggle**: Animated theme switching with smooth transitions
@@ -73,24 +78,49 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 ### 🔧 Technical Features
 - **Dynamic Type Detection**: Automatically discovers and displays all node types in dataset
 - **Context-Aware Interactions**: Different behaviors for regular nodes vs group nodes
-- **State Management**: Proper tracking of selections, groups, and visibility states
+- **Advanced State Management**: Dual-state tracking with React state and refs for layout stability
 - **TC_ Property System**: Advanced custom property system for visual styling and animations
 - **Alarm Management**: Comprehensive security alarm status system with filtering capabilities
-- **Layout Preservation**: Graph positions maintained during property updates for stable visualization
+- **Layout Preservation**: Graph positions maintained during property updates and grouping operations
 - **Integration Configuration**: Persistent settings management with localStorage for data source connections
 - **Modular Architecture**: Separate components for different integration categories and types
-- **Error Handling**: Graceful handling of missing icons and malformed data
+- **Robust Error Handling**: Graceful handling of missing icons, malformed data, and state conflicts
 - **Performance Optimized**: Efficient re-layout and rendering with 60fps animations
 - **Advanced Animation System**: Framer Motion + Lottie React for smooth UX
 - **Enhanced Component Architecture**: Memoized components to prevent infinite loops
 - **Stable React Patterns**: useCallback and useMemo for optimal performance
+- **Comprehensive Debugging**: Detailed console logging for troubleshooting complex operations
+- **Memory Management**: Proper cleanup and garbage collection for large datasets
+
+## 🆕 Recent Improvements & Bug Fixes
+
+### Major Grouping System Overhaul (Latest Update)
+- **Fixed Critical Ungrouping Bug**: Resolved issue where ungrouped nodes remained invisible after ungrouping operations
+- **Enhanced State Management**: Implemented dual-state tracking to prevent layout conflicts between React state and Cytoscape.js
+- **Improved Edge Restoration**: Comprehensive edge validation and restoration system with duplicate prevention
+- **Layout Preservation Logic**: Fixed group state preservation to use current refs instead of potentially stale React state
+- **Advanced Debugging**: Added detailed console logging for troubleshooting complex grouping operations
+- **Performance Optimization**: Streamlined ungrouping sequence with proper timing and state cleanup
+
+### Technical Improvements
+- **React Hooks Compliance**: Fixed React Hooks order warnings and improved component stability
+- **Memory Management**: Enhanced cleanup of grouped node references to prevent memory leaks
+- **Error Handling**: Robust error handling throughout the grouping/ungrouping pipeline
+- **Visual Feedback**: Comprehensive toast notifications and status indicators for all operations
+- **Code Quality**: Improved TypeScript types and reduced code complexity
+
+### User Experience Enhancements
+- **Reliable Operations**: Grouping and ungrouping now work consistently across all scenarios
+- **Visual Consistency**: Proper node visibility restoration with comprehensive style reset
+- **Smooth Interactions**: Eliminated visual glitches and layout jumping during group operations
+- **Better Feedback**: Enhanced user feedback with detailed operation status and error messages
 
 ## 🛠️ Technologies
 
 - **Framework**: Next.js 14.0.0 with TypeScript
 - **UI Library**: Chakra UI with custom Visium theme and dark mode support
 - **Animations**: Framer Motion 10.0.0 + Lottie React for advanced animations
-- **Graph Visualization**: Cytoscape.js with multiple layout algorithms
+- **Graph Visualization**: Cytoscape.js with multiple layout algorithms and advanced state management
 - **Mobile Gestures**: @use-gesture/react for touch interactions
 - **Persistent Storage**: PostgreSQL with Neon hosting for dataset management
 - **Configuration Management**: Browser localStorage for integration settings persistence
@@ -733,25 +763,41 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 - Handles both directed and undirected graph structures
 - Maintains proper node positioning across different screen sizes
 
-### Grouping Features
+### Advanced Grouping Features
 
 #### Auto-Group by Type
-- Automatically detects all unique node types in dataset
-- Creates groups for types with 2+ nodes
-- Groups labeled with type name and count
-- One-click operation with visual feedback
+- **Intelligent Type Detection**: Automatically discovers all unique node types in dataset
+- **Smart Group Creation**: Creates groups for types with 2+ nodes, with automatic conflict resolution
+- **Type-Based Ungrouping**: Existing groups of the same type are automatically ungrouped before creating new ones
+- **Dynamic Group Labels**: Groups labeled with type name and member count (e.g., "Machine (6)")
+- **One-Click Operation**: Single button click with comprehensive visual feedback and toast notifications
 
 #### Manual Grouping
-1. Click nodes to select them (selection counter appears)
-2. Click "Group Selected" when 2+ nodes are selected
-3. Enter custom group name in modal dialog
-4. Group created with selected nodes hidden
+1. **Node Selection**: Click nodes to select them (selection counter appears in real-time)
+2. **Group Creation**: Click "Group Selected" when 2+ nodes are selected
+3. **Custom Naming**: Enter custom group name in modal dialog with validation
+4. **Automatic Hiding**: Group created with selected nodes hidden and meta-edges established
+5. **Edge Preservation**: Original edge relationships automatically stored for later restoration
 
-#### Group Management
-- **Click Group Nodes**: Toggle visibility of grouped nodes
-- **Ungroup**: Select group nodes and click "Ungroup"
-- **Reset Groups**: Remove all groups and show all nodes
-- **Visual Indicators**: Group count shown in info panel
+#### Robust Group Management
+- **Toggle Visibility**: Click group nodes to show/hide grouped members with smooth transitions
+- **Comprehensive Ungrouping**: Select group nodes and click "Ungroup" for complete restoration:
+  - **Node Visibility Restoration**: Multi-step visibility restoration with style reset and comprehensive property setting
+  - **Edge Restoration**: Original edges validated and restored with duplicate prevention
+  - **Meta-Edge Cleanup**: Automatic removal of temporary group-to-external connections
+  - **State Synchronization**: Advanced cleanup of internal state references to prevent layout conflicts
+  - **Layout Preservation**: Graph positions maintained during ungrouping operations
+- **Reset All Groups**: Remove all groups and show all nodes with complete state reset
+- **Visual Indicators**: Real-time group count shown in info panel with status updates
+
+#### Advanced Technical Features
+- **Meta-Edge System**: Automatic creation of group-to-external node connections during grouping
+- **Edge Validation**: Comprehensive validation of source/target nodes before edge restoration
+- **State Management**: Dual-state tracking using both React state and refs for layout stability
+- **Layout Integration**: Grouping operations work seamlessly with all layout algorithms
+- **Performance Optimization**: Efficient batch operations and minimal re-rendering
+- **Error Handling**: Robust error handling with detailed console logging for debugging
+- **Memory Management**: Proper cleanup of grouped node references to prevent memory leaks
 
 ### Alarm Filtering Controls
 
