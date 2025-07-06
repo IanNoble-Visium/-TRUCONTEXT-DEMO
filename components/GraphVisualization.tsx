@@ -7,7 +7,8 @@ import {
   Badge, Menu, MenuButton, MenuList, MenuItem, Divider,
   Tooltip, useDisclosure, useColorModeValue, Portal, List,
   ListItem, UnorderedList, Accordion, AccordionItem,
-  AccordionButton, AccordionPanel, AccordionIcon
+  AccordionButton, AccordionPanel, AccordionIcon, Checkbox,
+  Switch, SimpleGrid
 } from '@chakra-ui/react'
 import {
   ChevronDownIcon, ChevronUpIcon, SettingsIcon,
@@ -21,6 +22,57 @@ import cola from 'cytoscape-cola'
 import { NodeTooltip, EdgeTooltip } from './GraphTooltip'
 import PropertiesPanel from './PropertiesPanel'
 import { BackgroundVideo, VideoControls } from './BackgroundVideo'
+import { TCAnimationEngine } from './TCAnimationEngine'
+import { parseThreatPaths, getAllThreatPaths, addThreatPath } from '../utils/threatPathUtils'
+import ThreatPathDialog from './ThreatPathDialog'
+
+// Import TC_PROPERTIES for property mapping
+const TC_PROPERTIES = [
+  { key: 'TC_SIZE', cytoscapeProperty: 'width' },
+  { key: 'TC_WIDTH', cytoscapeProperty: 'width' },
+  { key: 'TC_COLOR', cytoscapeProperty: 'background-color' },
+  { key: 'TC_OPACITY', cytoscapeProperty: 'opacity' },
+  { key: 'TC_CURVE', cytoscapeProperty: 'curve-style' },
+  { key: 'TC_LINE', cytoscapeProperty: 'line-style' },
+  { key: 'TC_TEXT_COLOR', cytoscapeProperty: 'text-outline-color' },
+  { key: 'TC_ANIMATION', cytoscapeProperty: 'animation' },
+  { key: 'TC_ALARM', cytoscapeProperty: 'border-color' },
+  { key: 'TC_THREAT_PATH', cytoscapeProperty: 'threat-path' }
+]
+
+// TC_ALARM severity levels with visual styling
+export const TC_ALARM_LEVELS = {
+  'Alert': {
+    color: '#dc3545',
+    bgColor: '#f8d7da',
+    borderWidth: 4,
+    label: 'Alert'
+  },
+  'Warning': {
+    color: '#fd7e14',
+    bgColor: '#fff3cd',
+    borderWidth: 3,
+    label: 'Warning'
+  },
+  'Success': {
+    color: '#198754',
+    bgColor: '#d1e7dd',
+    borderWidth: 2,
+    label: 'Success'
+  },
+  'Info': {
+    color: '#0dcaf0',
+    bgColor: '#d1ecf1',
+    borderWidth: 2,
+    label: 'Info'
+  },
+  'None': {
+    color: '#6c757d',
+    bgColor: 'transparent',
+    borderWidth: 2,
+    label: 'None'
+  }
+}
 import { createRoot } from 'react-dom/client'
 import { useGesture } from '@use-gesture/react'
 import { motion } from 'framer-motion'
@@ -190,6 +242,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const cyRef = useRef<Core | null>(null)
+  const animationEngineRef = useRef<TCAnimationEngine | null>(null)
+  const groupedNodesRef = useRef<{ [nodeId: string]: any }>({});
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [containerReady, setContainerReady] = useState(false)
@@ -222,7 +276,25 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   const [isTouch, setIsTouch] = useState(false)
   const [controlsCollapsed, setControlsCollapsed] = useState(false)
   const [layoutRunning, setLayoutRunning] = useState(false)
+  const [groupOperationRunning, setGroupOperationRunning] = useState(false)
   const { isOpen: isGroupModalOpen, onOpen: onGroupModalOpen, onClose: onGroupModalClose } = useDisclosure()
+  const { isOpen: isAlarmFilterOpen, onOpen: onAlarmFilterOpen, onClose: onAlarmFilterClose } = useDisclosure()
+  const [alarmFilters, setAlarmFilters] = useState<{[key: string]: boolean}>({
+    'Alert': true,
+    'Warning': true,
+    'Success': true,
+    'Info': true,
+    'None': true
+  })
+
+  // Threat path filtering state
+  const { isOpen: isThreatPathFilterOpen, onOpen: onThreatPathFilterOpen, onClose: onThreatPathFilterClose } = useDisclosure()
+  const [threatPathFilters, setThreatPathFilters] = useState<{[key: string]: boolean}>({})
+  const [availableThreatPaths, setAvailableThreatPaths] = useState<string[]>([])
+  const [threatPathFilterMode, setThreatPathFilterMode] = useState<'show' | 'hide'>('show')
+
+  // Threat path creation state
+  const { isOpen: isThreatPathDialogOpen, onOpen: onThreatPathDialogOpen, onClose: onThreatPathDialogClose } = useDisclosure()
   const toast = useToast()
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const centerFitTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -240,6 +312,10 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     isOpen: false,
     selectedElement: null
   })
+
+  // Add debounce ref for property changes to prevent loops
+  const propertyChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastPropertyChangeRef = useRef<{ elementId: string, properties: Record<string, any> } | null>(null)
 
   // Background video state
   const [videoSettings, setVideoSettings] = useState({
@@ -316,6 +392,308 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
   const changeOpacity = useCallback((opacity: number) => {
     setVideoSettings(prev => ({ ...prev, opacity }))
+  }, [])
+
+  // Handle property changes from PropertiesPanel
+  const handlePropertyChange = useCallback((elementType: 'node' | 'edge', elementId: string, properties: Record<string, any>) => {
+    if (!cyRef.current) {
+      console.warn('Cytoscape instance not available for property change')
+      return
+    }
+
+    // Debounce rapid property changes to prevent loops
+    const changeKey = `${elementType}-${elementId}`
+    const propertiesString = JSON.stringify(properties)
+
+    // Check if this is the same change as the last one
+    if (lastPropertyChangeRef.current &&
+        lastPropertyChangeRef.current.elementId === changeKey &&
+        JSON.stringify(lastPropertyChangeRef.current.properties) === propertiesString) {
+      console.log('Skipping duplicate property change for', elementId)
+      return
+    }
+
+    // Clear any pending timeout
+    if (propertyChangeTimeoutRef.current) {
+      clearTimeout(propertyChangeTimeoutRef.current)
+    }
+
+    // Store this change
+    lastPropertyChangeRef.current = { elementId: changeKey, properties }
+
+    try {
+      const cy = cyRef.current
+
+      // Validate Cytoscape instance state
+      if (!cy || cy.destroyed()) {
+        console.warn('Cytoscape instance is destroyed, cannot update properties')
+        return
+      }
+
+      // Find the element in Cytoscape with better error handling
+      const element = elementType === 'node'
+        ? cy.getElementById(elementId)
+        : cy.edges().filter(`[id = "${elementId}"]`).first()
+
+      if (!element || element.length === 0) {
+        console.warn(`Element ${elementId} not found in graph`)
+        return
+      }
+
+      // Validate element state
+      if (element.removed()) {
+        console.warn(`Element ${elementId} has been removed from graph`)
+        return
+      }
+
+      // Use batch operations to prevent internal state corruption
+      cy.startBatch()
+
+      try {
+        // Update the element's data
+        const currentData = element.data()
+        const updatedData = {
+          ...currentData,
+          properties: properties
+        }
+
+        // Apply the updated data
+        element.data(updatedData)
+
+        // Apply TC_ properties to Cytoscape styling and animations
+        const tcStyles: any = {}
+        let animationType: string | null = null
+
+        Object.entries(properties).forEach(([key, value]) => {
+          if (key.startsWith('TC_')) {
+            const tcProperty = TC_PROPERTIES.find(p => p.key === key)
+            if (tcProperty && value !== undefined && value !== null) {
+              // Handle animation separately
+              if (key === 'TC_ANIMATION') {
+                animationType = value
+                return
+              }
+
+              // Handle TC_ALARM with special styling
+              if (key === 'TC_ALARM') {
+                const alarmConfig = TC_ALARM_LEVELS[value as keyof typeof TC_ALARM_LEVELS]
+                if (alarmConfig && elementType === 'node') {
+                  tcStyles['border-color'] = alarmConfig.color
+                  tcStyles['border-width'] = alarmConfig.borderWidth
+                  if (alarmConfig.bgColor !== 'transparent') {
+                    tcStyles['background-color'] = alarmConfig.bgColor
+                  }
+                  // Add alarm indicator class for additional styling
+                  element.addClass(`alarm-${value.toLowerCase()}`)
+                  // Remove other alarm classes
+                  Object.keys(TC_ALARM_LEVELS).forEach(level => {
+                    if (level !== value) {
+                      element.removeClass(`alarm-${level.toLowerCase()}`)
+                    }
+                  })
+                }
+                return
+              }
+
+              // Map TC property to Cytoscape property
+              if (tcProperty.cytoscapeProperty === 'background-color' && elementType === 'edge') {
+                tcStyles['line-color'] = value
+              } else if (tcProperty.cytoscapeProperty === 'background-color' && elementType === 'node') {
+                tcStyles['background-color'] = value
+              } else if (tcProperty.cytoscapeProperty === 'width') {
+                if (elementType === 'node') {
+                  tcStyles['width'] = value
+                  tcStyles['height'] = value
+                } else {
+                  tcStyles['width'] = value
+                }
+              } else {
+                tcStyles[tcProperty.cytoscapeProperty] = value
+              }
+            }
+          }
+        })
+
+        // Apply the styling within the batch
+        if (Object.keys(tcStyles).length > 0) {
+          console.log(`Applying TC styles to ${elementType} ${elementId}:`, tcStyles)
+          element.style(tcStyles)
+        }
+
+        // End batch operation before handling animations
+        cy.endBatch()
+
+        // Handle animations outside of batch to prevent conflicts
+        if (animationEngineRef.current) {
+          try {
+            if (animationType && animationType !== 'none') {
+              animationEngineRef.current.startAnimation(elementId, {
+                type: animationType as any,
+                duration: 1000,
+                intensity: 0.3,
+                speed: 1000
+              })
+            } else {
+              // Stop any existing animation
+              animationEngineRef.current.stopAnimation(elementId)
+            }
+          } catch (animError) {
+            console.error('Error handling animation:', animError)
+          }
+        }
+
+      // Update the graph data state to keep it in sync
+      setGraphData(prevData => {
+        if (!prevData) return prevData
+
+        if (elementType === 'node') {
+          const updatedNodes = prevData.nodes.map(node => {
+            if (node.data.id === elementId) {
+              return {
+                ...node,
+                data: updatedData
+              }
+            }
+            return node
+          })
+          return { ...prevData, nodes: updatedNodes }
+        } else {
+          const updatedEdges = prevData.edges.map(edge => {
+            if (edge.data.id === elementId) {
+              return {
+                ...edge,
+                data: updatedData
+              }
+            }
+            return edge
+          })
+          return { ...prevData, edges: updatedEdges }
+        }
+      })
+
+      // Update the properties panel with debouncing to prevent loops
+      propertyChangeTimeoutRef.current = setTimeout(() => {
+        setPropertiesPanel(prev => {
+          if (prev.selectedElement &&
+              prev.selectedElement.type === elementType &&
+              (prev.selectedElement.data.id === elementId || prev.selectedElement.data.uid === elementId)) {
+            // Only update if the properties have actually changed to prevent loops
+            const currentProps = prev.selectedElement.data.properties || {}
+            const hasChanges = Object.keys(properties).some(key => currentProps[key] !== properties[key])
+
+            if (hasChanges) {
+              console.log(`Updating properties panel for ${elementType} ${elementId}`)
+              return {
+                ...prev,
+                selectedElement: {
+                  ...prev.selectedElement,
+                  data: updatedData
+                }
+              }
+            }
+          }
+          return prev
+        })
+      }, 50) // 50ms debounce
+
+        console.log(`Updated ${elementType} ${elementId} properties:`, properties)
+
+      } catch (batchError) {
+        // Ensure batch is ended even if there's an error
+        try {
+          cy.endBatch()
+        } catch (endBatchError) {
+          console.error('Error ending batch operation:', endBatchError)
+        }
+        throw batchError
+      }
+
+    } catch (error) {
+      console.error('Error updating element properties:', error)
+
+      // Provide user feedback for critical errors
+      if (error instanceof Error && error.message && error.message.includes('notify')) {
+        console.error('Critical Cytoscape state error detected. This may require a graph refresh.')
+      }
+    }
+  }, [])
+
+  // Apply all TC properties to elements when graph is loaded
+  const applyTCPropertiesToGraph = useCallback(() => {
+    if (!cyRef.current || !animationEngineRef.current) return
+
+    cyRef.current.elements().forEach(element => {
+      const data = element.data()
+      const properties = data.properties || {}
+
+      // Apply TC styling properties
+      const tcStyles: any = {}
+      let animationType: string | null = null
+
+      Object.entries(properties).forEach(([key, value]) => {
+        if (key.startsWith('TC_')) {
+          const tcProperty = TC_PROPERTIES.find(p => p.key === key)
+          if (tcProperty && value !== undefined && value !== null) {
+            if (key === 'TC_ANIMATION') {
+              animationType = value
+              return
+            }
+
+            // Handle TC_ALARM with special styling
+            if (key === 'TC_ALARM') {
+              const alarmConfig = TC_ALARM_LEVELS[value as keyof typeof TC_ALARM_LEVELS]
+              if (alarmConfig && element.isNode()) {
+                tcStyles['border-color'] = alarmConfig.color
+                tcStyles['border-width'] = alarmConfig.borderWidth
+                if (alarmConfig.bgColor !== 'transparent') {
+                  tcStyles['background-color'] = alarmConfig.bgColor
+                }
+                // Add alarm indicator class for additional styling
+                element.addClass(`alarm-${value.toLowerCase()}`)
+                // Remove other alarm classes
+                Object.keys(TC_ALARM_LEVELS).forEach(level => {
+                  if (level !== value) {
+                    element.removeClass(`alarm-${level.toLowerCase()}`)
+                  }
+                })
+              }
+              return
+            }
+
+            const isNode = element.isNode()
+            if (tcProperty.cytoscapeProperty === 'background-color' && !isNode) {
+              tcStyles['line-color'] = value
+            } else if (tcProperty.cytoscapeProperty === 'background-color' && isNode) {
+              tcStyles['background-color'] = value
+            } else if (tcProperty.cytoscapeProperty === 'width') {
+              if (isNode) {
+                tcStyles['width'] = value
+                tcStyles['height'] = value
+              } else {
+                tcStyles['width'] = value
+              }
+            } else {
+              tcStyles[tcProperty.cytoscapeProperty] = value
+            }
+          }
+        }
+      })
+
+      // Apply styling
+      if (Object.keys(tcStyles).length > 0) {
+        element.style(tcStyles)
+      }
+
+      // Apply animation
+      if (animationType && animationType !== 'none' && animationEngineRef.current) {
+        animationEngineRef.current.startAnimation(data.id, {
+          type: animationType as any,
+          duration: 1000,
+          intensity: 0.3,
+          speed: 1000
+        })
+      }
+    })
   }, [])
 
   const toggleVideoControls = useCallback(() => {
@@ -419,49 +797,55 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
   }, [selectedNodes])
 
-  // Periodically check for container availability after loading completes
+  // Simplified container ready check - runs after data is loaded
   useEffect(() => {
-    if (!loading && !error && !containerReady) {
+    if (!loading && !error && graphData && !containerReady) {
+      console.log('Data loaded, checking container availability...')
+
       const checkContainer = () => {
         if (containerRef.current) {
           const rect = containerRef.current.getBoundingClientRect()
-          console.log('Checking container periodically:', { rect })
+          console.log('Container check:', {
+            width: rect.width,
+            height: rect.height,
+            hasElement: !!containerRef.current
+          })
+
+          // More lenient check - just need the element to exist and have some dimensions
           if (rect.width > 0 && rect.height > 0) {
+            console.log('Container is ready for Cytoscape initialization')
             setContainerReady(true)
+            return true
           }
         }
+        return false
       }
-      
-      // Check immediately and then periodically
-      checkContainer()
-      const interval = setInterval(checkContainer, 100)
-      
-      // Clean up after 2 seconds if container still not ready
+
+      // Try immediately first
+      if (checkContainer()) {
+        return
+      }
+
+      // If not ready, check periodically with shorter intervals
+      const interval = setInterval(() => {
+        if (checkContainer()) {
+          clearInterval(interval)
+        }
+      }, 50) // Check every 50ms for faster response
+
+      // Force ready after 1 second if still not ready
       const timeout = setTimeout(() => {
         clearInterval(interval)
-        if (!containerReady) {
-          console.warn('Container check timeout - forcing ready state')
-          setContainerReady(true)
-        }
-      }, 2000)
-      
+        console.warn('Container check timeout - forcing ready state')
+        setContainerReady(true)
+      }, 1000) // Reduced timeout to 1 second
+
       return () => {
         clearInterval(interval)
         clearTimeout(timeout)
       }
     }
-  }, [loading, error, containerReady])
-
-  // Monitor container ref availability and set ready state (only check once initially)
-  useEffect(() => {
-    if (containerRef.current && !containerReady) {
-      console.log('Container ref is now available:', {
-        element: containerRef.current,
-        rect: containerRef.current.getBoundingClientRect()
-      })
-      setContainerReady(true)
-    }
-  }, []) // Run only once on mount
+  }, [loading, error, graphData, containerReady])
 
   // Cache for icon existence checks in GraphVisualization
   const graphIconExistsCache = new Map<string, boolean>()
@@ -478,7 +862,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       graphIconExistsCache.set(iconPath, exists)
       return exists
     } catch (error) {
-      console.warn(`Failed to check icon existence: ${iconPath}`, error)
+      console.warn(`Failed to check icon existence: ${iconPath}`, error instanceof Error ? error.message : String(error))
       graphIconExistsCache.set(iconPath, false)
       return false
     }
@@ -581,16 +965,25 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     if (!cyRef.current) return []
 
     const originalEdges: any[] = []
+    const storedEdgeIds = new Set<string>() // Track stored edge IDs to prevent duplicates
+
     memberIds.forEach(memberId => {
       const connectedEdges = cyRef.current!.edges(`[source = "${memberId}"], [target = "${memberId}"]`)
       connectedEdges.forEach(edge => {
-        originalEdges.push({
-          group: 'edges',
-          data: edge.data()
-        })
+        const edgeId = edge.id()
+        // Only store each edge once, even if it connects two nodes being grouped
+        if (!storedEdgeIds.has(edgeId)) {
+          storedEdgeIds.add(edgeId)
+          originalEdges.push({
+            group: 'edges',
+            data: edge.data()
+          })
+          console.log(`📦 Storing original edge: ${edgeId} (${edge.source().id()} → ${edge.target().id()}) - Source type: ${edge.source().data('type')}, Target type: ${edge.target().data('type')}`)
+        }
       })
     })
 
+    console.log(`Stored ${originalEdges.length} unique original edges for ${memberIds.length} nodes`)
     return originalEdges
   }
 
@@ -773,15 +1166,15 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               'background-image': (ele: any) => {
                 // Get the node type from Cytoscape element data
                 const nodeData = ele.data()
-                const type = nodeData.type
+                const type = nodeData?.type
 
-                if (!type) {
-                  console.warn(`No type found for node ${nodeData.id}:`, nodeData)
+                if (!type || typeof type !== 'string') {
+                  console.warn(`No type found for node ${nodeData?.id}:`, nodeData)
                   return '/icons-svg/unknown.svg'
                 }
 
                 // Convert to lowercase for case-insensitive matching
-                const filename = type.toLowerCase()
+                const filename = String(type).toLowerCase()
                 const primaryPath = `/icons-svg/${filename}.svg`
 
                 // Check cache first
@@ -888,6 +1281,46 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               'background-color': '#ffe6cc'
             }
           },
+          // TC_ALARM visual styles
+          {
+            selector: 'node.alarm-alert',
+            style: {
+              'border-color': '#dc3545',
+              'border-width': 4,
+              'background-color': '#f8d7da'
+            }
+          },
+          {
+            selector: 'node.alarm-warning',
+            style: {
+              'border-color': '#fd7e14',
+              'border-width': 3,
+              'background-color': '#fff3cd'
+            }
+          },
+          {
+            selector: 'node.alarm-success',
+            style: {
+              'border-color': '#198754',
+              'border-width': 2,
+              'background-color': '#d1e7dd'
+            }
+          },
+          {
+            selector: 'node.alarm-info',
+            style: {
+              'border-color': '#0dcaf0',
+              'border-width': 2,
+              'background-color': '#d1ecf1'
+            }
+          },
+          {
+            selector: 'node.alarm-none',
+            style: {
+              'border-color': '#6c757d',
+              'border-width': 2
+            }
+          },
           {
             selector: 'edge',
             style: {
@@ -937,7 +1370,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         ],
 
         layout: {
-          name: currentLayout,
+          name: sanitizeLayoutName(currentLayout === 'hierarchical-tree' ? 'grid' : currentLayout),
           fit: true,
           padding: 30
         } as any
@@ -1181,11 +1614,18 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       }
 
       cyRef.current = cy
+
+      // Initialize animation engine
+      if (animationEngineRef.current) {
+        animationEngineRef.current.destroy()
+      }
+      animationEngineRef.current = new TCAnimationEngine(cy)
+
       console.log('Cytoscape instance created successfully:', cy)
       console.log('Graph elements count:', cy.elements().length)
       console.log('Nodes count:', cy.nodes().length)
       console.log('Edges count:', cy.edges().length)
-      
+
       setLoading(false)
       
       // Run initial layout
@@ -1194,6 +1634,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         runLayout(currentLayout)
         setNodeCount(cy.nodes().length)
         setEdgeCount(cy.edges().length)
+
+        // Apply TC properties after layout
+        setTimeout(() => {
+          applyTCPropertiesToGraph()
+        }, 500)
+
         console.log('Layout and counts set')
       }, 100)
 
@@ -1212,7 +1658,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     try {
       setLoading(true)
       setError(null)
-      setContainerReady(false) // Reset container ready state
+      // Don't reset containerReady - let it stay true if already set
 
       console.log('GraphVisualization: Fetching data from /api/graph')
       const response = await fetch('/api/graph')
@@ -1426,6 +1872,28 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     return positions
   }
 
+  // Safety function to ensure we never pass 'hierarchical-tree' directly to Cytoscape
+  const sanitizeLayoutName = (layoutName: string): string => {
+    if (layoutName === 'hierarchical-tree') {
+      console.warn('Attempted to use hierarchical-tree layout directly, converting to grid')
+      return 'grid'
+    }
+    return layoutName
+  }
+
+  // Safety function to sanitize layout config objects
+  const sanitizeLayoutConfig = (config: any): any => {
+    if (!config) return config
+
+    const sanitizedConfig = { ...config }
+    if (sanitizedConfig.name === 'hierarchical-tree') {
+      console.warn('Layout config contains hierarchical-tree name, converting to grid')
+      sanitizedConfig.name = 'grid'
+    }
+
+    return sanitizedConfig
+  }
+
   // Helper function to determine the best root node for hierarchical layouts
   const determineRootNode = (cy: Core, explicitRootId?: string): string | undefined => {
     // If an explicit root is provided, use it (highest priority)
@@ -1483,6 +1951,11 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     const cy = cyRef.current
     const activeLayout = layoutName || currentLayout
     console.log('Running layout:', activeLayout, 'on', cy.nodes().length, 'nodes')
+
+    // Safety check to prevent passing 'hierarchical-tree' directly to Cytoscape
+    if (activeLayout === 'hierarchical-tree') {
+      console.log('Detected hierarchical-tree layout, applying special handling')
+    }
     
     setLayoutRunning(true)
     
@@ -1575,16 +2048,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         animationEasing: 'ease-out'
       },
       'hierarchical-tree': {
-        name: 'preset',
-        positions: (() => {
-          if (activeLayout === 'hierarchical-tree') {
-            const rootNodeId = determineRootNode(cy)
-            if (rootNodeId) {
-              return createHierarchicalTreeLayout(cy, rootNodeId)
-            }
-          }
-          return undefined
-        })(),
+        // This will be handled specially in the config selection logic above
+        name: 'grid',
         fit: true,
         padding: 50,
         animate: true,
@@ -1623,8 +2088,40 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       }
     }
 
-    const config = layoutConfigs[activeLayout] || layoutConfigs.grid
+    let config = layoutConfigs[activeLayout] || layoutConfigs.grid
+
+    // Additional safety check: ensure config.name is never 'hierarchical-tree'
+    if (config && config.name === 'hierarchical-tree') {
+      console.warn('Layout config has hierarchical-tree name, converting to grid')
+      config = { ...config, name: 'grid' }
+    }
+
+    // Special handling for hierarchical-tree layout
+    if (activeLayout === 'hierarchical-tree') {
+      const rootNodeId = determineRootNode(cy)
+      if (rootNodeId) {
+        const positions = createHierarchicalTreeLayout(cy, rootNodeId)
+        config = {
+          name: 'preset',
+          positions: positions,
+          fit: true,
+          padding: 50,
+          animate: true,
+          animationDuration: 500,
+          animationEasing: 'ease-out'
+        }
+      } else {
+        // Fallback to grid if no root found
+        config = layoutConfigs.grid
+      }
+    }
+
     console.log('Using layout config for', activeLayout + ':', config)
+
+    // Final safety check before applying layout
+    if (config && config.name) {
+      config.name = sanitizeLayoutName(config.name)
+    }
 
     // Enhanced debugging for circle layout
     if (activeLayout === 'circle') {
@@ -1642,8 +2139,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     console.log('Starting layout with group preservation')
     
     try {
-      // Run layout only on visible nodes (preserves groups)
-      const layout = visibleNodes.layout(config)
+      // Run layout only on visible nodes (preserves groups) with safety check
+      const safeConfig = sanitizeLayoutConfig(config)
+      const layout = visibleNodes.layout(safeConfig)
       
       // Use one-time event listeners to avoid multiple callbacks and cleanup properly
       layout.one('layoutstop', () => {
@@ -1699,15 +2197,18 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
         try {
           // Ensure group visibility state is maintained after layout
-          Object.entries(groups).forEach(([groupId, groupData]) => {
-            if (!groupData.expanded) {
-              // Ensure grouped nodes remain hidden
-              groupData.members.forEach(nodeId => {
-                const node = cy.nodes(`[id = "${nodeId}"]`)
-                if (node.length > 0 && node.style('display') !== 'none') {
-                  node.style('display', 'none')
-                }
-              })
+          // Use groupedNodesRef.current instead of groups state to avoid stale state issues
+          const currentGroupedNodes = groupedNodesRef.current
+          console.log('🔍 Layout preservation - groupedNodesRef contains:', Object.keys(currentGroupedNodes).length, 'grouped nodes')
+          console.log('🔍 Layout preservation - grouped node IDs:', Object.keys(currentGroupedNodes))
+
+          Object.entries(currentGroupedNodes).forEach(([nodeId, groupInfo]) => {
+            if (groupInfo && !groupInfo.expanded) {
+              const node = cy.nodes(`[id = "${nodeId}"]`)
+              if (node.length > 0 && node.style('display') !== 'none') {
+                console.log(`❌ Layout preservation hiding grouped node ${nodeId} (group: ${groupInfo.groupId})`)
+                node.style('display', 'none')
+              }
             }
           })
 
@@ -1842,7 +2343,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         animationEasing: 'ease-out'
       }
 
-      const layout = cy.layout(layoutConfig)
+      const layout = cy.layout(sanitizeLayoutConfig(layoutConfig))
 
       layout.one('layoutstop', () => {
         console.log('Hierarchy root layout completed for node:', nodeId)
@@ -1915,7 +2416,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           }
         } else {
           layoutConfig = {
-            name: currentLayout,
+            name: sanitizeLayoutName(currentLayout === 'hierarchical-tree' ? 'grid' : currentLayout),
             fit: true,
             padding: 50,
             animate: false
@@ -2011,8 +2512,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             }, 100)
           }
 
-        // Run the layout
-        cyRef.current.layout(layoutConfig).run()
+        // Run the layout with safety check
+        cyRef.current.layout(sanitizeLayoutConfig(layoutConfig)).run()
         
       } catch (error) {
         console.error('Error in centerAndFitGraph:', error)
@@ -2095,7 +2596,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         }
       } else {
         layoutConfig = {
-          name: currentLayout,
+          name: sanitizeLayoutName(currentLayout === 'hierarchical-tree' ? 'grid' : currentLayout),
           fit: true,
           padding: 100,
           animate: false
@@ -2165,7 +2666,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           }, 100)
         }
       
-      cyRef.current.layout(layoutConfig).run()
+      // Apply layout with safety check
+      cyRef.current.layout(sanitizeLayoutConfig(layoutConfig)).run()
       
     } catch (error) {
       console.error('Error in resetView:', error)
@@ -2235,13 +2737,26 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         })
 
         // Remove original edges between grouped nodes and external nodes to avoid duplication
+        console.log(`Removing original edges for ${nodeIds.length} nodes being grouped into ${groupId}`)
+        const edgesToRemove = new Set<string>() // Track edges to remove to avoid duplicates
+
         nodeIds.forEach(nodeId => {
           const connectedEdges = cyRef.current!.edges(`[source = "${nodeId}"], [target = "${nodeId}"]`)
-          if (connectedEdges.length > 0) {
-            console.log('Removing', connectedEdges.length, 'original edges connected to node:', nodeId)
-            cyRef.current!.remove(connectedEdges)
-          }
+          connectedEdges.forEach(edge => {
+            const edgeId = edge.id()
+            if (!edgesToRemove.has(edgeId)) {
+              edgesToRemove.add(edgeId)
+              console.log(`Marking edge for removal: ${edgeId} (${edge.source().id()} → ${edge.target().id()})`)
+            }
+          })
         })
+
+        if (edgesToRemove.size > 0) {
+          const edgeSelector = Array.from(edgesToRemove).map(id => `[id = "${id}"]`).join(', ')
+          const edgesToRemoveElements = cyRef.current!.edges(edgeSelector)
+          console.log(`Removing ${edgesToRemoveElements.length} unique edges from graph`)
+          cyRef.current!.remove(edgesToRemoveElements)
+        }
         
         // Create meta-edges with validation
         const metaEdges = createMetaEdges(groupId, nodeIds)
@@ -2280,72 +2795,162 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
   // Group nodes by a specific type (with toggle functionality)
   const groupBySpecificType = (targetType: string) => {
-    if (!cyRef.current || !graphData) return
+    if (!cyRef.current || !graphData || groupOperationRunning) {
+      console.log('Skipping groupBySpecificType - operation already running or invalid state')
+      return
+    }
 
-    // Check if a group for this type already exists
-    const existingGroupEntry = Object.entries(groups).find(([, group]) => group.sourceType === targetType)
+    // Prevent rapid successive operations
+    setGroupOperationRunning(true)
     
-    if (existingGroupEntry) {
-      // Ungroup the existing group
-      const [groupId, groupData] = existingGroupEntry
+    try {
+      // Check if a group for this type already exists
+      const existingGroupEntry = Object.entries(groups).find(([, group]) => group.sourceType === targetType)
       
-      // Show all nodes in the group
-      groupData.members.forEach(nodeId => {
-        const groupedNode = cyRef.current!.nodes(`[id = "${nodeId}"]`)
-        if (groupedNode.length > 0) {
-          groupedNode.style('display', 'element')
+      if (existingGroupEntry) {
+        // Ungroup the existing group
+        const [groupId, groupData] = existingGroupEntry
+        
+        console.log(`🔄 Ungrouping type group: ${targetType} (${groupData.members.length} members)`)
+        
+        // Step 1: Remove meta-edges for this group FIRST
+        const metaEdges = cyRef.current.edges(`[source = "${groupId}"], [target = "${groupId}"]`)
+        console.log(`🗑️ Removing ${metaEdges.length} meta-edges for group ${groupId}`)
+        if (metaEdges.length > 0) {
+          cyRef.current.remove(metaEdges)
         }
-      })
 
-      // Remove meta-edges for this group
-      cyRef.current.remove(cyRef.current.edges(`[source = "${groupId}"], [target = "${groupId}"]`))
-      
-      // Restore original edges for this group
-      if (groupData.originalEdges.length > 0) {
-        try {
-          console.log('Restoring original edges for type group:', targetType, 'Edges:', groupData.originalEdges.length)
-          
-          // Filter out any edges that might already exist to prevent duplicates
-          const existingEdgeIds = new Set(cyRef.current.edges().map(edge => edge.id()))
-          const edgesToRestore = groupData.originalEdges.filter(edge => !existingEdgeIds.has(edge.data.id))
-          
-          if (edgesToRestore.length > 0) {
-            cyRef.current.add(edgesToRestore)
-            console.log('Successfully restored', edgesToRestore.length, 'original edges for type group')
-          } else {
-            console.log('All original edges already exist for type group, no restoration needed')
+        // Step 2: Restore original edges BEFORE making nodes visible
+        if (groupData.originalEdges.length > 0) {
+          try {
+            console.log('🔗 Restoring original edges for type group:', targetType, 'Total stored:', groupData.originalEdges.length)
+            
+            // Get current edge IDs to prevent duplicates
+            const existingEdgeIds = new Set(cyRef.current.edges().map(edge => edge.id()))
+            
+            // Validate and filter edges to restore
+            const edgesToRestore = groupData.originalEdges.filter(edge => {
+              const edgeId = edge.data.id
+              const sourceId = edge.data.source
+              const targetId = edge.data.target
+
+              // Skip if edge already exists
+              if (existingEdgeIds.has(edgeId)) {
+                console.log(`⚠️ Edge ${edgeId} already exists, skipping`)
+                return false
+              }
+
+              // Verify both nodes exist (don't check visibility yet)
+              const sourceNode = cyRef.current!.nodes(`[id = "${sourceId}"]`)
+              const targetNode = cyRef.current!.nodes(`[id = "${targetId}"]`)
+
+              if (sourceNode.length === 0 || targetNode.length === 0) {
+                console.warn(`❌ Missing node for edge ${edgeId}: source=${sourceNode.length > 0}, target=${targetNode.length > 0}`)
+                return false
+              }
+
+              return true
+            })
+
+            if (edgesToRestore.length > 0) {
+              console.log(`🔗 Adding ${edgesToRestore.length} original edges back to graph`)
+              cyRef.current.add(edgesToRestore)
+              console.log(`✅ Successfully restored ${edgesToRestore.length} original edges for type group`)
+            } else {
+              console.log('ℹ️ No edges needed restoration for type group')
+            }
+          } catch (error) {
+            console.error('❌ Error restoring original edges for type group:', targetType, error)
           }
-        } catch (error) {
-          console.error('Error restoring original edges for type group:', targetType, error)
         }
+
+        // Step 3: Remove the group node
+        const groupNode = cyRef.current.nodes(`[id = "${groupId}"]`)
+        if (groupNode.length > 0) {
+          groupNode.remove()
+          console.log(`🗑️ Removed group node: ${groupId}`)
+        }
+
+        // Step 4: Make all grouped nodes visible with comprehensive restoration
+        groupData.members.forEach(nodeId => {
+          const groupedNode = cyRef.current!.nodes(`[id = "${nodeId}"]`)
+          if (groupedNode.length > 0) {
+            // Reset all visibility properties
+            groupedNode.removeStyle()
+            groupedNode.style({
+              'display': 'element',
+              'visibility': 'visible',
+              'opacity': 1
+            })
+            // Remove any grouping classes
+            groupedNode.removeClass('grouped hidden')
+            console.log(`✅ Fully restored visibility for node: ${nodeId}`)
+          } else {
+            console.warn(`❌ Node ${nodeId} not found during ungrouping`)
+          }
+        })
+
+        // Step 5: Clean up groupedNodesRef for all members of this group
+        if (groupData && groupData.members) {
+          console.log('🧹 Cleaning up groupedNodesRef for group:', groupId, 'with members:', groupData.members)
+          groupData.members.forEach(memberId => {
+            if (groupedNodesRef.current[memberId]) {
+              console.log(`🧹 Removing group data from groupedNodesRef for member: ${memberId}`)
+              delete groupedNodesRef.current[memberId]
+            }
+          })
+        }
+
+        // Step 6: Update groups state
+        setGroups(prev => {
+          const newGroups = { ...prev }
+          delete newGroups[groupId]
+          return newGroups
+        })
+
+        // Step 7: Force immediate layout refresh with a longer delay to ensure state is updated
+        setTimeout(() => {
+          console.log(`🔄 Running layout refresh after ungrouping ${targetType}`)
+          if (cyRef.current) {
+            // Ensure all elements are visible and properly positioned
+            cyRef.current.elements().style('display', 'element')
+            runLayout(currentLayout)
+            
+            // Additional fit and center after layout
+            setTimeout(() => {
+              if (cyRef.current) {
+                cyRef.current.fit(cyRef.current.elements(), 50)
+                cyRef.current.center()
+                console.log(`✅ Completed ungrouping and layout refresh for ${targetType}`)
+              }
+            }, 500)
+          }
+        }, 200)
+
+        toast({
+          title: 'Group Removed',
+          description: `Ungrouped ${groupData.members.length} "${targetType}" nodes and restored connections`,
+          status: 'success',
+          duration: 3000,
+          isClosable: true
+        })
+        
+        return
       }
-
-      // Remove the group node
-      const groupNode = cyRef.current.nodes(`[id = "${groupId}"]`)
-      if (groupNode.length > 0) {
-        groupNode.remove()
-      }
-
-      // Update groups state
-      setGroups(prev => {
-        const newGroups = { ...prev }
-        delete newGroups[groupId]
-        return newGroups
-      })
-
-      runLayout(currentLayout)
-
+    } catch (error) {
+      console.error('❌ Error during ungrouping operation:', error)
       toast({
-        title: 'Group Removed',
-        description: `Ungrouped ${groupData.members.length} "${targetType}" nodes`,
-        status: 'info',
+        title: 'Ungrouping Error',
+        description: 'Failed to ungroup nodes. Please try again.',
+        status: 'error',
         duration: 3000,
         isClosable: true
       })
-      
-      // Note: Users can now manually use Center & Fit or Reset View to reposition
-      
-      return
+    } finally {
+      // Always reset the operation flag
+      setTimeout(() => {
+        setGroupOperationRunning(false)
+      }, 500)
     }
 
     // Original grouping logic for when no group exists
@@ -2515,13 +3120,26 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     })
 
     // Remove original edges between grouped nodes and external nodes to avoid duplication
+    console.log(`Removing original edges for ${selectedNodes.length} nodes being grouped into custom group ${groupId}`)
+    const edgesToRemove = new Set<string>() // Track edges to remove to avoid duplicates
+
     selectedNodes.forEach(nodeId => {
       const connectedEdges = cyRef.current!.edges(`[source = "${nodeId}"], [target = "${nodeId}"]`)
-      if (connectedEdges.length > 0) {
-        console.log('Removing', connectedEdges.length, 'original edges connected to custom node:', nodeId)
-        cyRef.current!.remove(connectedEdges)
-      }
+      connectedEdges.forEach(edge => {
+        const edgeId = edge.id()
+        if (!edgesToRemove.has(edgeId)) {
+          edgesToRemove.add(edgeId)
+          console.log(`Marking edge for removal: ${edgeId} (${edge.source().id()} → ${edge.target().id()})`)
+        }
+      })
     })
+
+    if (edgesToRemove.size > 0) {
+      const edgeSelector = Array.from(edgesToRemove).map(id => `[id = "${id}"]`).join(', ')
+      const edgesToRemoveElements = cyRef.current!.edges(edgeSelector)
+      console.log(`Removing ${edgesToRemoveElements.length} unique edges from graph`)
+      cyRef.current!.remove(edgesToRemoveElements)
+    }
     
     // Create and add meta-edges with validation
     const metaEdges = createMetaEdges(groupId, selectedNodes)
@@ -2601,11 +3219,34 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         if (groupData) {
           console.log('Ungrouping group:', nodeId, 'with', groupData.members.length, 'members')
           
-          // Show all nodes in the group
+          // Show all nodes in the group with comprehensive visibility restoration
+          console.log('🔍 Restoring visibility for members:', groupData.members)
           groupData.members.forEach(id => {
             const groupedNode = cyRef.current!.nodes(`[id = "${id}"]`)
             if (groupedNode.length > 0) {
-              groupedNode.style('display', 'element')
+              console.log(`📍 Before restoration - Node ${id}:`, {
+                display: groupedNode.style('display'),
+                visibility: groupedNode.style('visibility'),
+                opacity: groupedNode.style('opacity'),
+                position: groupedNode.position()
+              })
+
+              // Comprehensive visibility restoration
+              groupedNode.removeStyle() // Clear all custom styles first
+              groupedNode.style({
+                'display': 'element',
+                'visibility': 'visible',
+                'opacity': 1
+              })
+
+              console.log(`✅ After restoration - Node ${id}:`, {
+                display: groupedNode.style('display'),
+                visibility: groupedNode.style('visibility'),
+                opacity: groupedNode.style('opacity'),
+                position: groupedNode.position()
+              })
+            } else {
+              console.error(`❌ Node ${id} not found in Cytoscape instance!`)
             }
           })
 
@@ -2617,21 +3258,69 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           // Restore original edges for this specific group
           if (groupData.originalEdges.length > 0) {
             try {
-              console.log('Restoring original edges for group:', nodeId, 'Edges:', groupData.originalEdges.length)
-              
-              // Filter out any edges that might already exist to prevent duplicates
+              console.log('Restoring original edges for group:', nodeId, 'Total stored edges:', groupData.originalEdges.length)
+
+              // Get current edge IDs to check for duplicates
               const existingEdgeIds = new Set(cyRef.current!.edges().map(edge => edge.id()))
-              const edgesToRestore = groupData.originalEdges.filter(edge => !existingEdgeIds.has(edge.data.id))
-              
+              console.log('Current edges in graph:', existingEdgeIds.size)
+
+              // Filter and validate edges to restore
+              const edgesToRestore = groupData.originalEdges.filter(edge => {
+                const edgeId = edge.data.id
+                const sourceId = edge.data.source
+                const targetId = edge.data.target
+
+                // Check if edge already exists
+                if (existingEdgeIds.has(edgeId)) {
+                  console.log(`Edge ${edgeId} already exists, skipping`)
+                  return false
+                }
+
+                // Check if both source and target nodes exist
+                const sourceNode = cyRef.current!.nodes(`[id = "${sourceId}"]`)
+                const targetNode = cyRef.current!.nodes(`[id = "${targetId}"]`)
+
+                if (sourceNode.length === 0) {
+                  console.warn(`❌ Source node ${sourceId} not found for edge ${edgeId}`)
+                  return false
+                }
+                if (targetNode.length === 0) {
+                  console.warn(`❌ Target node ${targetId} not found for edge ${edgeId}`)
+                  return false
+                }
+
+                // Check if nodes are visible (not hidden by other groups)
+                const sourceVisible = sourceNode.style('display') !== 'none'
+                const targetVisible = targetNode.style('display') !== 'none'
+
+                if (!sourceVisible) {
+                  console.warn(`❌ Source node ${sourceId} is hidden (display: ${sourceNode.style('display')}) for edge ${edgeId}`)
+                  return false
+                }
+                if (!targetVisible) {
+                  console.warn(`❌ Target node ${targetId} is hidden (display: ${targetNode.style('display')}) for edge ${edgeId}`)
+                  return false
+                }
+
+                console.log(`✅ Edge ${edgeId} (${sourceId} → ${targetId}) ready for restoration`)
+                return true
+              })
+
               if (edgesToRestore.length > 0) {
                 cyRef.current!.add(edgesToRestore)
-                console.log('Successfully restored', edgesToRestore.length, 'original edges')
+                console.log(`Successfully restored ${edgesToRestore.length} original edges for group ${nodeId}`)
+
+                // Verify restoration
+                const newEdgeCount = cyRef.current!.edges().length
+                console.log(`Graph now has ${newEdgeCount} total edges`)
               } else {
-                console.log('All original edges already exist, no restoration needed')
+                console.log('No edges needed restoration for group:', nodeId)
               }
             } catch (error) {
               console.error('Error restoring original edges for group:', nodeId, error)
             }
+          } else {
+            console.log('No original edges stored for group:', nodeId)
           }
 
           // Remove the group node
@@ -2653,12 +3342,56 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       return newGroups
     })
 
+    // CRITICAL: Also update the groupedNodesRef to prevent layout from re-hiding nodes
+    // We need to clean up the member nodes, not the group node itself
+    selectedNodes.forEach(nodeId => {
+      const groupData = groups[nodeId]
+      if (groupData && groupData.members) {
+        console.log('Cleaning up groupedNodesRef for group:', nodeId, 'with members:', groupData.members)
+        groupData.members.forEach(memberId => {
+          if (groupedNodesRef.current[memberId]) {
+            console.log('Removing group data from groupedNodesRef for member:', memberId)
+            delete groupedNodesRef.current[memberId]
+          }
+        })
+      }
+    })
+
     setSelectedNodes([])
-    
+
+    // CRITICAL: Force Cytoscape to refresh and re-render all elements
+    if (cyRef.current) {
+      console.log('🔄 Forcing Cytoscape viewport refresh...')
+
+      // Force a complete re-render of the graph
+      cyRef.current.forceRender()
+
+      // Ensure all elements are properly rendered
+      cyRef.current.elements().forEach(ele => {
+        if (ele.isNode() && ele.style('display') === 'element') {
+          console.log(`🔍 Node ${ele.id()} visibility check:`, {
+            display: ele.style('display'),
+            visibility: ele.style('visibility'),
+            opacity: ele.style('opacity'),
+            rendered: ele.rendered()
+          })
+        }
+      })
+
+      // Force viewport update
+      setTimeout(() => {
+        if (cyRef.current) {
+          cyRef.current.fit()
+          cyRef.current.center()
+          console.log('✅ Viewport refresh completed')
+        }
+      }, 100)
+    }
+
     // Force a re-render to update the Available Types display
     setTimeout(() => {
       runLayout(currentLayout)
-    }, 50)
+    }, 200)
 
     if (ungroupedCount > 0) {
       toast({
@@ -2672,6 +3405,316 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       // Note: Users can now manually use Center & Fit or Reset View to reposition
     }
   }
+
+  // Apply alarm filters to show/hide nodes based on alarm status
+  const applyAlarmFilters = useCallback(() => {
+    if (!cyRef.current) return
+
+    cyRef.current.nodes().forEach(node => {
+      const properties = node.data('properties') || {}
+      const alarmLevel = properties['TC_ALARM'] || 'None'
+
+      if (alarmFilters[alarmLevel]) {
+        node.style('display', 'element')
+      } else {
+        node.style('display', 'none')
+      }
+    })
+
+    // Update toast with filter status
+    const activeFilters = Object.entries(alarmFilters)
+      .filter(([_, active]) => active)
+      .map(([level, _]) => level)
+
+    toast({
+      title: 'Alarm Filters Applied',
+      description: `Showing nodes with: ${activeFilters.join(', ')}`,
+      status: 'info',
+      duration: 2000,
+      isClosable: true
+    })
+  }, [alarmFilters, toast])
+
+  // Preset alarm filter functions
+  const showOnlyAlerts = () => {
+    setAlarmFilters({
+      'Alert': true,
+      'Warning': false,
+      'Success': false,
+      'Info': false,
+      'None': false
+    })
+  }
+
+  const showAlertsAndWarnings = () => {
+    setAlarmFilters({
+      'Alert': true,
+      'Warning': true,
+      'Success': false,
+      'Info': false,
+      'None': false
+    })
+  }
+
+  const hideSuccessAndInfo = () => {
+    setAlarmFilters({
+      'Alert': true,
+      'Warning': true,
+      'Success': false,
+      'Info': false,
+      'None': true
+    })
+  }
+
+  const showAllAlarms = () => {
+    setAlarmFilters({
+      'Alert': true,
+      'Warning': true,
+      'Success': true,
+      'Info': true,
+      'None': true
+    })
+  }
+
+  // Apply alarm filters when they change
+  useEffect(() => {
+    if (cyRef.current && containerReady) {
+      applyAlarmFilters()
+    }
+  }, [alarmFilters, applyAlarmFilters, containerReady])
+
+  // Threat Path Filtering Functions
+  const updateAvailableThreatPaths = useCallback(() => {
+    if (!cyRef.current) return
+
+    const allElements = [...cyRef.current.nodes().map(n => ({ properties: n.data('properties') || {} })),
+                        ...cyRef.current.edges().map(e => ({ properties: e.data('properties') || {} }))]
+
+    const threatPaths = getAllThreatPaths(allElements)
+    setAvailableThreatPaths(threatPaths)
+
+    // Initialize filters for new threat paths
+    setThreatPathFilters(prev => {
+      const newFilters = { ...prev }
+      threatPaths.forEach(path => {
+        if (!(path in newFilters)) {
+          newFilters[path] = true // Default to showing all threat paths
+        }
+      })
+      return newFilters
+    })
+  }, [])
+
+  const applyThreatPathFilters = useCallback(() => {
+    if (!cyRef.current) return
+
+    const activeFilters = Object.entries(threatPathFilters)
+      .filter(([_, active]) => active)
+      .map(([path, _]) => path)
+
+    // Handle case when no filters are active
+    if (activeFilters.length === 0) {
+      if (threatPathFilterMode === 'show') {
+        // If no filters are active in show mode, show all elements
+        cyRef.current.elements().style('display', 'element')
+      } else {
+        // If no filters are active in hide mode, show all elements
+        cyRef.current.elements().style('display', 'element')
+      }
+      return
+    }
+
+    cyRef.current.elements().forEach(element => {
+      const properties = element.data('properties') || {}
+      const threatPaths = parseThreatPaths(properties['TC_THREAT_PATH'] || '')
+
+      // Check if element has any matching threat paths
+      const hasMatchingPath = threatPaths.some(path => activeFilters.includes(path))
+
+      if (threatPathFilterMode === 'show') {
+        // Show mode: ONLY show elements that have at least one matching threat path
+        // Hide all elements that don't have matching threat paths (including those with no threat paths)
+        element.style('display', hasMatchingPath ? 'element' : 'none')
+      } else {
+        // Hide mode: hide elements that have at least one matching threat path
+        // Show elements that don't have matching threat paths (including those with no threat paths)
+        element.style('display', hasMatchingPath ? 'none' : 'element')
+      }
+    })
+
+    // Update toast with filter status
+    const modeText = threatPathFilterMode === 'show' ? 'Showing' : 'Hiding'
+    toast({
+      title: 'Threat Path Filters Applied',
+      description: `${modeText} elements with: ${activeFilters.join(', ') || 'none'}`,
+      status: 'info',
+      duration: 2000,
+      isClosable: true
+    })
+  }, [threatPathFilters, threatPathFilterMode, toast])
+
+  const clearAllThreatPathFilters = () => {
+    setThreatPathFilters({})
+    if (cyRef.current) {
+      cyRef.current.elements().style('display', 'element')
+    }
+  }
+
+  const clearAllThreatPaths = useCallback(() => {
+    if (!cyRef.current) return
+
+    let elementsModified = 0
+
+    // Clear threat paths from all nodes and edges
+    cyRef.current.elements().forEach(element => {
+      const properties = element.data('properties') || {}
+      if (properties['TC_THREAT_PATH']) {
+        const updatedProperties = { ...properties }
+        delete updatedProperties['TC_THREAT_PATH']
+        element.data('properties', updatedProperties)
+        elementsModified++
+      }
+    })
+
+    // Update available threat paths
+    setAvailableThreatPaths([])
+    setThreatPathFilters({})
+
+    // Show success message
+    toast({
+      title: 'Threat Paths Cleared',
+      description: `Removed threat paths from ${elementsModified} elements`,
+      status: 'success',
+      duration: 3000,
+      isClosable: true
+    })
+
+    // Trigger property change callback if available
+    if (handlePropertyChange && typeof handlePropertyChange === 'function' && elementsModified > 0) {
+      // Note: This is a bulk operation, so we'll need to handle it differently
+      // For now, we'll just update the graph state
+      console.log(`Cleared threat paths from ${elementsModified} elements`)
+    }
+  }, [toast, handlePropertyChange])
+
+  const handleThreatPathCreated = useCallback(async (threatPathData: {
+    threatPathName: string
+    startNodeUid: string
+    endNodeUid: string
+    alarmLevel: string
+    animation: string
+    pathNodes: string[]
+    pathEdges: Array<{ from: string; to: string }>
+  }) => {
+    if (!cyRef.current) return
+
+    try {
+      // Apply threat path to Neo4j database
+      const response = await fetch('/api/threat-paths/apply', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(threatPathData)
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to apply threat path')
+      }
+
+      // Update local graph elements
+      threatPathData.pathNodes.forEach(nodeUid => {
+        const node = cyRef.current!.nodes(`[id = "${nodeUid}"]`)
+        if (node.length > 0) {
+          const properties = node.data('properties') || {}
+          const updatedThreatPath = addThreatPath(properties['TC_THREAT_PATH'] || '', threatPathData.threatPathName)
+
+          const updatedProperties = {
+            ...properties,
+            TC_THREAT_PATH: updatedThreatPath,
+            TC_ALARM: threatPathData.alarmLevel,
+            TC_ANIMATION: threatPathData.animation
+          }
+
+          node.data('properties', updatedProperties)
+        }
+      })
+
+      threatPathData.pathEdges.forEach(edge => {
+        const edgeElement = cyRef.current!.edges(`[source = "${edge.from}"][target = "${edge.to}"]`)
+        if (edgeElement.length > 0) {
+          const properties = edgeElement.data('properties') || {}
+          const updatedThreatPath = addThreatPath(properties['TC_THREAT_PATH'] || '', threatPathData.threatPathName)
+
+          const updatedProperties = {
+            ...properties,
+            TC_THREAT_PATH: updatedThreatPath,
+            TC_ALARM: threatPathData.alarmLevel,
+            TC_ANIMATION: threatPathData.animation
+          }
+
+          edgeElement.data('properties', updatedProperties)
+        }
+      })
+
+      // Update available threat paths
+      updateAvailableThreatPaths()
+
+      // Apply TC properties to update visual styling
+      setTimeout(() => {
+        applyTCPropertiesToGraph()
+      }, 100)
+
+      toast({
+        title: 'Threat Path Created',
+        description: `Successfully created threat path "${threatPathData.threatPathName}" with ${result.data.elementsUpdated} elements`,
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
+    } catch (error) {
+      console.error('Error creating threat path:', error)
+      toast({
+        title: 'Error Creating Threat Path',
+        description: 'Failed to create threat path. Please try again.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+    }
+  }, [toast, updateAvailableThreatPaths, applyTCPropertiesToGraph])
+
+  const selectAllThreatPaths = () => {
+    const allSelected = availableThreatPaths.reduce((acc, path) => {
+      acc[path] = true
+      return acc
+    }, {} as {[key: string]: boolean})
+    setThreatPathFilters(allSelected)
+  }
+
+  const deselectAllThreatPaths = () => {
+    const allDeselected = availableThreatPaths.reduce((acc, path) => {
+      acc[path] = false
+      return acc
+    }, {} as {[key: string]: boolean})
+    setThreatPathFilters(allDeselected)
+  }
+
+  // Update available threat paths when graph data changes
+  useEffect(() => {
+    if (cyRef.current && containerReady) {
+      updateAvailableThreatPaths()
+    }
+  }, [updateAvailableThreatPaths, containerReady])
+
+  // Apply threat path filters when they change
+  useEffect(() => {
+    if (cyRef.current && containerReady && availableThreatPaths.length > 0) {
+      applyThreatPathFilters()
+    }
+  }, [threatPathFilters, threatPathFilterMode, applyThreatPathFilters, containerReady, availableThreatPaths])
 
   // Enhanced reset groups functionality
   const resetGroups = () => {
@@ -2728,54 +3771,40 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     // Note: Users can now manually use Center & Fit or Reset View to reposition
   }
 
-  // Separate effect for initializing Cytoscape when container is ready
+  // Simplified Cytoscape initialization when container and data are ready
   useEffect(() => {
-    if (graphData && graphData.nodes.length > 0 && containerReady) {
-      console.log('Attempting to initialize Cytoscape...')
-      
-      // Add a longer delay and more robust checking
-      const initializeWithRetry = async (attempt = 1, maxAttempts = 5) => {
-        if (!containerRef.current) {
-          console.log(`Container ref not available (attempt ${attempt}/${maxAttempts})`)
-          if (attempt < maxAttempts) {
-            setTimeout(() => initializeWithRetry(attempt + 1, maxAttempts), 200 * attempt)
-          } else {
-            console.error('Failed to initialize after maximum attempts')
-            setError('Failed to initialize graph container')
-            setLoading(false)
-          }
-          return
-        }
+    if (graphData && graphData.nodes.length > 0 && containerReady && containerRef.current) {
+      console.log('Initializing Cytoscape with ready container and data...')
 
-        const containerRect = containerRef.current.getBoundingClientRect()
-        if (containerRect.width === 0 || containerRect.height === 0) {
-          console.log(`Container has no dimensions (attempt ${attempt}/${maxAttempts})`)
-          if (attempt < maxAttempts) {
-            setTimeout(() => initializeWithRetry(attempt + 1, maxAttempts), 200 * attempt)
-          } else {
-            console.error('Container never got dimensions')
-            setError('Container failed to get proper dimensions')
-            setLoading(false)
-          }
-          return
-        }
-
-        // Container is ready, initialize Cytoscape
+      // Simple initialization with minimal retry logic
+      const initializeGraph = async () => {
         try {
+          // Double-check container is still available and has dimensions
+          const rect = containerRef.current?.getBoundingClientRect()
+          if (!containerRef.current || !rect || rect.width === 0 || rect.height === 0) {
+            console.warn('Container not ready during initialization, retrying in 100ms...')
+            setTimeout(initializeGraph, 100)
+            return
+          }
+
+          console.log('Container verified, proceeding with Cytoscape initialization')
           const success = await initializeCytoscape(graphData.nodes, graphData.edges)
-          if (!success && attempt < maxAttempts) {
-            setTimeout(() => initializeWithRetry(attempt + 1, maxAttempts), 200 * attempt)
+
+          if (!success) {
+            console.warn('Cytoscape initialization failed, retrying once...')
+            setTimeout(async () => {
+              await initializeCytoscape(graphData.nodes, graphData.edges)
+            }, 200)
           }
         } catch (error) {
-          console.error('Failed to initialize Cytoscape:', error)
-          if (attempt < maxAttempts) {
-            setTimeout(() => initializeWithRetry(attempt + 1, maxAttempts), 200 * attempt)
-          }
+          console.error('Error during Cytoscape initialization:', error)
+          setError('Failed to initialize graph visualization')
+          setLoading(false)
         }
       }
 
-      // Start the initialization with retry logic
-      setTimeout(() => initializeWithRetry(), 100)
+      // Start initialization immediately
+      initializeGraph()
     }
   }, [graphData, containerReady])
 
@@ -2802,6 +3831,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           console.warn('Error during unmount cleanup:', error)
         }
         cyRef.current = null
+      }
+
+      // Clean up animation engine
+      if (animationEngineRef.current) {
+        animationEngineRef.current.destroy()
+        animationEngineRef.current = null
       }
     }
   }, [refreshTrigger])
@@ -2840,6 +3875,11 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       resizeObserver.disconnect()
     }
   }, [showControls, showGroupPanel, groups])
+
+  useEffect(() => {
+    // Only run layout if groups or layout changes (after grouping/ungrouping)
+    runLayout(currentLayout)
+  }, [groups, currentLayout])
 
   // Render loading state
   if (loading) {
@@ -3043,9 +4083,55 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 </Button>
               </WrapItem>
               <WrapItem>
-                <Button 
+                <Button
                   size={isMobile ? "md" : "sm"}
-                  variant="outline" 
+                  colorScheme="purple"
+                  variant="outline"
+                  onClick={onAlarmFilterOpen}
+                  isDisabled={nodeCount === 0}
+                >
+                  Alarm Filters
+                </Button>
+              </WrapItem>
+              <WrapItem>
+                <Button
+                  size={isMobile ? "md" : "sm"}
+                  colorScheme="blue"
+                  variant="outline"
+                  onClick={onThreatPathDialogOpen}
+                  isDisabled={nodeCount === 0}
+                >
+                  Create Threat Path
+                </Button>
+              </WrapItem>
+              <WrapItem>
+                <Button
+                  size={isMobile ? "md" : "sm"}
+                  colorScheme="orange"
+                  variant="outline"
+                  onClick={onThreatPathFilterOpen}
+                  isDisabled={nodeCount === 0 || availableThreatPaths.length === 0}
+                >
+                  Threat Paths ({availableThreatPaths.length})
+                </Button>
+              </WrapItem>
+              {availableThreatPaths.length > 0 && (
+                <WrapItem>
+                  <Button
+                    size={isMobile ? "md" : "sm"}
+                    colorScheme="red"
+                    variant="outline"
+                    onClick={clearAllThreatPaths}
+                    isDisabled={nodeCount === 0}
+                  >
+                    Clear All Threat Paths
+                  </Button>
+                </WrapItem>
+              )}
+              <WrapItem>
+                <Button
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
                   onClick={resetGroups}
                   isDisabled={Object.keys(groups).length === 0}
                 >
@@ -3332,6 +4418,233 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         </ModalContent>
       </Modal>
 
+      {/* Alarm Filter Modal */}
+      <Modal isOpen={isAlarmFilterOpen} onClose={onAlarmFilterClose} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Alarm Status Filters</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={6} align="stretch">
+              <Text fontSize="sm" color={textColor}>
+                Show or hide nodes based on their alarm status. Only nodes with selected alarm levels will be visible.
+              </Text>
+
+              {/* Individual Alarm Level Toggles */}
+              <Box>
+                <Text fontSize="md" fontWeight="bold" mb={3}>Alarm Levels</Text>
+                <SimpleGrid columns={2} spacing={4}>
+                  {Object.entries(TC_ALARM_LEVELS).map(([level, config]) => (
+                    <FormControl key={level} display="flex" alignItems="center">
+                      <Switch
+                        id={`alarm-${level}`}
+                        isChecked={alarmFilters[level]}
+                        onChange={(e) => setAlarmFilters(prev => ({
+                          ...prev,
+                          [level]: e.target.checked
+                        }))}
+                        colorScheme={level === 'Alert' ? 'red' : level === 'Warning' ? 'orange' : level === 'Success' ? 'green' : level === 'Info' ? 'blue' : 'gray'}
+                      />
+                      <FormLabel htmlFor={`alarm-${level}`} ml={3} mb={0}>
+                        <HStack>
+                          <Box
+                            w={3}
+                            h={3}
+                            borderRadius="full"
+                            bg={config.color}
+                            border="1px solid"
+                            borderColor={config.color}
+                          />
+                          <Text>{config.label}</Text>
+                        </HStack>
+                      </FormLabel>
+                    </FormControl>
+                  ))}
+                </SimpleGrid>
+              </Box>
+
+              {/* Preset Filter Buttons */}
+              <Box>
+                <Text fontSize="md" fontWeight="bold" mb={3}>Quick Presets</Text>
+                <Wrap spacing={2}>
+                  <WrapItem>
+                    <Button size="sm" colorScheme="red" variant="outline" onClick={showOnlyAlerts}>
+                      Show Only Alerts
+                    </Button>
+                  </WrapItem>
+                  <WrapItem>
+                    <Button size="sm" colorScheme="orange" variant="outline" onClick={showAlertsAndWarnings}>
+                      Alerts & Warnings
+                    </Button>
+                  </WrapItem>
+                  <WrapItem>
+                    <Button size="sm" colorScheme="gray" variant="outline" onClick={hideSuccessAndInfo}>
+                      Hide Success & Info
+                    </Button>
+                  </WrapItem>
+                  <WrapItem>
+                    <Button size="sm" colorScheme="green" variant="outline" onClick={showAllAlarms}>
+                      Show All
+                    </Button>
+                  </WrapItem>
+                </Wrap>
+              </Box>
+
+              {/* Current Filter Status */}
+              <Box p={3} bg={useColorModeValue('gray.50', 'gray.700')} borderRadius="md">
+                <Text fontSize="sm" fontWeight="bold" mb={2}>Current Filter Status:</Text>
+                <Text fontSize="xs" color={textColor}>
+                  Showing: {Object.entries(alarmFilters)
+                    .filter(([_, active]) => active)
+                    .map(([level, _]) => level)
+                    .join(', ') || 'None'}
+                </Text>
+              </Box>
+            </VStack>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={() => {
+              applyAlarmFilters()
+              onAlarmFilterClose()
+            }}>
+              Apply Filters
+            </Button>
+            <Button variant="ghost" onClick={onAlarmFilterClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Threat Path Filter Modal */}
+      <Modal isOpen={isThreatPathFilterOpen} onClose={onThreatPathFilterClose} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Threat Path Filters</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack spacing={6} align="stretch">
+              <Text fontSize="sm" color={textColor}>
+                Filter graph elements based on their threat path identifiers.
+                Elements can belong to multiple threat paths simultaneously.
+              </Text>
+
+              {/* Filter Mode Selection */}
+              <Box>
+                <Text fontSize="md" fontWeight="bold" mb={3}>Filter Mode</Text>
+                <HStack spacing={4}>
+                  <Button
+                    size="sm"
+                    colorScheme={threatPathFilterMode === 'show' ? 'blue' : 'gray'}
+                    variant={threatPathFilterMode === 'show' ? 'solid' : 'outline'}
+                    onClick={() => setThreatPathFilterMode('show')}
+                  >
+                    Show Selected
+                  </Button>
+                  <Button
+                    size="sm"
+                    colorScheme={threatPathFilterMode === 'hide' ? 'red' : 'gray'}
+                    variant={threatPathFilterMode === 'hide' ? 'solid' : 'outline'}
+                    onClick={() => setThreatPathFilterMode('hide')}
+                  >
+                    Hide Selected
+                  </Button>
+                </HStack>
+                <Text fontSize="xs" color="gray.500" mt={2}>
+                  {threatPathFilterMode === 'show'
+                    ? 'Show only elements with selected threat paths'
+                    : 'Hide elements with selected threat paths'}
+                </Text>
+              </Box>
+
+              {/* Available Threat Paths */}
+              {availableThreatPaths.length > 0 ? (
+                <Box>
+                  <HStack justify="space-between" mb={3}>
+                    <Text fontSize="md" fontWeight="bold">
+                      Available Threat Paths ({availableThreatPaths.length})
+                    </Text>
+                    <HStack spacing={2}>
+                      <Button size="xs" variant="ghost" onClick={selectAllThreatPaths}>
+                        Select All
+                      </Button>
+                      <Button size="xs" variant="ghost" onClick={deselectAllThreatPaths}>
+                        Clear All
+                      </Button>
+                    </HStack>
+                  </HStack>
+
+                  <VStack spacing={2} align="stretch" maxH="300px" overflowY="auto">
+                    {availableThreatPaths.map(threatPath => (
+                      <FormControl key={threatPath} display="flex" alignItems="center">
+                        <Checkbox
+                          isChecked={threatPathFilters[threatPath] || false}
+                          onChange={(e) => setThreatPathFilters(prev => ({
+                            ...prev,
+                            [threatPath]: e.target.checked
+                          }))}
+                          colorScheme="orange"
+                        >
+                          <Text fontSize="sm" fontFamily="mono">
+                            {threatPath}
+                          </Text>
+                        </Checkbox>
+                      </FormControl>
+                    ))}
+                  </VStack>
+                </Box>
+              ) : (
+                <Alert status="info">
+                  <AlertIcon />
+                  <Box>
+                    <Text fontSize="sm">
+                      No threat paths found in the current dataset.
+                    </Text>
+                    <Text fontSize="xs" color="gray.500" mt={1}>
+                      Create threat paths using the threat path creation tool.
+                    </Text>
+                  </Box>
+                </Alert>
+              )}
+
+              {/* Current Filter Status */}
+              <Box p={3} bg={useColorModeValue('gray.50', 'gray.700')} borderRadius="md">
+                <Text fontSize="sm" fontWeight="bold" mb={2}>Current Filter Status:</Text>
+                <Text fontSize="xs" color={textColor}>
+                  {threatPathFilterMode === 'show' ? 'Showing' : 'Hiding'}: {
+                    Object.entries(threatPathFilters)
+                      .filter(([_, active]) => active)
+                      .map(([path, _]) => path)
+                      .join(', ') || 'None'
+                  }
+                </Text>
+              </Box>
+            </VStack>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="orange" mr={3} onClick={() => {
+              applyThreatPathFilters()
+              onThreatPathFilterClose()
+            }}>
+              Apply Filters
+            </Button>
+            <Button variant="ghost" mr={3} onClick={clearAllThreatPathFilters}>
+              Clear Filters
+            </Button>
+            <Button variant="ghost" onClick={onThreatPathFilterClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Threat Path Creation Dialog */}
+      <ThreatPathDialog
+        isOpen={isThreatPathDialogOpen}
+        onClose={onThreatPathDialogClose}
+        onThreatPathCreated={handleThreatPathCreated}
+      />
+
       {/* Interactive Tooltip */}
       {tooltipData && (
         <Portal>
@@ -3422,9 +4735,10 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         isOpen={propertiesPanel.isOpen}
         onClose={closePropertiesPanel}
         selectedElement={propertiesPanel.selectedElement}
+        onPropertyChange={handlePropertyChange}
       />
     </Box>
   )
 }
 
-export default GraphVisualization 
+export default GraphVisualization

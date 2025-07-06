@@ -51,12 +51,17 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Touch-Friendly Animations**: Optimized animation timings for mobile performance
 - **Adaptive Interface**: Controls automatically collapse on mobile for maximum graph space
 
-### 🔗 Dynamic Grouping System
-- **Auto-Group by Type**: One-click grouping of nodes by their type attribute
-- **Manual Grouping**: Select multiple nodes to create custom groups
-- **Group Management**: Toggle visibility, ungroup, and reset operations
-- **Smart Group Naming**: Automatic naming with node counts (e.g., "Server (3)")
-- **Visual Feedback**: Toast notifications for all grouping operations
+### 🔗 Advanced Dynamic Grouping System
+- **Auto-Group by Type**: One-click grouping of nodes by their type attribute with intelligent type detection
+- **Manual Grouping**: Select multiple nodes to create custom groups with user-defined names
+- **Robust Ungrouping**: Comprehensive ungrouping functionality with proper node visibility restoration
+- **Group State Management**: Advanced state tracking prevents layout conflicts and ensures visual consistency
+- **Smart Group Naming**: Automatic naming with node counts (e.g., "Machine (6)", "Server (3)")
+- **Meta-Edge System**: Automatic creation and management of group-to-external connections
+- **Edge Preservation**: Original edge relationships stored and restored during ungrouping operations
+- **Layout Stability**: Grouping/ungrouping operations maintain graph layout positions
+- **Visual Feedback**: Toast notifications and detailed console logging for all grouping operations
+- **Type-Based Operations**: Intelligent handling of existing groups when creating new type-based groups
 
 ### 🎛️ Modern User Interface
 - **Dark/Light Mode Toggle**: Animated theme switching with smooth transitions
@@ -73,21 +78,49 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 ### 🔧 Technical Features
 - **Dynamic Type Detection**: Automatically discovers and displays all node types in dataset
 - **Context-Aware Interactions**: Different behaviors for regular nodes vs group nodes
-- **State Management**: Proper tracking of selections, groups, and visibility states
+- **Advanced State Management**: Dual-state tracking with React state and refs for layout stability
+- **TC_ Property System**: Advanced custom property system for visual styling and animations
+- **Alarm Management**: Comprehensive security alarm status system with filtering capabilities
+- **Layout Preservation**: Graph positions maintained during property updates and grouping operations
 - **Integration Configuration**: Persistent settings management with localStorage for data source connections
 - **Modular Architecture**: Separate components for different integration categories and types
-- **Error Handling**: Graceful handling of missing icons and malformed data
+- **Robust Error Handling**: Graceful handling of missing icons, malformed data, and state conflicts
 - **Performance Optimized**: Efficient re-layout and rendering with 60fps animations
 - **Advanced Animation System**: Framer Motion + Lottie React for smooth UX
 - **Enhanced Component Architecture**: Memoized components to prevent infinite loops
 - **Stable React Patterns**: useCallback and useMemo for optimal performance
+- **Comprehensive Debugging**: Detailed console logging for troubleshooting complex operations
+- **Memory Management**: Proper cleanup and garbage collection for large datasets
+
+## 🆕 Recent Improvements & Bug Fixes
+
+### Major Grouping System Overhaul (Latest Update)
+- **Fixed Critical Ungrouping Bug**: Resolved issue where ungrouped nodes remained invisible after ungrouping operations
+- **Enhanced State Management**: Implemented dual-state tracking to prevent layout conflicts between React state and Cytoscape.js
+- **Improved Edge Restoration**: Comprehensive edge validation and restoration system with duplicate prevention
+- **Layout Preservation Logic**: Fixed group state preservation to use current refs instead of potentially stale React state
+- **Advanced Debugging**: Added detailed console logging for troubleshooting complex grouping operations
+- **Performance Optimization**: Streamlined ungrouping sequence with proper timing and state cleanup
+
+### Technical Improvements
+- **React Hooks Compliance**: Fixed React Hooks order warnings and improved component stability
+- **Memory Management**: Enhanced cleanup of grouped node references to prevent memory leaks
+- **Error Handling**: Robust error handling throughout the grouping/ungrouping pipeline
+- **Visual Feedback**: Comprehensive toast notifications and status indicators for all operations
+- **Code Quality**: Improved TypeScript types and reduced code complexity
+
+### User Experience Enhancements
+- **Reliable Operations**: Grouping and ungrouping now work consistently across all scenarios
+- **Visual Consistency**: Proper node visibility restoration with comprehensive style reset
+- **Smooth Interactions**: Eliminated visual glitches and layout jumping during group operations
+- **Better Feedback**: Enhanced user feedback with detailed operation status and error messages
 
 ## 🛠️ Technologies
 
 - **Framework**: Next.js 14.0.0 with TypeScript
 - **UI Library**: Chakra UI with custom Visium theme and dark mode support
 - **Animations**: Framer Motion 10.0.0 + Lottie React for advanced animations
-- **Graph Visualization**: Cytoscape.js with multiple layout algorithms
+- **Graph Visualization**: Cytoscape.js with multiple layout algorithms and advanced state management
 - **Mobile Gestures**: @use-gesture/react for touch interactions
 - **Persistent Storage**: PostgreSQL with Neon hosting for dataset management
 - **Configuration Management**: Browser localStorage for integration settings persistence
@@ -150,7 +183,12 @@ The application expects JSON files with the following structure:
         "property1": "value1",
         "timestamp": "2023-12-31T12:00:00.000Z",
         "longitude": -74.0060,
-        "latitude": 40.7128
+        "latitude": 40.7128,
+        "TC_SIZE": 60,
+        "TC_COLOR": "#3182ce",
+        "TC_ALARM": "Warning",
+        "TC_ANIMATION": "pulse",
+        "TC_THREAT_PATH": "THREAT-malware-to-internet,THREAT-data-exfiltration"
       },
       "icon": "optional/path/to/icon.png"
     }
@@ -189,6 +227,20 @@ The application expects JSON files with the following structure:
 - `to`: Target node UID
 - `type`: Relationship type (e.g., "CONNECTS_TO", "HOSTS")
 - `properties`: Object containing additional properties
+
+### TC_ Properties (Optional)
+
+**Custom Visual Properties:**
+- `TC_SIZE`: Node size in pixels (10-100)
+- `TC_WIDTH`: Element width for precise control
+- `TC_COLOR`: Element color (hex, rgb, or named colors)
+- `TC_OPACITY`: Transparency level (0.0-1.0)
+- `TC_TEXT_COLOR`: Label text color
+- `TC_CURVE`: Edge curve style (straight, bezier, segments, taxi)
+- `TC_LINE`: Line style (solid, dotted, dashed)
+- `TC_ANIMATION`: Animation effect (none, pulse, glow, flow)
+- `TC_ALARM`: Security alarm level (Alert, Warning, Success, Info, None)
+- `TC_THREAT_PATH`: Comma-separated threat path identifiers (e.g., "THREAT-malware-to-internet,THREAT-data-exfiltration")
 
 ### Auto-Generated Properties
 
@@ -369,6 +421,184 @@ These videos are designed to evolve into real-time generation capabilities:
 - **Predictive Analytics**: Videos respond to predictive security models
 - **Adaptive Visualization**: Background patterns change based on detected anomalies
 
+## 🎨 TC_ Properties System
+
+### Advanced Custom Property Framework
+
+The TruContext Demo features a sophisticated TC_ (TruContext) property system that allows users to apply custom visual styling, animations, and security alarm states to graph elements. This system provides powerful customization capabilities while maintaining layout stability and performance.
+
+#### Available TC_ Properties
+
+**Visual Styling Properties:**
+- **TC_SIZE**: Node size in pixels (10-100px range with slider control)
+- **TC_WIDTH**: Element width for precise sizing control
+- **TC_COLOR**: Element color with full color picker interface
+- **TC_OPACITY**: Transparency control (0.0-1.0 range)
+- **TC_TEXT_COLOR**: Label text color customization
+
+**Edge-Specific Properties:**
+- **TC_CURVE**: Edge curve style (straight, bezier, segments, taxi)
+- **TC_LINE**: Line style (solid, dotted, dashed)
+
+**Animation Properties:**
+- **TC_ANIMATION**: Visual animation effects (none, pulse, glow, flow)
+
+**Security Alarm Properties:**
+- **TC_ALARM**: Security alarm severity levels (Alert, Warning, Success, Info, None)
+
+**Threat Path Properties:**
+- **TC_THREAT_PATH**: Comma-separated threat path identifiers for tracking security paths
+
+#### TC_ALARM Security System
+
+The TC_ALARM property provides a comprehensive security alarm management system designed for cybersecurity visualization and threat monitoring.
+
+**Alarm Severity Levels:**
+
+1. **Alert** 🔴
+   - **Color**: Red (#dc3545)
+   - **Border**: 4px red border with box shadow
+   - **Background**: Light red tint (#f8d7da)
+   - **Use Case**: Critical security threats, active breaches, high-priority incidents
+
+2. **Warning** 🟠
+   - **Color**: Orange (#fd7e14)
+   - **Border**: 3px orange border with box shadow
+   - **Background**: Light yellow tint (#fff3cd)
+   - **Use Case**: Potential threats, suspicious activity, medium-priority alerts
+
+3. **Success** 🟢
+   - **Color**: Green (#198754)
+   - **Border**: 2px green border
+   - **Background**: Light green tint (#d1e7dd)
+   - **Use Case**: Secure systems, successful security checks, resolved incidents
+
+4. **Info** 🔵
+   - **Color**: Blue (#0dcaf0)
+   - **Border**: 2px blue border
+   - **Background**: Light blue tint (#d1ecf1)
+   - **Use Case**: Informational alerts, system status, monitoring data
+
+5. **None** ⚪
+   - **Color**: Gray (#6c757d)
+   - **Border**: 2px gray border
+   - **Background**: Transparent
+   - **Use Case**: Normal operation, no active alerts
+
+#### Alarm Filtering System
+
+**Interactive Filter Dialog:**
+- **Individual Level Toggles**: Switch-based controls for each alarm severity
+- **Real-time Filtering**: Instantly show/hide nodes based on alarm status
+- **Filter Status Display**: Live summary of active filters
+- **Visual Feedback**: Toast notifications when filters are applied
+
+**Quick Preset Filters:**
+- **Show Only Alerts**: Display only critical Alert-level nodes
+- **Alerts & Warnings**: Show Alert and Warning level nodes
+- **Hide Success & Info**: Hide Success and Info nodes, show others
+- **Show All**: Display all alarm levels (reset filters)
+
+**Filter Integration:**
+- **Topology-Specific**: Filtering designed specifically for graph topology view
+- **Layout Preservation**: Filters maintain current graph layout and positions
+- **Performance Optimized**: Efficient show/hide operations without layout recalculation
+
+#### Property Management Interface
+
+**Properties Panel Integration:**
+- **Dropdown Selection**: User-friendly dropdown for TC_ALARM values
+- **Color Picker**: Advanced color selection for TC_COLOR properties
+- **Slider Controls**: Precise numeric input for TC_SIZE and TC_OPACITY
+- **Animation Selection**: Dropdown menu for TC_ANIMATION effects
+- **Real-time Preview**: Immediate visual feedback as properties change
+
+**Preset Buttons:**
+- **Alert Preset**: Sets TC_ALARM to "Alert" + pulse animation
+- **Warning Preset**: Sets TC_ALARM to "Warning" + glow animation
+- **Success Preset**: Sets TC_ALARM to "Success" + no animation
+- **Info Preset**: Sets TC_ALARM to "Info" + flow animation
+- **Reset All**: Sets TC_ALARM to "None" + removes animations
+
+#### TC_THREAT_PATH System
+
+The TC_THREAT_PATH property provides comprehensive threat path tracking capabilities designed for cybersecurity analysis and attack vector visualization.
+
+**Threat Path Structure:**
+- **Format**: Comma-separated threat path identifiers (e.g., "THREAT-malware-to-internet,THREAT-data-exfiltration")
+- **Multi-Path Support**: Nodes and edges can belong to multiple overlapping threat paths simultaneously
+- **Automatic Deduplication**: System prevents duplicate threat path identifiers when adding paths
+- **Text Input Control**: Simple text input interface for manual threat path assignment
+
+**Threat Path Creation:**
+- **Neo4j Integration**: Automatic shortest path calculation using Neo4j Cypher queries
+- **Start/End Selection**: Choose source and destination nodes from searchable dropdowns
+- **Path Validation**: Comprehensive error handling and path existence validation
+- **Custom Naming**: User-defined threat path names with format recommendations (THREAT-description)
+- **Alarm Integration**: Assign alarm levels (Alert/Warning/Success/Info/None) to threat paths
+- **Animation Effects**: Apply visual animations (pulse/glow/flow/none) to threat path elements
+
+**Threat Path Filtering:**
+- **Show/Hide Modes**: Flexible filtering with "Show Selected" and "Hide Selected" modes
+- **Multi-Select Interface**: Checkbox-based selection of multiple threat paths for filtering
+- **Real-time Updates**: Automatic detection and filtering of available threat paths
+- **Quick Actions**: Select All, Clear All, and preset filter combinations
+- **Visual Feedback**: Toast notifications and status indicators for filter operations
+
+**Threat Path Management:**
+- **Clear All Functionality**: Remove all threat paths from dataset with confirmation dialog
+- **PostgreSQL Persistence**: Automatic persistence through existing JSONB properties schema
+- **Bulk Operations**: Efficient handling of multiple element updates
+- **Data Integrity**: Proper validation and error handling throughout the system
+
+#### Advanced Features
+
+**Layout Preservation:**
+- **Stable Positioning**: Graph layout remains unchanged during property updates
+- **No Auto-Repositioning**: Property changes don't trigger layout recalculation
+- **Visual Continuity**: Users can track which nodes were modified
+- **Performance Optimized**: Batch operations prevent rendering issues
+
+**Undo/Redo System:**
+- **Property History**: Full undo/redo support for all TC_ property changes
+- **Batch Operations**: Multiple property changes grouped into single undo actions
+- **State Persistence**: Property states maintained across layout switches
+- **Error Recovery**: Robust error handling with automatic state restoration
+
+**Cross-Layout Persistence:**
+- **Layout Independence**: TC_ properties preserved when switching layouts
+- **Automatic Reapplication**: Properties automatically reapplied after layout changes
+- **Visual Consistency**: Styling maintained across all layout algorithms
+- **Animation Continuity**: Animations resume properly after layout transitions
+
+**Integration with Existing Features:**
+- **Group Compatibility**: TC_ properties work with grouped and ungrouped nodes
+- **Selection System**: Properties panel updates based on selected elements
+- **Export/Import**: TC_ properties included in dataset save/load operations
+- **Multi-View Support**: Properties visible across all visualization views
+
+#### Usage Workflow
+
+**Basic Property Application:**
+1. **Select Element**: Click any node or edge in the graph
+2. **Open Properties Panel**: Properties panel automatically opens for selected element
+3. **Modify Properties**: Use controls to adjust TC_ properties (size, color, alarm, etc.)
+4. **Real-time Updates**: See changes applied immediately without layout disruption
+5. **Save Changes**: Properties automatically saved with undo/redo support
+
+**Alarm Management Workflow:**
+1. **Set Alarm Levels**: Use dropdown or preset buttons to assign alarm severity
+2. **Visual Verification**: Observe immediate visual changes (border color, background)
+3. **Filter by Alarms**: Use "Alarm Filters" button to open filtering dialog
+4. **Apply Filters**: Toggle alarm levels to show/hide nodes based on security status
+5. **Monitor Status**: Use filter status display to track active alarm filters
+
+**Preset Usage:**
+1. **Quick Application**: Use preset buttons for common alarm + animation combinations
+2. **Batch Operations**: Apply presets to multiple selected nodes simultaneously
+3. **Reset Functionality**: Use "Reset All" to clear all TC_ properties
+4. **Consistent Styling**: Presets ensure consistent visual representation across teams
+
 ## 🎮 Interactive Features
 
 ### Enhanced Graph Interactions
@@ -533,25 +763,95 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 - Handles both directed and undirected graph structures
 - Maintains proper node positioning across different screen sizes
 
-### Grouping Features
+### Advanced Grouping Features
 
 #### Auto-Group by Type
-- Automatically detects all unique node types in dataset
-- Creates groups for types with 2+ nodes
-- Groups labeled with type name and count
-- One-click operation with visual feedback
+- **Intelligent Type Detection**: Automatically discovers all unique node types in dataset
+- **Smart Group Creation**: Creates groups for types with 2+ nodes, with automatic conflict resolution
+- **Type-Based Ungrouping**: Existing groups of the same type are automatically ungrouped before creating new ones
+- **Dynamic Group Labels**: Groups labeled with type name and member count (e.g., "Machine (6)")
+- **One-Click Operation**: Single button click with comprehensive visual feedback and toast notifications
 
 #### Manual Grouping
-1. Click nodes to select them (selection counter appears)
-2. Click "Group Selected" when 2+ nodes are selected
-3. Enter custom group name in modal dialog
-4. Group created with selected nodes hidden
+1. **Node Selection**: Click nodes to select them (selection counter appears in real-time)
+2. **Group Creation**: Click "Group Selected" when 2+ nodes are selected
+3. **Custom Naming**: Enter custom group name in modal dialog with validation
+4. **Automatic Hiding**: Group created with selected nodes hidden and meta-edges established
+5. **Edge Preservation**: Original edge relationships automatically stored for later restoration
 
-#### Group Management
-- **Click Group Nodes**: Toggle visibility of grouped nodes
-- **Ungroup**: Select group nodes and click "Ungroup"
-- **Reset Groups**: Remove all groups and show all nodes
-- **Visual Indicators**: Group count shown in info panel
+#### Robust Group Management
+- **Toggle Visibility**: Click group nodes to show/hide grouped members with smooth transitions
+- **Comprehensive Ungrouping**: Select group nodes and click "Ungroup" for complete restoration:
+  - **Node Visibility Restoration**: Multi-step visibility restoration with style reset and comprehensive property setting
+  - **Edge Restoration**: Original edges validated and restored with duplicate prevention
+  - **Meta-Edge Cleanup**: Automatic removal of temporary group-to-external connections
+  - **State Synchronization**: Advanced cleanup of internal state references to prevent layout conflicts
+  - **Layout Preservation**: Graph positions maintained during ungrouping operations
+- **Reset All Groups**: Remove all groups and show all nodes with complete state reset
+- **Visual Indicators**: Real-time group count shown in info panel with status updates
+
+#### Advanced Technical Features
+- **Meta-Edge System**: Automatic creation of group-to-external node connections during grouping
+- **Edge Validation**: Comprehensive validation of source/target nodes before edge restoration
+- **State Management**: Dual-state tracking using both React state and refs for layout stability
+- **Layout Integration**: Grouping operations work seamlessly with all layout algorithms
+- **Performance Optimization**: Efficient batch operations and minimal re-rendering
+- **Error Handling**: Robust error handling with detailed console logging for debugging
+- **Memory Management**: Proper cleanup of grouped node references to prevent memory leaks
+
+### Alarm Filtering Controls
+
+#### Alarm Filter Dialog
+- **Access**: Click "Alarm Filters" button in graph controls
+- **Individual Toggles**: Switch controls for each alarm severity level
+- **Real-time Filtering**: Instantly show/hide nodes based on alarm status
+- **Visual Indicators**: Color-coded switches matching alarm severity colors
+
+#### Quick Preset Filters
+- **Show Only Alerts**: Display only critical Alert-level nodes
+- **Alerts & Warnings**: Show Alert and Warning level nodes
+- **Hide Success & Info**: Hide Success and Info nodes, show others
+- **Show All**: Display all alarm levels (reset all filters)
+
+#### Filter Features
+- **Layout Preservation**: Filtering maintains current graph positions
+- **Status Display**: Live summary showing active filter criteria
+- **Toast Notifications**: User feedback when filters are applied
+- **Performance Optimized**: Efficient show/hide without layout recalculation
+
+### Threat Path Tracking Controls
+
+#### Threat Path Creation
+- **Access**: Click "Create Threat Path" button (blue) in graph controls
+- **Node Selection**: Choose start and destination nodes from searchable dropdowns
+- **Path Calculation**: Automatic Neo4j shortest path calculation with real-time feedback
+- **Threat Path Naming**: Text input with validation and format recommendations
+- **Alarm Level Assignment**: Dropdown selection for security severity (Alert/Warning/Success/Info/None)
+- **Animation Effects**: Choose visual animations (pulse/glow/flow/none) for path elements
+- **Path Application**: Apply calculated path to all nodes and edges in the shortest route
+
+#### Threat Path Filtering
+- **Access**: Click "Threat Paths (count)" button (orange) in graph controls
+- **Filter Modes**:
+  - **Show Selected**: Display ONLY elements containing selected threat path identifiers
+  - **Hide Selected**: Hide elements containing selected threat path identifiers
+- **Multi-Select Interface**: Checkbox-based selection of multiple threat paths
+- **Quick Actions**: Select All, Clear All, and preset filter buttons
+- **Real-time Updates**: Automatic detection of available threat paths in dataset
+- **Visual Feedback**: Toast notifications and status indicators
+
+#### Threat Path Management
+- **Clear All Threat Paths**: Click red "Clear All Threat Paths" button (conditional visibility)
+- **Bulk Removal**: Remove all threat path identifiers from entire dataset
+- **Confirmation Dialog**: Safety confirmation before clearing all threat paths
+- **PostgreSQL Persistence**: All changes automatically saved to database
+- **Undo Support**: Full undo/redo support for threat path operations
+
+#### Filter Features
+- **Layout Preservation**: Filtering maintains current graph positions and layout
+- **Status Display**: Live summary showing active threat path filter criteria
+- **Performance Optimized**: Efficient show/hide operations without layout recalculation
+- **Cross-View Compatibility**: Threat paths visible across all visualization views
 
 ## 🎨 UI Design
 
@@ -645,6 +945,12 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 - **DELETE `/api/datasets/[id]`**: Delete a saved dataset
 - **POST `/api/datasets/load/[id]`**: Load dataset into Neo4j for visualization
 
+### Threat Path Management
+- **POST `/api/threat-paths/calculate`**: Calculate shortest path between two nodes using Neo4j
+- **GET `/api/threat-paths/nodes`**: Fetch all available nodes for threat path creation
+- **POST `/api/threat-paths/apply`**: Apply threat path identifiers to calculated path elements
+- **POST `/api/threat-paths/clear`**: Remove all threat path identifiers from dataset
+
 ### Legacy Routes
 - **POST `/api/upload`**: Upload JSON dataset and import to Neo4j
 - **GET `/api/graph`**: Fetch current graph data from Neo4j
@@ -656,10 +962,14 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 2. **Upload or Load**: Either upload a new JSON file or load a saved dataset
 3. **Automatic Processing**: System validates and imports data into visualization
 4. **Configure Background Video**: Select ambient video and adjust opacity for enhanced analysis
-5. **Save Dataset**: Optionally save your current dataset to the database for future use
-6. **Multi-View Visualization**: Choose from 6 different visualization modes
-7. **Data Exploration**: Use appropriate view for your analysis needs
-8. **Interactive Analysis**: Click, filter, sort, and explore your data
+5. **Apply TC_ Properties**: Customize node appearance with size, color, and alarm properties
+6. **Set Security Alarms**: Use TC_ALARM property to mark security status of nodes
+7. **Create Threat Paths**: Use Neo4j integration to calculate and track security threat paths
+8. **Filter by Alarms & Threat Paths**: Use filtering to focus on specific security levels and threat scenarios
+9. **Save Dataset**: Optionally save your current dataset to the database for future use
+10. **Multi-View Visualization**: Choose from 6 different visualization modes
+11. **Data Exploration**: Use appropriate view for your analysis needs
+12. **Interactive Analysis**: Click, filter, sort, and explore your data
 
 ### Dataset Management Workflow
 1. **Upload New Data**: Use "Upload JSON" tab to import new datasets from files
@@ -694,6 +1004,75 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 4. **Adjust Opacity**: Use the slider to set video transparency (15-25% recommended)
 5. **Collapse Controls**: Click the collapse button to hide controls while keeping video active
 6. **Subconscious Analysis**: Let the ambient patterns enhance your pattern recognition abilities
+
+### TC_ Properties & Alarm Management Workflow
+
+#### Property Customization Workflow
+1. **Select Elements**: Click any node or edge in the graph to select it
+2. **Open Properties Panel**: Properties panel automatically appears for selected element
+3. **Customize Appearance**: Use controls to modify visual properties:
+   - **TC_SIZE**: Adjust node size with slider (10-100px)
+   - **TC_COLOR**: Change element color with color picker
+   - **TC_OPACITY**: Set transparency level
+   - **TC_ANIMATION**: Add visual effects (pulse, glow, flow)
+   - **TC_THREAT_PATH**: Add threat path identifiers (text input)
+4. **Apply Changes**: Properties update immediately without disrupting graph layout
+5. **Use Presets**: Quick-apply common combinations with preset buttons
+6. **Undo/Redo**: Use undo/redo system to revert changes if needed
+
+#### Security Alarm Management Workflow
+1. **Set Alarm Levels**: Select nodes and use TC_ALARM dropdown or preset buttons:
+   - **Alert**: Critical security threats (red, 4px border, box shadow)
+   - **Warning**: Potential threats (orange, 3px border, box shadow)
+   - **Success**: Secure systems (green, 2px border)
+   - **Info**: Informational status (blue, 2px border)
+   - **None**: Normal operation (gray, 2px border)
+
+2. **Visual Verification**: Observe immediate visual changes:
+   - Border colors change to match alarm severity
+   - Background tints applied for enhanced visibility
+   - Box shadows added for Alert and Warning levels
+
+3. **Filter by Alarm Status**: Use alarm filtering for focused analysis:
+   - Click "Alarm Filters" button in graph controls
+   - Toggle individual alarm levels on/off
+   - Use quick presets for common filter combinations
+   - Apply filters to show/hide nodes based on security status
+
+4. **Monitor Security Status**: Track alarm distribution:
+   - View filter status display for active criteria
+   - Use toast notifications for filter confirmation
+   - Maintain alarm states across layout changes
+
+#### Threat Path Management Workflow
+1. **Create Threat Paths**: Use the comprehensive threat path creation system:
+   - Click "Create Threat Path" button to open the creation dialog
+   - Select start and destination nodes from searchable dropdowns
+   - Enter threat path name with recommended format (THREAT-description)
+   - Choose alarm level and animation effects for visual enhancement
+   - Calculate shortest path using Neo4j integration
+   - Apply threat path to all elements in the calculated route
+
+2. **Filter by Threat Paths**: Use advanced filtering for focused analysis:
+   - Click "Threat Paths (count)" button to open filtering dialog
+   - Choose between "Show Selected" and "Hide Selected" filter modes
+   - Select specific threat paths using checkbox interface
+   - Use quick actions (Select All, Clear All) for efficient filtering
+   - Apply filters to focus on specific threat scenarios
+
+3. **Manage Threat Paths**: Comprehensive threat path management:
+   - View all threat paths in the filtering interface
+   - Clear individual threat paths through properties panel
+   - Use "Clear All Threat Paths" for bulk removal with confirmation
+   - Monitor threat path distribution across the dataset
+
+#### Advanced Property Features
+- **Layout Preservation**: Graph positions remain stable during property updates
+- **Batch Operations**: Apply properties to multiple selected elements
+- **Cross-Layout Persistence**: Properties maintained when switching layouts
+- **Export/Import**: TC_ properties included in dataset save/load operations
+- **Performance Optimized**: Efficient property updates without layout recalculation
+- **Threat Path Integration**: TC_THREAT_PATH properties work seamlessly with all other TC_ properties
 
 ### View-Specific Features
 
@@ -967,7 +1346,19 @@ TruContext is powered by Visium Technologies, a leader in graph analytics and cy
 
 ## 🌟 Recent Updates & Improvements
 
-### ✅ Revolutionary Background Video System (Latest)
+### ✅ TC_ Properties System & Security Alarm Management (Latest)
+- **Advanced Property Framework**: Comprehensive TC_ property system for visual customization and security monitoring
+- **TC_ALARM Security System**: Five-level alarm severity system (Alert, Warning, Success, Info, None) with distinct visual styling
+- **Layout Preservation**: Graph positions remain stable during property updates for consistent visualization
+- **Alarm Filtering Dialog**: Interactive filtering system with individual toggles and quick preset filters
+- **Real-time Visual Feedback**: Immediate property updates with border colors, background tints, and box shadows
+- **Preset Button System**: Quick-apply common alarm + animation combinations for efficient workflow
+- **Undo/Redo Integration**: Full history tracking for all TC_ property changes with batch operation support
+- **Cross-Layout Persistence**: Properties maintained across all layout algorithm switches
+- **Performance Optimized**: Efficient batch operations prevent rendering issues during property updates
+- **Security-Focused Design**: Purpose-built for cybersecurity visualization and threat monitoring workflows
+
+### ✅ Revolutionary Background Video System
 - **8 Cybersecurity-Themed Videos**: Groundbreaking ambient visualizations designed for subconscious pattern recognition
 - **Advanced Psychological Principles**: Peripheral vision activation, subliminal pattern disruption, and biometric rhythm synchronization
 - **Collapsible Video Controls**: Independent video enable/disable and UI collapse/expand functionality
