@@ -217,4 +217,132 @@ export async function getAllGraphData(): Promise<{ nodes: any[], edges: any[] }>
   } finally {
     await session.close()
   }
-} 
+}
+
+// Threat Path Calculation Functions
+
+export interface ThreatPathNode {
+  uid: string
+  type: string
+  showname: string
+  properties: Record<string, any>
+}
+
+export interface ThreatPathEdge {
+  from: string
+  to: string
+  type: string
+  properties: Record<string, any>
+}
+
+export interface ThreatPathResult {
+  nodes: ThreatPathNode[]
+  edges: ThreatPathEdge[]
+  pathLength: number
+  pathExists: boolean
+}
+
+/**
+ * Calculate the shortest path between two nodes using Neo4j
+ * @param startNodeUid - UID of the starting node
+ * @param endNodeUid - UID of the destination node
+ * @returns Promise<ThreatPathResult> - The shortest path result
+ */
+export async function calculateShortestPath(
+  startNodeUid: string,
+  endNodeUid: string
+): Promise<ThreatPathResult> {
+  const session = await getSession()
+
+  try {
+    // Use Neo4j's shortestPath function to find the shortest path
+    const result = await session.run(`
+      MATCH (start {uid: $startUid}), (end {uid: $endUid})
+      MATCH path = shortestPath((start)-[*]-(end))
+      RETURN path
+    `, {
+      startUid: startNodeUid,
+      endUid: endNodeUid
+    })
+
+    if (result.records.length === 0) {
+      return {
+        nodes: [],
+        edges: [],
+        pathLength: 0,
+        pathExists: false
+      }
+    }
+
+    const path = result.records[0].get('path')
+    const nodes: ThreatPathNode[] = []
+    const edges: ThreatPathEdge[] = []
+    const nodeUids = new Set<string>()
+
+    // Extract nodes from the path
+    path.segments.forEach((segment: any) => {
+      // Add start node if not already added
+      if (!nodeUids.has(segment.start.properties.uid)) {
+        nodes.push({
+          uid: segment.start.properties.uid,
+          type: segment.start.labels[0],
+          showname: segment.start.properties.showname || segment.start.properties.uid,
+          properties: segment.start.properties
+        })
+        nodeUids.add(segment.start.properties.uid)
+      }
+
+      // Add end node if not already added
+      if (!nodeUids.has(segment.end.properties.uid)) {
+        nodes.push({
+          uid: segment.end.properties.uid,
+          type: segment.end.labels[0],
+          showname: segment.end.properties.showname || segment.end.properties.uid,
+          properties: segment.end.properties
+        })
+        nodeUids.add(segment.end.properties.uid)
+      }
+
+      // Add edge
+      edges.push({
+        from: segment.start.properties.uid,
+        to: segment.end.properties.uid,
+        type: segment.relationship.type,
+        properties: segment.relationship.properties
+      })
+    })
+
+    return {
+      nodes,
+      edges,
+      pathLength: path.length,
+      pathExists: true
+    }
+  } finally {
+    await session.close()
+  }
+}
+
+/**
+ * Get all available nodes for threat path selection
+ * @returns Promise<Array<{uid: string, showname: string, type: string}>>
+ */
+export async function getAvailableNodes(): Promise<Array<{uid: string, showname: string, type: string}>> {
+  const session = await getSession()
+
+  try {
+    const result = await session.run(`
+      MATCH (n)
+      RETURN n.uid as uid, n.showname as showname, labels(n)[0] as type
+      ORDER BY n.showname, n.uid
+    `)
+
+    return result.records.map(record => ({
+      uid: record.get('uid'),
+      showname: record.get('showname') || record.get('uid'),
+      type: record.get('type')
+    }))
+  } finally {
+    await session.close()
+  }
+}
