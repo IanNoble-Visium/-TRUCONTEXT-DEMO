@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   Modal,
   ModalOverlay,
@@ -86,28 +86,12 @@ const ThreatPathDialog: React.FC<ThreatPathDialogProps> = ({
   const bgColor = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('gray.200', 'gray.600')
 
-  // Load available nodes when dialog opens
-  useEffect(() => {
-    if (isOpen) {
-      loadAvailableNodes()
-      // Reset form
-      setStartNodeUid('')
-      setEndNodeUid('')
-      setThreatPathName('')
-      setAlarmLevel('Warning')
-      setAnimation('pulse')
-      setCalculatedPath(null)
-      setPathError(null)
-      setNameError(null)
-    }
-  }, [isOpen])
-
-  const loadAvailableNodes = async () => {
+  const loadAvailableNodes = useCallback(async () => {
     setIsLoadingNodes(true)
     try {
       const response = await fetch('/api/threat-paths/nodes')
       const result = await response.json()
-      
+
       if (result.success) {
         setAvailableNodes(result.data)
       } else {
@@ -125,7 +109,23 @@ const ThreatPathDialog: React.FC<ThreatPathDialogProps> = ({
     } finally {
       setIsLoadingNodes(false)
     }
-  }
+  }, [toast])
+
+  // Load available nodes when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      loadAvailableNodes()
+      // Reset form
+      setStartNodeUid('')
+      setEndNodeUid('')
+      setThreatPathName('')
+      setAlarmLevel('Warning')
+      setAnimation('pulse')
+      setCalculatedPath(null)
+      setPathError(null)
+      setNameError(null)
+    }
+  }, [isOpen, loadAvailableNodes])
 
   const calculatePath = async () => {
     if (!startNodeUid || !endNodeUid) {

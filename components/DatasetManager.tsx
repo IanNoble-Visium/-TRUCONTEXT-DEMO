@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   Box,
   VStack,
@@ -65,12 +65,7 @@ const DatasetManager: React.FC<DatasetManagerProps> = ({ onDatasetLoaded, curren
   const borderColor = useColorModeValue("gray.200", "gray.600")
   const hoverBg = useColorModeValue("gray.50", "gray.700")
 
-  // Load datasets on component mount
-  useEffect(() => {
-    loadDatasets()
-  }, [])
-
-  const loadDatasets = async () => {
+  const loadDatasets = useCallback(async () => {
     setLoading(true)
     try {
       const response = await fetch('/api/datasets')
@@ -91,7 +86,12 @@ const DatasetManager: React.FC<DatasetManagerProps> = ({ onDatasetLoaded, curren
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  // Load datasets on component mount
+  useEffect(() => {
+    loadDatasets()
+  }, [loadDatasets])
 
   const saveCurrentDataset = async () => {
     if (!currentGraphData || !currentGraphData.nodes.length) {

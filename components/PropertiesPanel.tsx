@@ -384,7 +384,7 @@ const EditPropertyModal: React.FC<EditPropertyModalProps> = ({
 
     try {
       // Try to parse as JSON if it looks like an object
-      let parsedValue = value
+      let parsedValue: any = value
       if (value.trim().startsWith('{') || value.trim().startsWith('[')) {
         parsedValue = JSON.parse(value)
       } else if (value === 'true' || value === 'false') {
@@ -489,7 +489,7 @@ const AddPropertyModal: React.FC<AddPropertyModalProps> = ({
 
     try {
       // Try to parse as JSON if it looks like an object
-      let parsedValue = value
+      let parsedValue: any = value
       if (value.trim().startsWith('{') || value.trim().startsWith('[')) {
         parsedValue = JSON.parse(value)
       } else if (value === 'true' || value === 'false') {
@@ -586,7 +586,7 @@ const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
           </AlertDialogHeader>
 
           <AlertDialogBody>
-            Are you sure you want to delete the property "{propertyKey}"?
+            Are you sure you want to delete the property &quot;{propertyKey}&quot;?
             This action cannot be undone.
           </AlertDialogBody>
 

@@ -47,7 +47,7 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
         longitude: sampleNode.longitude || sampleNode.properties?.longitude
       })
     }
-  }, [nodes.length]) // Only re-run when the number of nodes changes
+  }, [nodes]) // Include nodes in dependency array
 
   // Color mode values
   const bgColor = useColorModeValue("white", "gray.800")

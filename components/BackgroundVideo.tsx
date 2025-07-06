@@ -232,7 +232,7 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
       // Pause video when disabled to save resources
       videoRef.current.pause()
     }
-  }, [selectedVideo, isEnabled, currentVideoOption.file])
+  }, [selectedVideo, isEnabled, currentVideoOption.file, currentVideoOption.label])
 
   // Handle video selection change
   const handleVideoChange = (value: string) => {
@@ -247,8 +247,8 @@ export const BackgroundVideo: React.FC<BackgroundVideoProps> = ({
   // Cleanup on unmount for memory management
   useEffect(() => {
     return () => {
-      if (videoRef.current) {
-        const video = videoRef.current
+      const video = videoRef.current
+      if (video) {
         video.pause()
         video.src = ''
         video.load() // This helps free up memory
