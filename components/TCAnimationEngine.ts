@@ -126,7 +126,7 @@ export class TCAnimationEngine {
     const originalOpacity = element.style('opacity')
     
     const pulseUp = () => {
-      const animation = element.animation({
+      const animation = (element as any).animation({
         style: {
           ...(isNode ? {
             width: `${parseFloat(originalSize) * (1 + intensity)}px`,
@@ -151,7 +151,7 @@ export class TCAnimationEngine {
     }
 
     const pulseDown = () => {
-      const animation = element.animation({
+      const animation = (element as any).animation({
         style: {
           ...(isNode ? {
             width: originalSize,
@@ -192,7 +192,7 @@ export class TCAnimationEngine {
       isFlashing = !isFlashing
       const targetColor = isFlashing ? flashColor : originalColor
       
-      const animation = element.animation({
+      const animation = (element as any).animation({
         style: isNode ? {
           'background-color': targetColor
         } : {
@@ -220,7 +220,7 @@ export class TCAnimationEngine {
     const strobe = () => {
       isVisible = !isVisible
       
-      const animation = element.animation({
+      const animation = (element as any).animation({
         style: {
           opacity: isVisible ? 1 : 0
         }
@@ -246,7 +246,7 @@ export class TCAnimationEngine {
     const glowColor = this.adjustColorBrightness(originalColor, intensity)
     
     const glowUp = () => {
-      const animation = element.animation({
+      const animation = (element as any).animation({
         style: isNode ? {
           'background-color': glowColor,
           'border-color': glowColor
@@ -268,7 +268,7 @@ export class TCAnimationEngine {
     }
 
     const glowDown = () => {
-      const animation = element.animation({
+      const animation = (element as any).animation({
         style: isNode ? {
           'background-color': originalColor,
           'border-color': originalColor
@@ -308,7 +308,7 @@ export class TCAnimationEngine {
       offset -= 2
       if (offset <= -18) offset = 0 // Reset when pattern completes
       
-      const animation = element.animation({
+      const animation = (element as any).animation({
         style: {
           'line-dash-offset': offset
         }

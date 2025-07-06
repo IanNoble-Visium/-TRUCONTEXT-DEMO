@@ -428,7 +428,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
   }, [geoNodes])
 
   // Default center if no nodes
-  const defaultCenter: [number, number] = [0, 0]
+  const defaultCenter: [number, number] = useMemo(() => [0, 0], [])
   const defaultZoom = 2
 
   // Tooltip helper functions
@@ -487,8 +487,9 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current)
+      const timeout = resizeTimeoutRef.current
+      if (timeout) {
+        clearTimeout(timeout)
       }
     }
   }, [handleResize])
@@ -546,11 +547,13 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
-      if (resizeTimeoutRef.current) {
-        clearTimeout(resizeTimeoutRef.current);
+      const resizeTimeout = resizeTimeoutRef.current;
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
       }
-      if (tooltipTimeoutRef.current) {
-        clearTimeout(tooltipTimeoutRef.current);
+      const tooltipTimeout = tooltipTimeoutRef.current;
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
       }
     };
   }, []);
@@ -628,7 +631,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
     if (isClient && geoNodes.length > 0) {
       loadIcons()
     }
-  }, [geoNodes, isClient, iconSize])
+  }, [geoNodes, isClient, iconSize, loadIcons])
 
   // Ensure the map container has proper dimensions for the parent Box
   const mapContainerStyle = useMemo(() => ({

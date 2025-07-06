@@ -635,7 +635,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           const tcProperty = TC_PROPERTIES.find(p => p.key === key)
           if (tcProperty && value !== undefined && value !== null) {
             if (key === 'TC_ANIMATION') {
-              animationType = value
+              animationType = value as string
               return
             }
 
@@ -649,7 +649,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                   tcStyles['background-color'] = alarmConfig.bgColor
                 }
                 // Add alarm indicator class for additional styling
-                element.addClass(`alarm-${value.toLowerCase()}`)
+                element.addClass(`alarm-${(value as string).toLowerCase()}`)
                 // Remove other alarm classes
                 Object.keys(TC_ALARM_LEVELS).forEach(level => {
                   if (level !== value) {
@@ -3228,7 +3228,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 display: groupedNode.style('display'),
                 visibility: groupedNode.style('visibility'),
                 opacity: groupedNode.style('opacity'),
-                position: groupedNode.position()
+                position: groupedNode.length > 0 ? groupedNode[0].position() : null
               })
 
               // Comprehensive visibility restoration
@@ -3243,7 +3243,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 display: groupedNode.style('display'),
                 visibility: groupedNode.style('visibility'),
                 opacity: groupedNode.style('opacity'),
-                position: groupedNode.position()
+                position: groupedNode.length > 0 ? groupedNode[0].position() : null
               })
             } else {
               console.error(`❌ Node ${id} not found in Cytoscape instance!`)
@@ -3373,7 +3373,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             display: ele.style('display'),
             visibility: ele.style('visibility'),
             opacity: ele.style('opacity'),
-            rendered: ele.rendered()
+            rendered: (ele as any).rendered?.() || 'unknown'
           })
         }
       })
@@ -4491,7 +4491,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               </Box>
 
               {/* Current Filter Status */}
-              <Box p={3} bg={useColorModeValue('gray.50', 'gray.700')} borderRadius="md">
+              <Box p={3} bg={controlsBg} borderRadius="md">
                 <Text fontSize="sm" fontWeight="bold" mb={2}>Current Filter Status:</Text>
                 <Text fontSize="xs" color={textColor}>
                   Showing: {Object.entries(alarmFilters)
@@ -4608,7 +4608,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               )}
 
               {/* Current Filter Status */}
-              <Box p={3} bg={useColorModeValue('gray.50', 'gray.700')} borderRadius="md">
+              <Box p={3} bg={controlsBg} borderRadius="md">
                 <Text fontSize="sm" fontWeight="bold" mb={2}>Current Filter Status:</Text>
                 <Text fontSize="xs" color={textColor}>
                   {threatPathFilterMode === 'show' ? 'Showing' : 'Hiding'}: {

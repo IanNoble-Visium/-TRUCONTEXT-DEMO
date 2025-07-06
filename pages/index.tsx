@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
   Box,
   Container,
@@ -90,7 +90,7 @@ const HomePage: React.FC = () => {
   }
 
   // Fullscreen functionality
-  const toggleFullscreen = () => {
+  const toggleFullscreen = useCallback(() => {
     setIsTransitioning(true)
 
     if (!isFullscreen) {
@@ -115,7 +115,7 @@ const HomePage: React.FC = () => {
 
     // Reset transition flag after a short delay
     setTimeout(() => setIsTransitioning(false), 300)
-  }
+  }, [isFullscreen, showHeader, isUploadOpen, isInfoOpen, previousState, onUploadClose, onInfoClose, onUploadOpen, onInfoOpen])
 
   // Keyboard support for fullscreen
   useEffect(() => {
