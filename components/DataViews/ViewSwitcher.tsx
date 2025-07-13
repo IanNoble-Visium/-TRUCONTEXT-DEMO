@@ -8,8 +8,9 @@ import TimelineView from './TimelineView'
 import CardsView from './CardsView'
 import DashboardView from './DashboardView'
 import GeoMapView from './GeoMapView'
+import ExecutiveDashboard from '../ExecutiveDashboardEnhanced'
 
-export type ViewType = 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
+export type ViewType = 'executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
 
 interface ViewSwitcherProps {
   currentView: ViewType
@@ -35,13 +36,14 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
 }) => {
   const bgColor = useColorModeValue("white", "gray.800")
 
-  // View options
+  // View options with Executive Dashboard as first option
   const viewOptions = [
+    { value: 'executive', label: 'Executive Dashboard', icon: '📊' },
     { value: 'graph', label: 'Topology View', icon: '🕸️' },
-    { value: 'table', label: 'Table View', icon: '📊' },
+    { value: 'table', label: 'Table View', icon: '📋' },
     { value: 'timeline', label: 'Timeline View', icon: '⏰' },
     { value: 'cards', label: 'Cards View', icon: '🗂️' },
-    { value: 'dashboard', label: 'Dashboard View', icon: '📈' },
+    { value: 'dashboard', label: 'Analytics Dashboard', icon: '📈' },
     { value: 'geomap', label: 'Geographic Map', icon: '🗺️' }
   ]
 
@@ -57,6 +59,14 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
     console.log(`ViewSwitcher: Rendering view "${currentView}" with ${nodes.length} nodes and ${edges.length} edges`)
 
     switch (currentView) {
+      case 'executive':
+        return (
+          <ExecutiveDashboard 
+            graphData={{ nodes, edges }}
+            isLoading={false}
+            onViewChange={onViewChange}
+          />
+        )
       case 'table':
         return <TableView {...commonProps} />
       case 'timeline':
@@ -72,7 +82,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       default:
         return GraphComponent
     }
-  }, [currentView, nodes, edges, selectedNodes, onNodeSelect, GraphComponent])
+  }, [currentView, nodes, edges, selectedNodes, onNodeSelect, GraphComponent, onViewChange])
 
   return (
     <Box height="100%" display="flex" flexDirection="column">

@@ -14,7 +14,7 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
   onGraphDataLoad,
   isFullscreen = false
 }) => {
-  const [currentView, setCurrentView] = useState<ViewType>('graph')
+  const [currentView, setCurrentView] = useState<ViewType>('executive')
   const [graphData, setGraphData] = useState<{ nodes: any[], edges: any[] } | null>(null)
   const [selectedNodes, setSelectedNodes] = useState<string[]>([])
 
