@@ -9,34 +9,30 @@ import {
   VStack,
   HStack,
   Badge,
-  Progress,
   Divider,
   useColorModeValue,
   Icon,
-  Flex,
-  Circle,
-  Tooltip
+  Progress,
+  SimpleGrid
 } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   FiShield,
   FiAlertTriangle,
-  FiAlertCircle,
-  FiInfo,
   FiCheckCircle,
+  FiClock,
   FiActivity
 } from 'react-icons/fi'
 
-const MotionCard = motion(Card)
 const MotionBox = motion(Box)
+const MotionCard = motion(Card)
 
 interface ThreatEvent {
   id: string
-  type: 'critical' | 'warning' | 'info' | 'success'
+  type: 'critical' | 'warning' | 'info'
   title: string
   description: string
   timestamp: Date
-  source?: string
 }
 
 interface ThreatMonitorProps {
@@ -47,221 +43,204 @@ interface ThreatMonitorProps {
 }
 
 const ThreatMonitor: React.FC<ThreatMonitorProps> = ({ graphData }) => {
-  const [threats, setThreats] = useState<ThreatEvent[]>([])
-  const [isActive, setIsActive] = useState(true)
-
+  // All hooks must be called at the top level
   const cardBg = useColorModeValue('white', 'gray.800')
   const borderColor = useColorModeValue('gray.200', 'gray.700')
   const textColor = useColorModeValue('gray.800', 'white')
-  const accentColor = useColorModeValue('blue.500', 'blue.300')
+  const grayTextColor = useColorModeValue('gray.600', 'gray.400')
+  const dangerColor = useColorModeValue('red.500', 'red.300')
+  const warningColor = useColorModeValue('orange.500', 'orange.300')
+  const successColor = useColorModeValue('green.500', 'green.300')
+  const mutedBg = useColorModeValue('gray.50', 'gray.700')
 
-  // Simulate real-time threat events
+  const [threats, setThreats] = useState<{
+    critical: number
+    warning: number
+    total: number
+  }>({
+    critical: 0,
+    warning: 0,
+    total: 3
+  })
+
+  const [recentEvents, setRecentEvents] = useState<ThreatEvent[]>([
+    {
+      id: '1',
+      type: 'info',
+      title: 'Maintenance Window',
+      description: 'Scheduled maintenance in 2 hours',
+      timestamp: new Date(Date.now() - 30 * 60 * 1000) // 30 minutes ago
+    },
+    {
+      id: '2',
+      type: 'info',
+      title: 'Backup Completed',
+      description: 'Daily backup successful',
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+    },
+    {
+      id: '3',
+      type: 'info',
+      title: 'Maintenance Window',
+      description: 'Scheduled maintenance in 2 hours',
+      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
+    }
+  ])
+
+  // Calculate threat metrics from graph data
   useEffect(() => {
-    if (!isActive || !graphData) return
+    if (graphData?.nodes) {
+      const criticalThreats = graphData.nodes.filter(node => 
+        node.data?.alert === 'critical' || node.data?.status === 'critical'
+      ).length
 
-    const threatTypes = [
-      {
-        type: 'critical' as const,
-        titles: ['Unauthorized Access Detected', 'Critical Vulnerability Found', 'Data Exfiltration Attempt'],
-        descriptions: ['Suspicious login from unknown location', 'CVE-2023-XXXX affects critical systems', 'Large data transfer detected']
-      },
-      {
-        type: 'warning' as const,
-        titles: ['Unusual Network Activity', 'Configuration Drift', 'Performance Anomaly'],
-        descriptions: ['Traffic spike detected', 'Security policy changes', 'Response time degradation']
-      },
-      {
-        type: 'info' as const,
-        titles: ['System Update Available', 'Backup Completed', 'Maintenance Window'],
-        descriptions: ['Security patches ready', 'Daily backup successful', 'Scheduled maintenance in 2 hours']
-      },
-      {
-        type: 'success' as const,
-        titles: ['Threat Mitigated', 'Security Scan Complete', 'Patch Applied'],
-        descriptions: ['Malware quarantined successfully', 'No vulnerabilities found', 'System updated successfully']
-      }
-    ]
+      const warningThreats = graphData.nodes.filter(node => 
+        node.data?.alert === 'warning' || node.data?.status === 'warning'
+      ).length
 
-    const generateThreat = (): ThreatEvent => {
-      const category = threatTypes[Math.floor(Math.random() * threatTypes.length)]
-      const titleIndex = Math.floor(Math.random() * category.titles.length)
-      
-      return {
-        id: `threat-${Date.now()}-${Math.random()}`,
-        type: category.type,
-        title: category.titles[titleIndex],
-        description: category.descriptions[titleIndex],
-        timestamp: new Date(),
-        source: graphData.nodes[Math.floor(Math.random() * graphData.nodes.length)]?.data?.id || 'Unknown'
-      }
+      setThreats({
+        critical: criticalThreats,
+        warning: warningThreats,
+        total: criticalThreats + warningThreats + recentEvents.length
+      })
     }
+  }, [graphData, recentEvents.length])
 
-    // Add initial threats
-    const initialThreats = Array.from({ length: 3 }, generateThreat)
-    setThreats(initialThreats)
-
-    // Simulate real-time updates
-    const interval = setInterval(() => {
-      if (Math.random() > 0.3) { // 70% chance of new threat
-        const newThreat = generateThreat()
-        setThreats(prev => [newThreat, ...prev.slice(0, 9)]) // Keep last 10 threats
-      }
-    }, 3000 + Math.random() * 4000) // Random interval 3-7 seconds
-
-    return () => clearInterval(interval)
-  }, [isActive, graphData])
-
-  const getThreatIcon = (type: ThreatEvent['type']) => {
+  const getEventIcon = (type: string) => {
     switch (type) {
-      case 'critical': return FiAlertCircle
-      case 'warning': return FiAlertTriangle
-      case 'info': return FiInfo
-      case 'success': return FiCheckCircle
-      default: return FiActivity
+      case 'critical':
+        return FiAlertTriangle
+      case 'warning':
+        return FiAlertTriangle
+      case 'info':
+      default:
+        return FiCheckCircle
     }
   }
 
-  const getThreatColor = (type: ThreatEvent['type']) => {
+  const getEventColor = (type: string) => {
     switch (type) {
-      case 'critical': return 'red'
-      case 'warning': return 'orange'
-      case 'info': return 'blue'
-      case 'success': return 'green'
-      default: return 'gray'
+      case 'critical':
+        return dangerColor
+      case 'warning':
+        return warningColor
+      case 'info':
+      default:
+        return successColor
     }
   }
 
-  const threatCounts = threats.reduce((acc, threat) => {
-    acc[threat.type] = (acc[threat.type] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
+  const formatTimeAgo = (timestamp: Date) => {
+    const now = new Date()
+    const diffMs = now.getTime() - timestamp.getTime()
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffMinutes = Math.floor(diffMs / (1000 * 60))
 
-  const totalThreats = threats.length
-  const criticalThreats = threatCounts.critical || 0
-  const warningThreats = threatCounts.warning || 0
+    if (diffHours > 0) {
+      return `${diffHours}h ago`
+    } else if (diffMinutes > 0) {
+      return `${diffMinutes}m ago`
+    } else {
+      return 'Just now'
+    }
+  }
 
   return (
     <MotionCard
       bg={cardBg}
       borderColor={borderColor}
       borderWidth="1px"
-      h="400px"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
     >
       <CardHeader>
         <HStack justify="space-between">
-          <HStack>
-            <Icon as={FiShield} color={accentColor} />
+          <VStack align="start" spacing={0}>
             <Heading size="md" color={textColor}>Threat Monitor</Heading>
-          </HStack>
-          <HStack>
-            <Circle size="8px" bg={isActive ? 'green.400' : 'gray.400'} />
-            <Text fontSize="xs" color={useColorModeValue('gray.600', 'gray.400')}>
-              {isActive ? 'Live' : 'Offline'}
-            </Text>
-          </HStack>
+            <HStack spacing={4}>
+              <HStack spacing={1}>
+                <Text fontSize="sm" fontWeight="bold" color={dangerColor}>
+                  {threats.critical}
+                </Text>
+                <Text fontSize="sm" color={grayTextColor}>Critical</Text>
+              </HStack>
+              <HStack spacing={1}>
+                <Text fontSize="sm" fontWeight="bold" color={warningColor}>
+                  {threats.warning}
+                </Text>
+                <Text fontSize="sm" color={grayTextColor}>Warning</Text>
+              </HStack>
+              <HStack spacing={1}>
+                <Text fontSize="sm" fontWeight="bold" color={textColor}>
+                  {threats.total}
+                </Text>
+                <Text fontSize="sm" color={grayTextColor}>Total</Text>
+              </HStack>
+            </HStack>
+          </VStack>
+          <Icon as={FiShield} boxSize={6} color={successColor} />
         </HStack>
       </CardHeader>
-      
-      <CardBody pt={0}>
-        <VStack spacing={4} align="stretch" h="300px">
-          {/* Threat Summary */}
+      <CardBody>
+        <VStack spacing={4} align="stretch">
+          {/* Threat Level Indicator */}
           <Box>
-            <HStack spacing={4} mb={3}>
-              <Tooltip label="Critical Threats">
-                <Badge colorScheme="red" variant="solid">
-                  {criticalThreats} Critical
-                </Badge>
-              </Tooltip>
-              <Tooltip label="Warning Level">
-                <Badge colorScheme="orange" variant="solid">
-                  {warningThreats} Warning
-                </Badge>
-              </Tooltip>
-              <Tooltip label="Total Events">
-                <Badge colorScheme="blue" variant="outline">
-                  {totalThreats} Total
-                </Badge>
-              </Tooltip>
+            <HStack justify="space-between" mb={2}>
+              <Text fontSize="sm" color={grayTextColor}>Security Level</Text>
+              <Text fontSize="sm" color={successColor} fontWeight="bold">Normal</Text>
             </HStack>
-            
-            {/* Threat Level Progress */}
-            <Box>
-              <Text fontSize="xs" color={useColorModeValue('gray.600', 'gray.400')} mb={1}>
-                Threat Level
-              </Text>
-              <Progress
-                value={Math.min(100, (criticalThreats * 30 + warningThreats * 10))}
-                colorScheme={criticalThreats > 0 ? 'red' : warningThreats > 2 ? 'orange' : 'green'}
-                size="sm"
-                borderRadius="full"
-              />
-            </Box>
+            <Progress
+              value={85}
+              colorScheme="green"
+              size="sm"
+              borderRadius="full"
+            />
           </Box>
 
           <Divider />
 
-          {/* Threat Feed */}
-          <Box flex={1} overflowY="auto">
-            <Text fontSize="sm" fontWeight="bold" color={textColor} mb={2}>
+          {/* Recent Events */}
+          <VStack align="start" spacing={0}>
+            <Text fontSize="sm" fontWeight="bold" color={textColor} mb={3}>
               Recent Events
             </Text>
-            <VStack spacing={2} align="stretch">
+            <VStack spacing={3} align="stretch" width="100%">
               <AnimatePresence>
-                {threats.slice(0, 6).map((threat, index) => (
+                {recentEvents.slice(0, 3).map((event, index) => (
                   <MotionBox
-                    key={threat.id}
-                    initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                    animate={{ opacity: 1, x: 0, scale: 1 }}
-                    exit={{ opacity: 0, x: 20, scale: 0.95 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    key={event.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ delay: index * 0.1 }}
                   >
-                    <Box
-                      p={2}
-                      borderRadius="md"
-                      bg={useColorModeValue('gray.50', 'gray.700')}
-                      borderLeft="3px solid"
-                      borderLeftColor={`${getThreatColor(threat.type)}.400`}
-                      _hover={{
-                        bg: useColorModeValue('gray.100', 'gray.600'),
-                        transform: 'translateX(2px)'
-                      }}
-                      transition="all 0.2s"
-                    >
-                      <HStack spacing={2} align="start">
-                        <Icon
-                          as={getThreatIcon(threat.type)}
-                          color={`${getThreatColor(threat.type)}.400`}
-                          mt={0.5}
-                          flexShrink={0}
-                        />
-                        <Box flex={1} minW={0}>
-                          <Text fontSize="xs" fontWeight="bold" color={textColor} noOfLines={1}>
-                            {threat.title}
-                          </Text>
-                          <Text fontSize="xs" color={useColorModeValue('gray.600', 'gray.400')} noOfLines={1}>
-                            {threat.description}
-                          </Text>
-                          <HStack justify="space-between" mt={1}>
-                            <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.500')}>
-                              {threat.timestamp.toLocaleTimeString()}
-                            </Text>
-                            {threat.source && (
-                              <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.500')} noOfLines={1}>
-                                {threat.source}
-                              </Text>
-                            )}
-                          </HStack>
-                        </Box>
-                      </HStack>
-                    </Box>
+                    <HStack spacing={3} p={3} bg={mutedBg} borderRadius="md">
+                      <Icon
+                        as={getEventIcon(event.type)}
+                        color={getEventColor(event.type)}
+                        boxSize={4}
+                      />
+                      <VStack align="start" spacing={0} flex={1}>
+                        <Text fontSize="sm" fontWeight="medium" color={textColor}>
+                          {event.title}
+                        </Text>
+                        <Text fontSize="xs" color={grayTextColor}>
+                          {event.description}
+                        </Text>
+                      </VStack>
+                      <VStack align="end" spacing={0}>
+                        <Icon as={FiClock} boxSize={3} color={grayTextColor} />
+                        <Text fontSize="xs" color={grayTextColor}>
+                          {formatTimeAgo(event.timestamp)}
+                        </Text>
+                      </VStack>
+                    </HStack>
                   </MotionBox>
                 ))}
               </AnimatePresence>
             </VStack>
-          </Box>
+          </VStack>
         </VStack>
       </CardBody>
     </MotionCard>

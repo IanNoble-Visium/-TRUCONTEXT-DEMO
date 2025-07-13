@@ -8,7 +8,7 @@ import TimelineView from './TimelineView'
 import CardsView from './CardsView'
 import DashboardView from './DashboardView'
 import GeoMapView from './GeoMapView'
-import ExecutiveDashboard from '../ExecutiveDashboardEnhanced'
+import ExecutiveDashboard from '../ExecutiveDashboard'
 
 export type ViewType = 'executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
 
