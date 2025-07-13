@@ -19,12 +19,22 @@ import cytoscape, { Core, NodeSingular, Collection } from 'cytoscape'
 // @ts-ignore
 import cola from 'cytoscape-cola'
 // @ts-ignore
+import noOverlap from 'cytoscape-no-overlap'
+// @ts-ignore
 import { NodeTooltip, EdgeTooltip } from './GraphTooltip'
 import PropertiesPanel from './PropertiesPanel'
 import { BackgroundVideo, VideoControls } from './BackgroundVideo'
 import { TCAnimationEngine } from './TCAnimationEngine'
 import { parseThreatPaths, getAllThreatPaths, addThreatPath } from '../utils/threatPathUtils'
 import ThreatPathDialog from './ThreatPathDialog'
+// @ts-ignore
+import spread from 'cytoscape-spread'
+// @ts-ignore
+import elk from 'cytoscape-elk'
+// @ts-ignore
+import klay from 'cytoscape-klay'
+// @ts-ignore
+import cise from 'cytoscape-cise'
 
 // Import TC_PROPERTIES for property mapping
 const TC_PROPERTIES = [
@@ -73,12 +83,16 @@ export const TC_ALARM_LEVELS = {
     label: 'None'
   }
 }
-import { createRoot } from 'react-dom/client'
 import { useGesture } from '@use-gesture/react'
 import { motion } from 'framer-motion'
 
-// Register cytoscape-cola extension
+// Register cytoscape extensions
 cytoscape.use(cola)
+cytoscape.use(noOverlap)
+cytoscape.use(spread)
+cytoscape.use(elk)
+cytoscape.use(klay)
+cytoscape.use(cise)
 
 interface GraphVisualizationProps {
   refreshTrigger: number
@@ -135,6 +149,36 @@ const LAYOUT_OPTIONS: LayoutOption[] = [
     value: 'preset',
     label: 'Preset Layout',
     description: 'Uses manually specified node positions from the data, allowing for custom or saved layouts.'
+  },
+  {
+    value: 'fcose',
+    label: 'Force-Directed (fCoSE) Layout',
+    description: 'Fast, organic layout for large graphs.'
+  },
+  {
+    value: 'spread',
+    label: 'Spread Layout',
+    description: 'Force-directed layout that spreads nodes evenly, minimizing overlap and clustering. Good for large, dense graphs.'
+  },
+  {
+    value: 'cola',
+    label: 'Cola Layout',
+    description: 'Constraint-based force-directed layout with advanced features for large graphs. Good for flexible, readable layouts.'
+  },
+  {
+    value: 'elk',
+    label: 'Hierarchical (ELK) Layout',
+    description: 'Hierarchical layout using the ELK engine (layered algorithm). Good for trees, DAGs, and complex hierarchies.'
+  },
+  {
+    value: 'klay',
+    label: 'Hierarchical (Klay) Layout',
+    description: 'Traditional hierarchical layout using the Klay engine. Predecessor to ELK layered, good for trees and DAGs.'
+  },
+  {
+    value: 'cise',
+    label: 'Clustered (CISE) Layout',
+    description: 'Organizes nodes into clusters, each as a circle. Great for graphs with well-defined clusters.'
   }
 ]
 
@@ -295,6 +339,16 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
   // Threat path creation state
   const { isOpen: isThreatPathDialogOpen, onOpen: onThreatPathDialogOpen, onClose: onThreatPathDialogClose } = useDisclosure()
+
+  // Node overlap prevention state
+  const [overlapPreventionEnabled, setOverlapPreventionEnabled] = useState(() => {
+    // Load from localStorage, default to true (only in browser environment)
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('trucontext-overlap-prevention')
+      return saved !== null ? JSON.parse(saved) : true
+    }
+    return true // Default to enabled during SSR
+  })
   const toast = useToast()
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const centerFitTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -332,6 +386,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   const controlsBg = useColorModeValue("white", "gray.700")
   const hoverBg = useColorModeValue("gray.50", "gray.600")
   const contextMenuBg = useColorModeValue('white', 'gray.700')
+  // Additional color mode values for overlap prevention section
+  const overlapPreventionBg = useColorModeValue('gray.50', 'gray.700')
+  const overlapPreventionTextColor = useColorModeValue('gray.600', 'gray.400')
 
   // Optimized tooltip position update function
   const updateTooltipPosition = useCallback((mouseX: number, mouseY: number) => {
@@ -1050,7 +1107,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }))
 
     // Re-run layout
-    setTimeout(() => runLayout(currentLayout), 100)
+    setTimeout(() => runLayout(currentLayout).catch(console.error), 100)
     
     // Note: Users can now manually use Center & Fit or Reset View to reposition
   }
@@ -1328,8 +1385,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               'line-color': '#999999',
               'target-arrow-color': '#999999',
               'target-arrow-shape': 'triangle',
-              'curve-style': 'bezier',
-              'control-point-step-size': 40,
+              'curve-style': 'straight', // Default to straight lines
               'arrow-scale': 1.2,
               'label': 'data(type)',
               'font-size': '8px',
@@ -1339,7 +1395,18 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               'color': '#666666',
               'text-rotation': 'autorotate',
               'transition-property': 'line-color, target-arrow-color, width',
-              'transition-duration': 200
+              'transition-duration': 200,
+              'opacity': 0.8 // Slightly transparent to reduce visual clutter
+            }
+          },
+          // Curved edge style for TC_CURVE property
+          {
+            selector: 'edge[TC_CURVE]',
+            style: {
+              'curve-style': 'unbundled-bezier',
+              'control-point-step-size': 60,
+              'control-point-distances': [20, -20],
+              'control-point-weights': [0.25, 0.75]
             }
           },
           // Meta-edge style for group connections
@@ -1615,6 +1682,25 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
       cyRef.current = cy
 
+      // Apply no-overlap extension to prevent node overlapping during drag operations
+      // Skip for CoSE layout as it has built-in physics-based spacing
+      if (overlapPreventionEnabled && currentLayout !== 'cose') {
+        try {
+          const initialPadding = currentLayout === 'random' ? 60 : 25 // Significantly enhanced padding for random layout readability
+          cy.nodes().noOverlap({
+            padding: initialPadding, // Dynamic padding based on layout
+            animate: true, // Smooth animation when nodes are repositioned
+            animationDuration: 300, // Duration of repositioning animation
+            animationEasing: 'ease-out' // Easing function for smooth movement
+          })
+          console.log(`No-overlap extension applied successfully with ${initialPadding}px padding for ${currentLayout} layout`)
+        } catch (error) {
+          console.warn('Failed to apply no-overlap extension:', error)
+        }
+      } else if (currentLayout === 'cose') {
+        console.log('Skipping initial overlap prevention for CoSE layout - using built-in physics-based spacing')
+      }
+
       // Initialize animation engine
       if (animationEngineRef.current) {
         animationEngineRef.current.destroy()
@@ -1631,7 +1717,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       // Run initial layout
       setTimeout(() => {
         console.log('Starting layout with:', currentLayout)
-        runLayout(currentLayout)
+        runLayout(currentLayout).catch(console.error)
         setNodeCount(cy.nodes().length)
         setEdgeCount(cy.edges().length)
 
@@ -1651,6 +1737,139 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       return false
     }
   }
+
+  // Helper function to apply no-overlap extension to prevent node overlapping
+  // Skip for CoSE layout as it has built-in physics-based spacing
+  const applyNoOverlapExtension = useCallback((customPadding?: number) => {
+    if (!cyRef.current || !overlapPreventionEnabled || currentLayout === 'cose') {
+      if (currentLayout === 'cose') {
+        console.log('Skipping overlap prevention for CoSE layout - using built-in physics-based spacing')
+      }
+      return
+    }
+
+    try {
+      const padding = customPadding || (currentLayout === 'random' ? 60 : 25) // Significantly increased padding for random layout readability
+      cyRef.current.nodes().noOverlap({
+        padding: padding, // Dynamic padding based on layout type
+        animate: true, // Smooth animation when nodes are repositioned
+        animationDuration: 400, // Slightly longer animation for better visual feedback
+        animationEasing: 'ease-out' // Easing function for smooth movement
+      })
+      console.log(`No-overlap extension applied successfully with ${padding}px padding for ${currentLayout} layout`)
+    } catch (error) {
+      console.warn('Failed to apply no-overlap extension:', error)
+    }
+  }, [overlapPreventionEnabled, currentLayout])
+
+  // Truly random positioning for Random Layout (no grid-based distribution)
+  const applyTrulyRandomSpacing = useCallback(() => {
+    if (!cyRef.current || currentLayout !== 'random') return
+
+    try {
+      const nodes = cyRef.current.nodes(':visible')
+      const container = cyRef.current.container()
+      if (!container || nodes.length === 0) return
+
+      const containerWidth = container.clientWidth
+      const containerHeight = container.clientHeight
+      const margin = 50 // Margin from edges
+
+      console.log('Applying truly random spacing for', nodes.length, 'nodes')
+
+      // Apply completely random positions within the container bounds
+      nodes.forEach((node: any) => {
+        // Generate truly random positions within the available space
+        const randomX = margin + Math.random() * (containerWidth - 2 * margin)
+        const randomY = margin + Math.random() * (containerHeight - 2 * margin)
+
+        node.position({ x: randomX, y: randomY })
+      })
+
+      console.log('Truly random spacing applied successfully')
+    } catch (error) {
+      console.error('Error applying truly random spacing:', error)
+    }
+  }, [currentLayout])
+
+  // Enhanced function to apply overlap prevention after layout with proper timing
+  const applyOverlapPreventionAfterLayout = useCallback((delay: number = 800) => {
+    if (!overlapPreventionEnabled) return
+
+    setTimeout(() => {
+      if (cyRef.current) {
+        try {
+          // Double-check that layout is complete by verifying nodes have positions
+          const nodes = cyRef.current.nodes()
+          const hasValidPositions = nodes.length > 0 && nodes.every((node: any) => {
+            const pos = node.position()
+            return pos && typeof pos.x === 'number' && typeof pos.y === 'number' &&
+                   !isNaN(pos.x) && !isNaN(pos.y)
+          })
+
+          if (hasValidPositions) {
+            // For Random Layout, apply enhanced overlap prevention with increased spacing
+            if (currentLayout === 'random') {
+              setTimeout(() => {
+                applyNoOverlapExtension(60) // Increased padding for better readability in random layout
+                console.log('Enhanced overlap prevention applied for Random Layout with 60px spacing')
+              }, 300)
+            } else if (currentLayout !== 'cose') {
+              // Skip overlap prevention for CoSE layout as it has built-in physics-based spacing
+              // Apply standard overlap prevention for other layouts (except CoSE)
+              applyNoOverlapExtension()
+
+              // For circle layout, apply additional spacing
+              if (currentLayout === 'circle') {
+                setTimeout(() => {
+                  applyNoOverlapExtension()
+                  console.log('Second pass overlap prevention applied for', currentLayout, 'layout')
+                }, 300)
+              }
+            } else {
+              console.log('Skipping overlap prevention for CoSE layout - using built-in physics-based spacing')
+            }
+
+            console.log('Enhanced overlap prevention applied after layout completion')
+          } else {
+            console.warn('Layout positions not ready, retrying overlap prevention...')
+            // Retry after additional delay if positions aren't ready
+            setTimeout(() => applyNoOverlapExtension(), 300)
+          }
+        } catch (error) {
+          console.error('Error applying overlap prevention after layout:', error)
+        }
+      }
+    }, delay)
+  }, [overlapPreventionEnabled, applyNoOverlapExtension, currentLayout])
+
+  // Handle overlap prevention toggle
+  const handleOverlapPreventionToggle = useCallback((enabled: boolean) => {
+    setOverlapPreventionEnabled(enabled)
+
+    // Save to localStorage only in browser environment
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('trucontext-overlap-prevention', JSON.stringify(enabled))
+    }
+
+    if (enabled) {
+      // Apply enhanced overlap prevention immediately when enabled
+      applyOverlapPreventionAfterLayout(100)
+    }
+
+    console.log('Overlap prevention', enabled ? 'enabled' : 'disabled')
+  }, [applyNoOverlapExtension])
+
+  // Load overlap prevention setting from localStorage after hydration
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('trucontext-overlap-prevention')
+      if (saved !== null) {
+        const enabled = JSON.parse(saved)
+        setOverlapPreventionEnabled(enabled)
+      }
+    }
+  }, [])
 
   // Load graph data from API
   const loadGraphData = async () => {
@@ -1937,7 +2156,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   }
 
   // Enhanced layout with smooth transitions
-  const runLayout = (layoutName?: string) => {
+  const runLayout = async (layoutName?: string) => {
     if (!cyRef.current) {
       console.log('No cytoscape instance available for layout')
       return
@@ -1975,46 +2194,25 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         name: 'grid',
         rows: Math.ceil(Math.sqrt(visibleNodes.length)),
         cols: Math.ceil(Math.sqrt(visibleNodes.length)),
-        padding: 30,
-        spacingFactor: 1.2,
+        padding: 40, // Increased padding for better spacing
+        spacingFactor: 1.4, // Increased spacing factor
         animate: true,
         animationDuration: 500,
         animationEasing: 'ease-out'
       },
       random: {
-        name: 'random',
-        fit: true,
-        padding: 30,
+        name: 'preset', // Use preset layout to manually set positions
+        positions: undefined, // Will be set dynamically when random layout is used
+        fit: false, // Don't auto-fit to preserve random positions and allow off-screen nodes
         animate: true,
-        animationDuration: 500,
+        animationDuration: 600,
         animationEasing: 'ease-out'
       },
       circle: {
         name: 'circle',
-        // Calculate radius dynamically based on container and node count
-        radius: (() => {
-          const container = cy.container()
-          if (container && container.clientWidth > 0) {
-            const containerWidth = container.clientWidth
-            const containerHeight = container.clientHeight
-            const minDimension = Math.min(containerWidth, containerHeight)
-            const calculatedRadius = Math.max(100, Math.min(300, minDimension / 4))
-            console.log('Circle layout radius calculation:', {
-              containerWidth,
-              containerHeight,
-              minDimension,
-              calculatedRadius,
-              nodeCount: visibleNodes.length
-            })
-            return calculatedRadius
-          }
-          // Fallback radius based on number of nodes
-          const fallbackRadius = Math.max(100, Math.min(300, visibleNodes.length * 15))
-          console.log('Circle layout using fallback radius:', fallbackRadius, 'for', visibleNodes.length, 'nodes')
-          return fallbackRadius
-        })(),
+        // Radius will be calculated only when circle layout is used
         fit: true,
-        padding: 30,
+        padding: 40, // Increased padding
         animate: true,
         animationDuration: 500,
         animationEasing: 'ease-out'
@@ -2023,26 +2221,27 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         name: 'concentric',
         concentric: (node: any) => node.degree(false), // false = count all edges (undirected)
         levelWidth: () => 2,
-        padding: 30,
+        padding: 40, // Increased padding
+        minNodeSpacing: 30, // Add minimum node spacing
         animate: true,
         animationDuration: 500,
         animationEasing: 'ease-out'
       },
       breadthfirst: {
         name: 'breadthfirst',
-        directed: false,
+        directed: true,
         roots: (() => {
           if (activeLayout === 'breadthfirst') {
             const rootNodeId = determineRootNode(cy)
             if (rootNodeId) {
-              // Return the actual node collection, not just the ID
               return cy.nodes(`[id = "${rootNodeId}"]`)
             }
           }
           return undefined
         })(),
-        padding: 30,
-        spacingFactor: 1.75,
+        padding: 100,
+        avoidOverlap: true,
+        nodeDimensionsIncludeLabels: true,
         animate: true,
         animationDuration: 500,
         animationEasing: 'ease-out'
@@ -2058,24 +2257,51 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       },
       cose: {
         name: 'cose',
-        idealEdgeLength: 100,
-        nodeOverlap: 20,
+        idealEdgeLength: 300, // Much larger for more organic spacing
+        nodeOverlap: 40,
         refresh: 20,
         fit: true,
-        padding: 30,
-        randomize: false,
-        componentSpacing: 100,
-        nodeRepulsion: 400000,
+        padding: 50,
+        randomize: true,
+        componentSpacing: 400,
+        nodeRepulsion: 2000000, // Much stronger repulsion
         edgeElasticity: 100,
         nestingFactor: 5,
-        gravity: 80,
-        numIter: 1000,
-        initialTemp: 200,
+        gravity: 0, // Lower gravity to prevent collapse
+        numIter: 10000, // Many more iterations
+        initialTemp: 250,
         coolingFactor: 0.95,
         minTemp: 1.0,
         animate: true,
-        animationDuration: 500,
-        animationEasing: 'ease-out'
+        animationDuration: 2000,
+        animationEasing: 'ease-out',
+        avoidOverlap: true,
+        ready: function() { console.log('🔥 CoSE layout: Physics simulation started') },
+        stop: function() { console.log('🔥 CoSE layout: Physics simulation completed') }
+      },
+      // Add fcose layout if available
+      fcose: {
+        name: 'fcose',
+        quality: 'default', // 'proof' for best, 'draft' for fastest
+        randomize: true,
+        animate: true,
+        animationDuration: 2000,
+        fit: true,
+        padding: 50,
+        nodeSeparation: 600,
+        nodeRepulsion: 5000000,
+        idealEdgeLength: 600,
+        edgeElasticity: 0.1,
+        nestingFactor: 0.1,
+        gravity: 0.1,
+        numIter: 10000,
+        tile: true,
+        tilingPaddingVertical: 50,
+        tilingPaddingHorizontal: 50,
+        gravityRangeCompound: 1.5,
+        gravityCompound: 1.0,
+        gravityRange: 3.8,
+        initialEnergyOnIncremental: 0.5
       },
       preset: {
         name: 'preset',
@@ -2085,6 +2311,67 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         animate: true,
         animationDuration: 500,
         animationEasing: 'ease-out'
+      },
+      spread: {
+        name: 'spread',
+        animate: true,
+        fit: true,
+        minDist: 200, // Increased minimum distance between nodes
+        padding: 100, // Increased padding
+        expandingFactor: -1.0, // Auto
+        prelayout: { name: 'cose' }, // Use CoSE for initial positions
+        maxExpandIterations: 4,
+        randomize: true
+      },
+      elk: {
+        name: 'elk',
+        elk: {
+          algorithm: 'layered',
+          direction: 'DOWN',
+          spacing: 80,
+          edgeRouting: 'ORTHOGONAL',
+          nodePlacement: 'BRANDES_KOEPF',
+          hierarchyHandling: 'INCLUDE_CHILDREN',
+          separateConnectedComponents: true
+        },
+        fit: true,
+        padding: 100,
+        animate: true,
+        animationDuration: 800,
+        animationEasing: 'ease-out'
+      },
+      klay: {
+        name: 'klay',
+        klay: {
+          direction: 'DOWN',
+          edgeSpacingFactor: 0.5,
+          layoutHierarchy: true,
+          nodePlacement: 'BRANDES_KOEPF',
+          thoroughness: 50
+        },
+        fit: true,
+        padding: 100,
+        animate: true,
+        animationDuration: 800,
+        animationEasing: 'ease-out'
+      },
+      cise: {
+        name: 'cise',
+        clusters: undefined, // Let CISE auto-detect clusters unless specified
+        animate: true,
+        animationDuration: 1000,
+        animationEasing: 'ease-out',
+        fit: true,
+        padding: 100,
+        nodeSeparation: 12,
+        idealInterClusterEdgeLengthCoefficient: 1.4,
+        allowNodesInsideCircle: false,
+        maxRatioOfNodesInsideCircle: 1.0,
+        springCoeff: 0.45,
+        nodeRepulsion: 4500,
+        gravity: 0.25,
+        gravityRange: 3.8,
+        layoutStep: 10
       }
     }
 
@@ -2094,6 +2381,32 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     if (config && config.name === 'hierarchical-tree') {
       console.warn('Layout config has hierarchical-tree name, converting to grid')
       config = { ...config, name: 'grid' }
+    }
+
+    // Special handling for CoSE layout to ensure proper physics-based positioning
+    if (activeLayout === 'cose') {
+      // Remove any preset positions from node data
+      cy.nodes().forEach((node) => {
+        node.removeData('position');
+        node.removeData('x');
+        node.removeData('y');
+      });
+      // Use a safer approach: set random positions instead of clearing data entirely
+      // This ensures CoSE has valid starting positions but still runs full physics simulation
+      const container = cy.container()
+      if (container) {
+        const containerWidth = container.clientWidth
+        const containerHeight = container.clientHeight
+        const margin = 100
+
+        cy.nodes().forEach((node) => {
+          // Set truly random positions to force physics simulation
+          const randomX = margin + Math.random() * (containerWidth - 2 * margin)
+          const randomY = margin + Math.random() * (containerHeight - 2 * margin)
+          node.position({ x: randomX, y: randomY })
+        })
+        console.log('🔥 CoSE layout: Set random starting positions to force full physics simulation')
+      }
     }
 
     // Special handling for hierarchical-tree layout
@@ -2123,28 +2436,128 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       config.name = sanitizeLayoutName(config.name)
     }
 
-    // Enhanced debugging for circle layout
+    // Calculate radius for circle layout only when needed
     if (activeLayout === 'circle') {
       const container = cy.container()
-      console.log('Circle layout debugging:', {
-        containerExists: !!container,
-        containerWidth: container?.clientWidth,
-        containerHeight: container?.clientHeight,
-        calculatedRadius: config.radius,
-        visibleNodesCount: visibleNodes.length
+      let calculatedRadius: number
+
+      if (container && container.clientWidth > 0) {
+        const containerWidth = container.clientWidth
+        const containerHeight = container.clientHeight
+        const minDimension = Math.min(containerWidth, containerHeight)
+        // Increased radius calculation for better node spacing
+        calculatedRadius = Math.max(150, Math.min(400, minDimension / 3))
+        console.log('Circle layout radius calculation:', {
+          containerWidth,
+          containerHeight,
+          minDimension,
+          calculatedRadius,
+          nodeCount: visibleNodes.length
+        })
+      } else {
+        // Fallback radius based on number of nodes with increased spacing
+        calculatedRadius = Math.max(150, Math.min(400, visibleNodes.length * 20))
+        console.log('Circle layout using fallback radius:', calculatedRadius, 'for', visibleNodes.length, 'nodes')
+      }
+
+      // Add radius to config
+      config = { ...config, radius: calculatedRadius }
+    }
+
+    // Special handling for random layout - generate positions only when needed
+    if (activeLayout === 'random') {
+      const positions: { [key: string]: { x: number, y: number } } = {}
+      const container = cy.container()
+      if (container) {
+        const containerWidth = container.clientWidth
+        const containerHeight = container.clientHeight
+
+        // Significantly expand the available area for better spacing
+        // Allow nodes to extend well beyond viewport boundaries
+        const expansionFactor = Math.max(2.5, Math.sqrt(visibleNodes.length / 10)) // Scale with node count
+        const expandedWidth = containerWidth * expansionFactor
+        const expandedHeight = containerHeight * expansionFactor
+
+        // Center the expanded area around the viewport
+        const offsetX = -(expandedWidth - containerWidth) / 2
+        const offsetY = -(expandedHeight - containerHeight) / 2
+
+        const margin = 100 // Increased margin for better edge spacing
+
+        console.log(`Random layout: Using expanded area ${expandedWidth}x${expandedHeight} (${expansionFactor}x expansion) for ${visibleNodes.length} nodes`)
+
+        visibleNodes.forEach(node => {
+          const nodeId = node.id()
+          positions[nodeId] = {
+            x: offsetX + margin + Math.random() * (expandedWidth - 2 * margin),
+            y: offsetY + margin + Math.random() * (expandedHeight - 2 * margin)
+          }
+        })
+      }
+      // Add positions to config
+      config = { ...config, positions: positions }
+    }
+
+    // Special handling for CISE layout - dynamically generate clusters by node type
+    if (activeLayout === 'cise') {
+      // Group visible nodes by their data.type property
+      const typeClusters: { [type: string]: string[] } = {}
+      visibleNodes.forEach(node => {
+        const type = node.data('type') || 'Unknown'
+        if (!typeClusters[type]) typeClusters[type] = []
+        typeClusters[type].push(node.id())
       })
+      // Only include clusters with at least one node
+      const clusters = Object.values(typeClusters).filter(arr => arr.length > 0)
+      config = { ...config, clusters }
+      // In the future, this can be made configurable (e.g., by group, property, or user selection)
+      console.log('CISE layout: Generated clusters by node type:', clusters)
     }
 
     // Simplified layout without nested animations to prevent infinite loops
     console.log('Starting layout with group preservation')
-    
+
     try {
       // Run layout only on visible nodes (preserves groups) with safety check
       const safeConfig = sanitizeLayoutConfig(config)
       const layout = visibleNodes.layout(safeConfig)
-      
+
+      // Add physics simulation monitoring for CoSE layout
+      if (activeLayout === 'cose' || activeLayout === 'fcose') {
+        const startTime = Date.now()
+
+        layout.on('layoutstart', () => {
+          console.log('🔥 CoSE Physics: Layout started, beginning simulation...')
+        })
+
+        layout.on('layoutready', () => {
+          console.log('🔥 CoSE Physics: Initial positioning complete, running physics...')
+        })
+
+        // Store start time for duration tracking
+        layout.startTime = startTime
+      }
+
       // Use one-time event listeners to avoid multiple callbacks and cleanup properly
       layout.one('layoutstop', () => {
+        if (activeLayout === 'cose' || activeLayout === 'fcose') {
+          const duration = Date.now() - (layout.startTime || Date.now())
+          console.log(`🔥 ${activeLayout.toUpperCase()} Physics: Simulation completed in ${duration}ms`)
+          // Log a few node positions for debugging
+          const nodePositions = visibleNodes.map(node => ({ id: node.id(), position: node.position() }))
+          console.log(`${activeLayout} node positions (first 5):`, nodePositions.slice(0, 5))
+          // Ensure the graph is fit and centered after layout
+          // To debug layout, you can comment out the next two lines:
+          setTimeout(() => {
+            try {
+              cy.fit(cy.elements(), 60)
+              cy.center()
+              console.log('Graph fit and centered after', activeLayout, 'layout')
+            } catch (e) {
+              console.warn('Could not fit/center after', activeLayout, 'layout:', e)
+            }
+          }, 100)
+        }
         console.log(`${activeLayout} layout completed successfully, restoring group state`)
 
         // Special handling for hierarchical layouts - highlight root node
@@ -2217,20 +2630,60 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         } catch (error) {
           console.error('Error preserving group state:', error)
         } finally {
+          // Clear safety timeout
+          if (layout.timeoutRef) {
+            clearTimeout(layout.timeoutRef)
+          }
+
+          // Always reset layout running state
+          console.log('🔄 Layout completed, resetting layoutRunning flag')
           setLayoutRunning(false)
+
+          // Apply enhanced overlap prevention after layout completion
+          applyOverlapPreventionAfterLayout(700)
         }
       })
       
       layout.one('layouterror', (error: any) => {
         console.error(`${activeLayout} layout error:`, error)
         console.error('Layout config that failed:', config)
+
+        // Clear safety timeout
+        if (layout.timeoutRef) {
+          clearTimeout(layout.timeoutRef)
+        }
+
+        console.log('🔄 Layout error, resetting layoutRunning flag')
         setLayoutRunning(false)
       })
-      
+
+      // Add safety timeout to prevent infinite layout running state
+      const layoutTimeout = setTimeout(() => {
+        console.warn('⚠️ Layout timeout reached, forcing layoutRunning reset')
+        setLayoutRunning(false)
+      }, 10000) // 10 second timeout
+
+      // Store timeout reference to clear it later
+      layout.timeoutRef = layoutTimeout
+
       layout.run()
     } catch (error) {
       console.error('Error starting layout:', error)
+      console.log('🔄 Layout start error, resetting layoutRunning flag')
       setLayoutRunning(false)
+    }
+
+    if (activeLayout === 'fcose' && fcoseAnchorNode) {
+      const container = cy.container();
+      let centerX = 0, centerY = 0;
+      if (container) {
+        centerX = container.clientWidth / 2;
+        centerY = container.clientHeight / 2;
+      }
+      config.fixedNodeConstraint = [
+        { nodeId: fcoseAnchorNode, position: { x: centerX, y: centerY } }
+      ];
+      console.log('fCoSE anchor constraint applied:', config.fixedNodeConstraint);
     }
   }
 
@@ -2249,7 +2702,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
     setTimeout(() => {
       console.log('About to run layout:', layoutName)
-      runLayout(layoutName)
+      runLayout(layoutName).catch(console.error)
 
       // Get human-readable layout name for toast
       const layoutOption = LAYOUT_OPTIONS.find(option => option.value === layoutName)
@@ -2356,6 +2809,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         setTimeout(() => {
           cy.fit(cy.elements(), 60)
           cy.center()
+
+          // Apply enhanced overlap prevention after hierarchical layout
+          applyOverlapPreventionAfterLayout(200)
 
           toast({
             title: 'Hierarchy Root Set',
@@ -2514,6 +2970,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
         // Run the layout with safety check
         cyRef.current.layout(sanitizeLayoutConfig(layoutConfig)).run()
+
+        // Apply enhanced overlap prevention after layout
+        applyOverlapPreventionAfterLayout(700)
         
       } catch (error) {
         console.error('Error in centerAndFitGraph:', error)
@@ -2668,6 +3127,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       
       // Apply layout with safety check
       cyRef.current.layout(sanitizeLayoutConfig(layoutConfig)).run()
+
+      // Apply enhanced overlap prevention after layout
+      applyOverlapPreventionAfterLayout(700)
       
     } catch (error) {
       console.error('Error in resetView:', error)
@@ -2780,7 +3242,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     })
 
     setGroups(newGroups)
-    runLayout(currentLayout)
+    runLayout(currentLayout).catch(console.error)
 
     toast({
       title: 'Grouped by Type',
@@ -2914,7 +3376,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           if (cyRef.current) {
             // Ensure all elements are visible and properly positioned
             cyRef.current.elements().style('display', 'element')
-            runLayout(currentLayout)
+            runLayout(currentLayout).catch(console.error)
             
             // Additional fit and center after layout
             setTimeout(() => {
@@ -3062,7 +3524,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       }
     }))
 
-    runLayout(currentLayout)
+    runLayout(currentLayout).catch(console.error)
 
     toast({
       title: 'Group Created',
@@ -3192,7 +3654,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     setGroupName('')
     onGroupModalClose()
 
-    runLayout(currentLayout)
+    runLayout(currentLayout).catch(console.error)
 
     toast({
       title: 'Custom Group Created',
@@ -3390,7 +3852,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
     // Force a re-render to update the Available Types display
     setTimeout(() => {
-      runLayout(currentLayout)
+      runLayout(currentLayout).catch(console.error)
     }, 200)
 
     if (ungroupedCount > 0) {
@@ -3757,7 +4219,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     
     // Force a re-render to update the Available Types display
     setTimeout(() => {
-      runLayout(currentLayout)
+      runLayout(currentLayout).catch(console.error)
     }, 50)
 
     toast({
@@ -3877,9 +4339,45 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   }, [showControls, showGroupPanel, groups])
 
   useEffect(() => {
-    // Only run layout if groups or layout changes (after grouping/ungrouping)
-    runLayout(currentLayout)
-  }, [groups, currentLayout])
+    // Only run layout if groups change (after grouping/ungrouping)
+    // Don't run on currentLayout changes to avoid duplicate execution with changeLayout function
+    runLayout(currentLayout).catch(console.error)
+  }, [groups])
+
+  // Add state for fCoSE anchor node
+  const [fcoseAnchorNode, setFcoseAnchorNode] = useState<string | null>(null)
+
+  // Handler to set fCoSE anchor node
+  const setNodeAsFcoseAnchor = useCallback((nodeId: string) => {
+    if (!cyRef.current) {
+      console.error('No cytoscape instance available for setNodeAsFcoseAnchor')
+      return
+    }
+    const cy = cyRef.current
+    const node = cy.nodes(`[id = "${nodeId}"]`)
+    if (node.length === 0) {
+      toast({
+        title: 'Error',
+        description: `Node "${nodeId}" not found`,
+        status: 'error',
+        duration: 3000,
+        isClosable: true
+      })
+      return
+    }
+    setFcoseAnchorNode(nodeId)
+    setContextMenu({ isOpen: false, nodeId: null, position: { x: 0, y: 0 } })
+    // Visually highlight the anchor node
+    cy.nodes().removeClass('fcose-anchor')
+    node.addClass('fcose-anchor')
+    toast({
+      title: 'fCoSE Anchor Set',
+      description: `Set "${node.data('showname') || node.data('name') || nodeId}" as anchor for fCoSE layout`,
+      status: 'success',
+      duration: 3000,
+      isClosable: true
+    })
+  }, [toast])
 
   // Render loading state
   if (loading) {
@@ -4161,7 +4659,36 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 </Button>
               </WrapItem>
             </Wrap>
-            
+
+            {/* Node Overlap Prevention Toggle */}
+            <Box mt={3} p={3} bg={overlapPreventionBg} borderRadius="md">
+              <HStack justify="space-between" align="center">
+                <VStack align="start" spacing={0}>
+                  <Text fontSize="sm" fontWeight="medium" color={textColor}>
+                    Node Overlap Prevention
+                  </Text>
+                  <Text fontSize="xs" color={overlapPreventionTextColor}>
+                    Automatically prevents nodes from overlapping when dragging
+                  </Text>
+                </VStack>
+                <Tooltip
+                  label={overlapPreventionEnabled
+                    ? "Nodes will automatically move apart when dragged close together"
+                    : "Nodes can overlap when dragged - manual positioning required"
+                  }
+                  placement="top"
+                  hasArrow
+                >
+                  <Switch
+                    isChecked={overlapPreventionEnabled}
+                    onChange={(e) => handleOverlapPreventionToggle(e.target.checked)}
+                    colorScheme="blue"
+                    size={isMobile ? "md" : "sm"}
+                  />
+                </Tooltip>
+              </HStack>
+            </Box>
+
             {nodeTypes.length > 0 && (
               <Box mt={3}>
                 <HStack spacing={2} mb={2} align="center">
@@ -4721,6 +5248,28 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                     </Text>
                     <Text fontSize="xs" color="gray.500">
                       Use this node as root for Multi-Level Hierarchical Tree layout
+                    </Text>
+                  </VStack>
+                </MenuItem>
+                <MenuItem
+                  icon={<RepeatIcon />}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setNodeAsFcoseAnchor(contextMenu.nodeId!)
+                  }}
+                  _hover={{ bg: hoverBg }}
+                  onContextMenu={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                  }}
+                >
+                  <VStack align="start" spacing={0}>
+                    <Text fontSize="sm" fontWeight="medium">
+                      Set as fCoSE Anchor
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      Use this node as anchor for Force-Directed (fCoSE) layout
                     </Text>
                   </VStack>
                 </MenuItem>
