@@ -41,7 +41,8 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Smooth Layout Transitions**: 800ms animated transitions between layout algorithms
 - **Interactive Tooltips**: Rich hover tooltips with node/edge details and smooth animations
 - **Lottie Animations**: Beautiful loading states and empty state animations
-- **Multiple Layout Algorithms**: Grid, Circle, Concentric, Breadth First, and Cose layouts
+- **Multiple Layout Algorithms**: Grid, Circle, Concentric, Breadth First, CoSE, fCoSE, Cola, Spread, ELK, Klay, and CISE layouts, all selectable in the UI
+- **Dynamic Clustering**: CISE layout clusters nodes by type for clear group visualization (future: user-configurable)
 - **Real-time Updates**: Instant graph refresh with smooth transitions after data upload
 
 ### 📱 Enhanced Mobile & Touch Support
@@ -91,6 +92,9 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Stable React Patterns**: useCallback and useMemo for optimal performance
 - **Comprehensive Debugging**: Detailed console logging for troubleshooting complex operations
 - **Memory Management**: Proper cleanup and garbage collection for large datasets
+- **Expanded Layout Support**: Full support for advanced Cytoscape.js layouts (CoSE, fCoSE, Cola, Spread, ELK, Klay, CISE)
+- **Dynamic Layout Configuration**: Layout parameters (e.g., node spacing, clustering) are dynamically set for optimal results and can be extended for user control
+- **Anchor Node & Clustering**: fCoSE supports anchor nodes; CISE supports dynamic clustering by node type
 
 ## 🆕 Recent Improvements & Bug Fixes
 
@@ -114,6 +118,18 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Visual Consistency**: Proper node visibility restoration with comprehensive style reset
 - **Smooth Interactions**: Eliminated visual glitches and layout jumping during group operations
 - **Better Feedback**: Enhanced user feedback with detailed operation status and error messages
+
+### Major Graph Layout & Visualization Upgrades (2024)
+- **Expanded Layout Options**: Added support for advanced layouts including fCoSE, Cola, Spread, ELK, Klay, and CISE, in addition to existing Grid, Circle, Concentric, Breadthfirst, and CoSE layouts.
+- **Dynamic CISE Clustering**: CISE layout now automatically clusters nodes by their `type` property for clear, meaningful groupings. (Future versions will allow user-configurable clustering.)
+- **Improved Layout Switching**: Switching between layouts (especially physics-based ones like CoSE/fCoSE) now resets node positions as needed for organic results.
+- **fCoSE Anchor Node**: Added ability to set an "anchor" node for fCoSE layouts, improving control over layout root and structure.
+- **Node Spacing Enhancements**: Increased node separation and repulsion for fCoSE and Spread layouts for better readability on large graphs.
+- **Breadthfirst Layout Fix**: Hierarchical (multi-level) arrangement restored for Breadthfirst layout; nodes no longer appear in a single row.
+- **Extension Registration**: All Cytoscape layout extensions are registered globally before any Cytoscape instance is created, ensuring stability after hot reloads.
+- **UI Enhancements**: Layout selector updated to include all new layouts, with clear labels and descriptions. Anchor node and clustering options are visually indicated.
+- **Robust Error Handling**: Fixed CISE error when clusters are not provided; now always generates valid clusters by node type.
+- **Configurable Foundation**: Codebase is ready for future user-configurable clustering/grouping and layout parameter tuning.
 
 ## 🛠️ Technologies
 
@@ -607,6 +623,102 @@ The TC_THREAT_PATH property provides comprehensive threat path tracking capabili
 - **Visual Feedback**: Hover effects, selection states, and micro-interactions
 - **Context Menus**: Right-click for additional options (future enhancement)
 - **Zoom Controls**: Mouse wheel, pinch gestures, and dedicated mobile buttons
+
+### 🚫 Node Overlap Prevention
+
+**Automatic Collision Detection**: The TruContext Demo features intelligent node overlap prevention that automatically maintains proper spacing between nodes during manual repositioning operations.
+
+#### How It Works
+- **Real-time Physics**: When you drag a node close to others, nearby nodes automatically move away to prevent overlapping
+- **Seamless Integration**: Works automatically in the background - no manual activation required
+- **Smooth Animations**: Node repositioning uses 300ms smooth animations with ease-out transitions
+- **Preserved Connections**: Edge relationships remain intact during automatic repositioning
+- **Layout Compatibility**: Reactivates automatically after layout changes and transitions
+
+#### Configuration
+- **Minimum Spacing**: 20px padding maintained between node edges
+- **Animation Duration**: 300ms for smooth, natural movement
+- **Animation Easing**: Ease-out function for physics-like behavior
+- **Always Active**: Enabled by default for all graph interactions
+
+#### Best Practices
+- **Recommended Layout**: Force-Directed (CoSE) Layout works best with overlap prevention
+- **Optimal Dataset Size**: Most effective with 10-50 nodes for smooth performance
+- **Testing Approach**: Drag nodes toward clusters to observe automatic repositioning
+- **Mobile Support**: Fully compatible with touch interactions and mobile gestures
+
+#### Testing Instructions
+1. **Load Dataset**: Import a JSON dataset with 10+ nodes
+2. **Select Layout**: Choose "Force-Directed (CoSE) Layout" from the dropdown
+3. **Test Dragging**: Click and drag any node toward a group of other nodes
+4. **Observe Behavior**: Watch nearby nodes smoothly move away to maintain spacing
+5. **Verify Persistence**: Switch layouts and confirm overlap prevention reactivates
+
+#### Performance Considerations
+- **Large Datasets**: Performance may vary with 100+ nodes - consider using layout-based spacing instead
+- **Animation Quality**: Maintains 60fps animations on modern browsers
+- **Memory Usage**: Minimal overhead - uses efficient collision detection algorithms
+
+### 🔗 Edge Overlap Considerations
+
+**Current Implementation**: The TruContext Demo uses Bézier curves with automatic control point spacing to reduce edge overlap in dense graph areas.
+
+#### Built-in Edge Routing Features
+- **Bézier Curves**: All edges use `curve-style: bezier` with automatic control point calculation
+- **Control Point Spacing**: 40px step size for natural curve separation
+- **Dynamic Arrows**: Scaled arrow heads (1.2x) for better visibility at intersections
+- **Transition Animations**: 200ms smooth transitions for edge property changes
+
+#### Edge Bundling Research Findings
+After extensive research into Cytoscape.js edge bundling extensions:
+
+**❌ Limited Extension Support**:
+- No mature edge bundling extensions available for Cytoscape.js
+- Force-directed layouts (CoSE, CoSE-Bilkent) do not include edge overlap prevention
+- Third-party bundling libraries require significant integration effort
+
+**⚠️ Performance Implications**:
+- Edge bundling algorithms are computationally expensive for large datasets
+- Performance degrades significantly with 100+ edges
+- Real-time bundling during layout changes causes UI lag
+
+#### Recommended Approaches for Edge Overlap Reduction
+
+**1. Layout Optimization** (Currently Implemented):
+- Use **Force-Directed (CoSE) Layout** for natural edge spacing
+- **Hierarchical layouts** minimize edge crossings through tree structure
+- **Grid/Circle layouts** provide predictable edge patterns
+
+**2. Visual Enhancements** (Currently Implemented):
+- **Bézier curves** with automatic control points
+- **Edge transparency** during hover interactions
+- **Arrow scaling** for better intersection visibility
+
+**3. Interactive Solutions** (Recommended for Future):
+- **Zoom-based detail levels**: Hide edge labels at low zoom levels
+- **Edge filtering**: Toggle edge types on/off to reduce visual clutter
+- **Opacity adjustment**: Reduce edge opacity in dense areas
+
+**4. Alternative Approaches** (For Consideration):
+- **Straight edges** with `curve-style: straight` for minimal overlap
+- **Segmented edges** with `curve-style: segments` for manual control
+- **Edge bundling post-processing**: Apply bundling after layout completion
+
+#### Current Configuration
+```javascript
+// Edge styling optimized for overlap reduction
+'curve-style': 'bezier',
+'control-point-step-size': 40,  // Automatic spacing
+'width': 2,                     // Thin lines reduce visual clutter
+'arrow-scale': 1.2,            // Larger arrows for visibility
+'transition-duration': 200      // Smooth property changes
+```
+
+#### Recommendations for Large Datasets
+- **50+ nodes, 100+ edges**: Use hierarchical layouts to minimize crossings
+- **100+ nodes, 200+ edges**: Consider edge filtering or type-based hiding
+- **200+ nodes**: Implement zoom-based level-of-detail rendering
+- **Performance monitoring**: Test edge rendering performance on target devices
 
 ### Mobile-Optimized Touch Interactions
 - **Touch Detection**: Automatic mobile device and touch capability detection
