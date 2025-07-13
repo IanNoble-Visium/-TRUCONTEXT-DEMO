@@ -42,6 +42,7 @@ import FileUpload from '../components/FileUpload'
 import DatasetManager from '../components/DatasetManager'
 import DataSourceIntegrations from '../components/DataSourceIntegrations'
 import EnhancedGraphVisualization from '../components/EnhancedGraphVisualization'
+import CompactMenuBar, { ViewType } from '../components/CompactMenuBar'
 import PageTransition from '../components/PageTransition'
 
 const MotionBox = motion(chakra.div)
@@ -54,6 +55,10 @@ const HomePage: React.FC = () => {
   const [currentGraphData, setCurrentGraphData] = useState<{ nodes: any[], edges: any[] } | undefined>(undefined)
   const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure()
   const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
+
+  // View state for compact menu bar
+  const [currentView, setCurrentView] = useState<ViewType>('graph')
+  const [selectedNodesCount, setSelectedNodesCount] = useState(0)
 
   // Fullscreen state management
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -236,13 +241,26 @@ const HomePage: React.FC = () => {
                 ? "calc(100dvh - 80px)"
                 : "100dvh"
           }>
-            {/* Top Toolbar */}
-            <MotionBox 
-              bg={cardBg} 
-              borderBottom="1px solid" 
-              borderColor={borderColor} 
-              px={4} 
-              py={2}
+            {/* Compact Menu Bar - Hidden in fullscreen mode */}
+            {!isFullscreen && (
+              <CompactMenuBar
+                currentView={currentView}
+                onViewChange={setCurrentView}
+                nodeCount={currentGraphData?.nodes?.length || 0}
+                edgeCount={currentGraphData?.edges?.length || 0}
+                selectedNodesCount={selectedNodesCount}
+                onManageDatasets={onUploadOpen}
+              />
+            )}
+
+            {/* Fullscreen controls */}
+            {isFullscreen && (
+              <MotionBox 
+                bg={cardBg} 
+                borderBottom="1px solid" 
+                borderColor={borderColor} 
+                px={4} 
+                py={2}
               initial={{ y: -50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4 }}
@@ -276,9 +294,8 @@ const HomePage: React.FC = () => {
                     />
 
                     <motion.div variants={slideIn}>
-                      <MotionIconButton
-                        icon={<AttachmentIcon />}
-                        aria-label="Manage Datasets"
+                      <MotionButton
+                        leftIcon={<AttachmentIcon />}
                         colorScheme="blue"
                         variant="outline"
                         size="sm"
@@ -286,7 +303,9 @@ const HomePage: React.FC = () => {
                         mr={2}
                         whileHover={buttonHover}
                         whileTap={buttonTap}
-                      />
+                      >
+                        Manage Datasets
+                      </MotionButton>
                     </motion.div>
                   </>
                 )}
@@ -294,16 +313,17 @@ const HomePage: React.FC = () => {
                 {/* Help button - hide in fullscreen */}
                 {!isFullscreen && (
                   <motion.div variants={slideIn}>
-                    <MotionIconButton
-                      icon={<InfoIcon />}
-                      aria-label="Help"
+                    <MotionButton
+                      leftIcon={<InfoIcon />}
                       variant="ghost"
                       size="sm"
                       onClick={onInfoOpen}
                       mr={4}
                       whileHover={buttonHover}
                       whileTap={buttonTap}
-                    />
+                    >
+                      Help
+                    </MotionButton>
                   </motion.div>
                 )}
 
