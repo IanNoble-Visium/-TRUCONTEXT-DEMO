@@ -1687,7 +1687,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       if (overlapPreventionEnabled && currentLayout !== 'cose') {
         try {
           const initialPadding = currentLayout === 'random' ? 60 : 25 // Significantly enhanced padding for random layout readability
-          cy.nodes().noOverlap({
+          // Type assertion needed because cytoscape-no-overlap doesn't have TypeScript definitions
+          ;(cy.nodes() as any).noOverlap({
             padding: initialPadding, // Dynamic padding based on layout
             animate: true, // Smooth animation when nodes are repositioned
             animationDuration: 300, // Duration of repositioning animation
@@ -1750,7 +1751,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
     try {
       const padding = customPadding || (currentLayout === 'random' ? 60 : 25) // Significantly increased padding for random layout readability
-      cyRef.current.nodes().noOverlap({
+      // Type assertion needed because cytoscape-no-overlap doesn't have TypeScript definitions
+      ;(cyRef.current.nodes() as any).noOverlap({
         padding: padding, // Dynamic padding based on layout type
         animate: true, // Smooth animation when nodes are repositioned
         animationDuration: 400, // Slightly longer animation for better visual feedback
@@ -2535,13 +2537,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         })
 
         // Store start time for duration tracking
-        layout.startTime = startTime
+        ;(layout as any).startTime = startTime
       }
 
       // Use one-time event listeners to avoid multiple callbacks and cleanup properly
       layout.one('layoutstop', () => {
         if (activeLayout === 'cose' || activeLayout === 'fcose') {
-          const duration = Date.now() - (layout.startTime || Date.now())
+          const duration = Date.now() - ((layout as any).startTime || Date.now())
           console.log(`🔥 ${activeLayout.toUpperCase()} Physics: Simulation completed in ${duration}ms`)
           // Log a few node positions for debugging
           const nodePositions = visibleNodes.map(node => ({ id: node.id(), position: node.position() }))
@@ -2631,8 +2633,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           console.error('Error preserving group state:', error)
         } finally {
           // Clear safety timeout
-          if (layout.timeoutRef) {
-            clearTimeout(layout.timeoutRef)
+          if ((layout as any).timeoutRef) {
+            clearTimeout((layout as any).timeoutRef)
           }
 
           // Always reset layout running state
@@ -2649,8 +2651,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         console.error('Layout config that failed:', config)
 
         // Clear safety timeout
-        if (layout.timeoutRef) {
-          clearTimeout(layout.timeoutRef)
+        if ((layout as any).timeoutRef) {
+          clearTimeout((layout as any).timeoutRef)
         }
 
         console.log('🔄 Layout error, resetting layoutRunning flag')
@@ -2664,7 +2666,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       }, 10000) // 10 second timeout
 
       // Store timeout reference to clear it later
-      layout.timeoutRef = layoutTimeout
+      ;(layout as any).timeoutRef = layoutTimeout
 
       layout.run()
     } catch (error) {
