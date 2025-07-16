@@ -117,9 +117,9 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
   }, [currentView, nodes, edges, selectedNodes, onNodeSelect, GraphComponent])
 
   return (
-    <Box>
+    <Box height="100%" display="flex" flexDirection="column">
       {/* View Selector */}
-      <HStack spacing={4} mb={4} align="center">
+      <HStack spacing={4} mb={4} align="center" flexShrink={0}>
         <Text fontSize="sm" fontWeight="medium" color="gray.600" minW="40px">
           View:
         </Text>
@@ -144,6 +144,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
         flex="1"
         overflow={currentView === 'executive' || currentView === 'soc-executive' ? 'auto' : 'hidden'}
         position="relative"
+        minHeight={0}
       >
         <AnimatePresence mode="wait">
           <MotionBox
@@ -152,7 +153,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            h="full"
+            height="100%"
           >
             {renderedView}
           </MotionBox>
