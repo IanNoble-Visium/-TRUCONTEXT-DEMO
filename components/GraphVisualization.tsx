@@ -27,6 +27,10 @@ import { BackgroundVideo, VideoControls } from './BackgroundVideo'
 import { TCAnimationEngine } from './TCAnimationEngine'
 import { parseThreatPaths, getAllThreatPaths, addThreatPath } from '../utils/threatPathUtils'
 import ThreatPathDialog from './ThreatPathDialog'
+// SOC Components
+import SOCContextMenu from './SOCContextMenu'
+import SOCEdgeContextMenu from './SOCEdgeContextMenu'
+import SOCWorkflowDialogEnhanced from './SOCWorkflowDialogEnhanced'
 // @ts-ignore
 import spread from 'cytoscape-spread'
 // @ts-ignore
@@ -316,6 +320,46 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     nodeId: null,
     position: { x: 0, y: 0 }
   })
+
+  // SOC Context Menu States
+  const [socNodeContextMenu, setSocNodeContextMenu] = useState<{
+    isOpen: boolean
+    nodeId: string | null
+    nodeData: any
+    position: { x: number; y: number }
+  }>({
+    isOpen: false,
+    nodeId: null,
+    nodeData: null,
+    position: { x: 0, y: 0 }
+  })
+
+  const [socEdgeContextMenu, setSocEdgeContextMenu] = useState<{
+    isOpen: boolean
+    edgeId: string | null
+    edgeData: any
+    position: { x: number; y: number }
+  }>({
+    isOpen: false,
+    edgeId: null,
+    edgeData: null,
+    position: { x: 0, y: 0 }
+  })
+
+  // SOC Workflow Dialog State
+  const [socWorkflowDialog, setSocWorkflowDialog] = useState<{
+    isOpen: boolean
+    action: any
+    targetId: string
+    targetData: any
+    targetType: 'node' | 'edge'
+  }>({
+    isOpen: false,
+    action: null,
+    targetId: '',
+    targetData: null,
+    targetType: 'node'
+  })
   const [isMobile, setIsMobile] = useState(false)
   const [isTouch, setIsTouch] = useState(false)
   const [controlsCollapsed, setControlsCollapsed] = useState(false)
@@ -430,6 +474,51 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   // Handle context menu close
   const closeContextMenu = useCallback(() => {
     setContextMenu({ isOpen: false, nodeId: null, position: { x: 0, y: 0 } })
+  }, [])
+
+  // SOC Context Menu Handlers
+  const closeSocNodeContextMenu = useCallback(() => {
+    setSocNodeContextMenu({ isOpen: false, nodeId: null, nodeData: null, position: { x: 0, y: 0 } })
+  }, [])
+
+  const closeSocEdgeContextMenu = useCallback(() => {
+    setSocEdgeContextMenu({ isOpen: false, edgeId: null, edgeData: null, position: { x: 0, y: 0 } })
+  }, [])
+
+  const handleSocAction = useCallback((action: any, targetId: string, targetData: any, targetType: 'node' | 'edge') => {
+    // Close context menus
+    closeSocNodeContextMenu()
+    closeSocEdgeContextMenu()
+    
+    // Open workflow dialog
+    setSocWorkflowDialog({
+      isOpen: true,
+      action,
+      targetId,
+      targetData,
+      targetType
+    })
+  }, [closeSocNodeContextMenu, closeSocEdgeContextMenu])
+
+  // Wrapper functions for SOC context menu compatibility
+  const handleSocNodeAction = useCallback((action: string, nodeId: string, data?: any) => {
+    const actionObj = { id: action, title: action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }
+    handleSocAction(actionObj, nodeId, data || socNodeContextMenu.nodeData, 'node')
+  }, [handleSocAction, socNodeContextMenu.nodeData])
+
+  const handleSocEdgeAction = useCallback((action: string, edgeId: string, data?: any) => {
+    const actionObj = { id: action, title: action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }
+    handleSocAction(actionObj, edgeId, data || socEdgeContextMenu.edgeData, 'edge')
+  }, [handleSocAction, socEdgeContextMenu.edgeData])
+
+  const closeSocWorkflowDialog = useCallback(() => {
+    setSocWorkflowDialog({
+      isOpen: false,
+      action: null,
+      targetId: '',
+      targetData: null,
+      targetType: 'node'
+    })
   }, [])
 
   // Handle properties panel
@@ -1745,10 +1834,11 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         updateTooltipPosition(mouseX, mouseY)
       })
 
-      // Right-click context menu for nodes
+      // Right-click context menu for nodes - SOC Enhanced
       cy.on('cxttap', 'node', (event) => {
         const node = event.target
         const nodeId = node.id()
+        const nodeData = node.data()
         const isGroupNode = node.data('type') === 'Group'
         const mouseEvent = event.originalEvent
 
@@ -1779,14 +1869,66 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           const mouseX = mouseEvent.pageX || mouseEvent.clientX
           const mouseY = mouseEvent.pageY || mouseEvent.clientY
 
-          // Close any existing context menu first
+          // Close any existing context menus first
           setContextMenu({ isOpen: false, nodeId: null, position: { x: 0, y: 0 } })
+          closeSocNodeContextMenu()
+          closeSocEdgeContextMenu()
 
           // Small delay to ensure clean state transition
           setTimeout(() => {
-            setContextMenu({
+            setSocNodeContextMenu({
               isOpen: true,
               nodeId: nodeId,
+              nodeData: nodeData,
+              position: { x: mouseX, y: mouseY }
+            })
+          }, 10)
+
+          // Hide tooltip when context menu opens
+          setTooltipData(null)
+        }
+
+        return false
+      })
+
+      // Right-click context menu for edges - SOC Enhanced
+      cy.on('cxttap', 'edge', (event) => {
+        const edge = event.target
+        const edgeId = edge.id()
+        const edgeData = edge.data()
+        const mouseEvent = event.originalEvent
+
+        // Comprehensive event prevention
+        event.stopPropagation()
+        event.stopImmediatePropagation()
+
+        // Prevent default browser context menu
+        if (mouseEvent) {
+          mouseEvent.preventDefault()
+          mouseEvent.stopPropagation()
+          mouseEvent.stopImmediatePropagation()
+
+          if (mouseEvent.type === 'contextmenu') {
+            mouseEvent.returnValue = false
+          }
+        }
+
+        // Get mouse position for context menu
+        if (mouseEvent) {
+          const mouseX = mouseEvent.pageX || mouseEvent.clientX
+          const mouseY = mouseEvent.pageY || mouseEvent.clientY
+
+          // Close any existing context menus first
+          setContextMenu({ isOpen: false, nodeId: null, position: { x: 0, y: 0 } })
+          closeSocNodeContextMenu()
+          closeSocEdgeContextMenu()
+
+          // Small delay to ensure clean state transition
+          setTimeout(() => {
+            setSocEdgeContextMenu({
+              isOpen: true,
+              edgeId: edgeId,
+              edgeData: edgeData,
               position: { x: mouseX, y: mouseY }
             })
           }, 10)
@@ -1802,12 +1944,16 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       cy.on('cxttap', (event) => {
         if (event.target === cy) {
           closeContextMenu()
+          closeSocNodeContextMenu()
+          closeSocEdgeContextMenu()
         }
       })
 
       cy.on('tap', (event) => {
         if (event.target === cy) {
           closeContextMenu()
+          closeSocNodeContextMenu()
+          closeSocEdgeContextMenu()
         }
       })
 
@@ -5556,6 +5702,36 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         onClose={closePropertiesPanel}
         selectedElement={propertiesPanel.selectedElement}
         onPropertyChange={handlePropertyChange}
+      />
+
+      {/* SOC Node Context Menu */}
+      <SOCContextMenu
+        isOpen={socNodeContextMenu.isOpen}
+        position={socNodeContextMenu.position}
+        nodeId={socNodeContextMenu.nodeId}
+        nodeData={socNodeContextMenu.nodeData}
+        onClose={closeSocNodeContextMenu}
+        onAction={handleSocNodeAction}
+      />
+
+      {/* SOC Edge Context Menu */}
+      <SOCEdgeContextMenu
+        isOpen={socEdgeContextMenu.isOpen}
+        position={socEdgeContextMenu.position}
+        edgeId={socEdgeContextMenu.edgeId}
+        edgeData={socEdgeContextMenu.edgeData}
+        onClose={closeSocEdgeContextMenu}
+        onAction={handleSocEdgeAction}
+      />
+
+      {/* SOC Workflow Dialog */}
+      <SOCWorkflowDialogEnhanced
+        isOpen={socWorkflowDialog.isOpen}
+        onClose={closeSocWorkflowDialog}
+        action={socWorkflowDialog.action}
+        targetId={socWorkflowDialog.targetId}
+        targetData={socWorkflowDialog.targetData}
+        targetType={socWorkflowDialog.targetType}
       />
     </Box>
   )

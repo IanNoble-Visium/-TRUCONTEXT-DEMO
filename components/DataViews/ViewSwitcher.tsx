@@ -20,7 +20,17 @@ const ExecutiveDashboard = dynamic(() => import('../ExecutiveDashboard'), {
   )
 })
 
-export type ViewType = 'executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
+// Dynamic import for SOC Executive Dashboard
+const ExecutiveDashboardSOC = dynamic(() => import('../ExecutiveDashboardSOC'), {
+  ssr: false,
+  loading: () => (
+    <Box p={6} minH="100vh" display="flex" alignItems="center" justifyContent="center">
+      <Text>Loading SOC Executive Dashboard...</Text>
+    </Box>
+  )
+})
+
+export type ViewType = 'executive' | 'soc-executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
 
 interface ViewSwitcherProps {
   currentView: ViewType
@@ -49,6 +59,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
   // View options with Executive Dashboard as first option
   const viewOptions = [
     { value: 'executive', label: 'Executive Dashboard', icon: '📊' },
+    { value: 'soc-executive', label: 'SOC Executive Dashboard', icon: '🛡️' },
     { value: 'graph', label: 'Topology View', icon: '🕸️' },
     { value: 'table', label: 'Table View', icon: '📋' },
     { value: 'timeline', label: 'Timeline View', icon: '⏰' },
@@ -74,9 +85,17 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
           <ExecutiveDashboard 
             graphData={{ nodes, edges }}
             isLoading={false}
-            onViewChange={onViewChange}
           />
         )
+      case 'soc-executive':
+        return (
+          <ExecutiveDashboardSOC 
+            graphData={{ nodes, edges }}
+            isLoading={false}
+          />
+        )
+      case 'graph':
+        return GraphComponent || <Box p={4}><Text>Graph view not available</Text></Box>
       case 'table':
         return <TableView {...commonProps} />
       case 'timeline':
@@ -84,53 +103,47 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       case 'cards':
         return <CardsView {...commonProps} />
       case 'dashboard':
-        return <DashboardView nodes={nodes} edges={edges} selectedNodes={selectedNodes} />
+        return <DashboardView {...commonProps} />
       case 'geomap':
-        console.log('ViewSwitcher: Rendering GeoMapView with props:', commonProps)
         return <GeoMapView {...commonProps} />
-      case 'graph':
       default:
-        return GraphComponent
+        return (
+          <ExecutiveDashboard 
+            graphData={{ nodes, edges }}
+            isLoading={false}
+          />
+        )
     }
-  }, [currentView, nodes, edges, selectedNodes, onNodeSelect, GraphComponent, onViewChange])
+  }, [currentView, nodes, edges, selectedNodes, onNodeSelect, GraphComponent])
 
   return (
-    <Box height="100%" display="flex" flexDirection="column">
+    <Box>
       {/* View Selector */}
-      <Box p={3} borderBottom="1px solid" borderColor="gray.200" bg={bgColor}>
-        <HStack spacing={4} align="center">
-          <Text fontSize="sm" fontWeight="medium" color="gray.600" minWidth="fit-content">
-            View:
-          </Text>
-          <Select
-            value={currentView}
-            onChange={(e) => {
-              const newView = e.target.value as ViewType
-              console.log(`ViewSwitcher: Changing view from "${currentView}" to "${newView}"`)
-              onViewChange(newView)
-            }}
-            size="sm"
-            width="200px"
-            bg={bgColor}
-          >
-            {viewOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.icon} {option.label}
-              </option>
-            ))}
-          </Select>
-          <Text fontSize="xs" color="gray.500">
-            {nodes.length} nodes, {edges.length} edges
-            {selectedNodes.length > 0 && ` • ${selectedNodes.length} selected`}
-          </Text>
-        </HStack>
-      </Box>
+      <HStack spacing={4} mb={4} align="center">
+        <Text fontSize="sm" fontWeight="medium" color="gray.600" minW="40px">
+          View:
+        </Text>
+        <Select
+          value={currentView}
+          onChange={(e) => onViewChange(e.target.value as ViewType)}
+          size="sm"
+          maxW="300px"
+          bg={bgColor}
+          borderRadius="md"
+        >
+          {viewOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.icon} {option.label}
+            </option>
+          ))}
+        </Select>
+      </HStack>
 
       {/* View Content */}
       <Box
         flex="1"
+        overflow={currentView === 'executive' || currentView === 'soc-executive' ? 'auto' : 'hidden'}
         position="relative"
-        overflow={currentView === 'executive' ? 'auto' : 'hidden'}
       >
         <AnimatePresence mode="wait">
           <MotionBox
@@ -138,13 +151,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            height={currentView === 'executive' ? 'auto' : '100%'}
-            width="100%"
-            position={currentView === 'executive' ? 'relative' : 'absolute'}
-            top={currentView === 'executive' ? 'auto' : 0}
-            left={currentView === 'executive' ? 'auto' : 0}
-            minHeight={currentView === 'executive' ? '100%' : 'auto'}
+            transition={{ duration: 0.2 }}
+            h="full"
           >
             {renderedView}
           </MotionBox>
@@ -154,4 +162,5 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
   )
 }
 
-export default ViewSwitcher 
+export default ViewSwitcher
+
