@@ -145,13 +145,15 @@ const cardVariants = {
 }
 
 interface ExecutiveDashboardSOCProps {
-  data?: any
+  graphData?: { nodes: any[]; edges: any[] }
+  isLoading?: boolean
   selectedNodes?: string[]
   onNodeSelect?: (nodeId: string) => void
 }
 
 const ExecutiveDashboardSOC: React.FC<ExecutiveDashboardSOCProps> = ({
-  data,
+  graphData,
+  isLoading = false,
   selectedNodes = [],
   onNodeSelect
 }) => {

@@ -43,6 +43,7 @@ import DatasetManager from '../components/DatasetManager'
 import DataSourceIntegrations from '../components/DataSourceIntegrations'
 import EnhancedGraphVisualization from '../components/EnhancedGraphVisualization'
 import PageTransition from '../components/PageTransition'
+import { ViewType } from '../components/DataViews'
 
 const MotionBox = motion(chakra.div)
 const MotionButton = motion(Button)
@@ -52,7 +53,7 @@ const HomePage: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [showHeader, setShowHeader] = useState(true)
   const [currentGraphData, setCurrentGraphData] = useState<{ nodes: any[], edges: any[] } | undefined>(undefined)
-  const [currentView, setCurrentView] = useState<'executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'>('executive')
+  const [currentView, setCurrentView] = useState<ViewType>('executive')
   const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure()
   const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
 
@@ -90,7 +91,7 @@ const HomePage: React.FC = () => {
     setCurrentGraphData(data)
   }, [])
 
-  const handleViewChange = useCallback((view: 'executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap') => {
+  const handleViewChange = useCallback((view: ViewType) => {
     setCurrentView(view)
   }, [])
 
