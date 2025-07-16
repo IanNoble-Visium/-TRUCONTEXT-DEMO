@@ -1,7 +1,8 @@
 import React from 'react'
-import { Box, Flex, Heading, Text, IconButton, useColorMode, useColorModeValue } from '@chakra-ui/react'
+import { Box, Flex, Heading, Text, IconButton, useColorMode, useColorModeValue, HStack, Icon } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
+import { FiMonitor } from 'react-icons/fi'
 import Image from 'next/image'
 
 const MotionIconButton = motion(IconButton)
@@ -13,33 +14,26 @@ const Header: React.FC = () => {
 
   return (
     <Box bg={bgColor} color={textColor} py={4} px={6} boxShadow="lg">
-      <Flex align="center" justify="space-between" maxW="1400px" mx="auto">
-        {/* Left-aligned logo and branding */}
-        <Flex align="center">
-          <Box mr={4}>
-            <Image
-              src="/images/logo.png"
-              alt="Visium Technologies"
-              width={103}
-              height={40}
-              style={{ objectFit: 'contain' }}
-            />
-          </Box>
-          <Box>
-            <Heading size="lg" fontWeight="bold">
-              TruContext Demo
-            </Heading>
-            <Text fontSize="sm" opacity={0.9}>
-              TruContext Application
-            </Text>
-          </Box>
-        </Flex>
+      <Flex align="center" justify="space-between" w="100%">
+        {/* Task #2: Left-aligned Visium logo only - clean, minimal placement */}
+        <Box>
+          <Image
+            src="/images/logo.png"
+            alt="Visium Technologies"
+            width={103}
+            height={40}
+            style={{ objectFit: 'contain' }}
+          />
+        </Box>
 
-        {/* Right-aligned attribution and controls */}
+        {/* Task #3: Right-aligned attribution with monitor icon and controls */}
         <Flex align="center" gap={4}>
-          <Text fontSize="sm" opacity={0.8}>
-            Powered by TruAI & Neo4j
-          </Text>
+          <HStack spacing={2}>
+            <Icon as={FiMonitor} boxSize={4} />
+            <Text fontSize="sm" opacity={0.8}>
+              Powered by TruAI & Neo4J
+            </Text>
+          </HStack>
 
           <MotionIconButton
             aria-label="Toggle color mode"

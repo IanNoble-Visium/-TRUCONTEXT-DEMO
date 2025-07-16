@@ -226,7 +226,7 @@ const HomePage: React.FC = () => {
       </Head>
 
       <PageTransition animationKey="home" direction="up" duration={0.5}>
-        <Box height="100dvh" bg={bgColor} overflow={currentView === 'executive' ? 'auto' : 'hidden'}>
+        <Box height="100dvh" bg={bgColor} overflow={currentView === 'executive' || currentView === 'soc-executive' ? 'auto' : 'hidden'}>
           {/* Animated Header - Hidden in fullscreen mode */}
           {!isFullscreen && (
             <MotionBox variants={headerVariants}>
@@ -355,19 +355,8 @@ const HomePage: React.FC = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                {/* Hide title in fullscreen mode */}
-                {!isFullscreen && (
-                  <Box p={4} borderBottom="1px solid" borderColor={borderColor}>
-                    <motion.div
-                      initial={{ x: -20, opacity: 0 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ duration: 0.4, delay: 0.3 }}
-                    >
-                      <Heading size="md" color="visium.500">Interactive Graph Topology</Heading>
-                    </motion.div>
-                  </Box>
-                )}
-                <Box height={isFullscreen ? "100%" : "calc(100% - 60px)"}>
+                {/* Title removed to free up vertical space for dashboard content */}
+                <Box height="100%">
                   <EnhancedGraphVisualization
                     refreshTrigger={refreshTrigger}
                     onGraphDataLoad={handleGraphDataLoad}
