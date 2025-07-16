@@ -24,6 +24,8 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Format Validation**: Comprehensive JSON structure checking
 
 ### 📊 Multiple Data Visualization Views
+- **Executive Dashboard**: High-level business metrics and KPIs with interactive charts
+- **SOC Executive Dashboard**: ⭐ Security Operations Center dashboard with threat monitoring and incident metrics
 - **Graph View**: Interactive network topology with Cytoscape.js and SVG icons in circular markers
 - **Table View**: Sortable and filterable data tables with dedicated Icon column (24px SVG icons)
 - **Timeline View**: Chronological data visualization with SVG icons for node events (20px)
@@ -98,7 +100,15 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 
 ## 🆕 Recent Improvements & Bug Fixes
 
-### Major Grouping System Overhaul (Latest Update)
+### Security Operations Center (SOC) Integration (Latest Update)
+- **SOC Executive Dashboard**: Comprehensive security dashboard with real-time threat monitoring, incident metrics, and security posture indicators
+- **Right-Click Context Menus**: Professional SOC actions for nodes and edges with industry-standard workflows
+- **Realistic SOC Workflows**: Multi-step dialogs with forms, progress tracking, and mock tool integrations
+- **Enhanced Workflow Dialogs**: Comprehensive SOC engineer processes with SIEM, EDR, and SOAR simulations
+- **Security-Focused Interface**: Professional SOC terminology and visual design optimized for security operations
+- **Demo-Ready Features**: Comprehensive platform ready for client demonstrations and sales presentations
+
+### Major Grouping System Overhaul (Previous Update)
 - **Fixed Critical Ungrouping Bug**: Resolved issue where ungrouped nodes remained invisible after ungrouping operations
 - **Enhanced State Management**: Implemented dual-state tracking to prevent layout conflicts between React state and Cytoscape.js
 - **Improved Edge Restoration**: Comprehensive edge validation and restoration system with duplicate prevention
@@ -1458,7 +1468,15 @@ TruContext is powered by TruAI, a leader in graph analytics and cybersecurity so
 
 ## 🌟 Recent Updates & Improvements
 
-### ✅ TC_ Properties System & Security Alarm Management (Latest)
+### ✅ Security Operations Center (SOC) Integration (Latest)
+- **SOC Executive Dashboard**: Comprehensive security dashboard with real-time threat monitoring, incident metrics, and security posture indicators
+- **Right-Click Context Menus**: Professional SOC actions for nodes and edges with industry-standard workflows based on real SOC daily tasks
+- **Realistic SOC Workflows**: Multi-step dialogs with forms, progress tracking, and mock tool integrations (SIEM, EDR, SOAR)
+- **Enhanced Workflow Dialogs**: Comprehensive SOC engineer processes including incident response, threat hunting, and compliance workflows
+- **Security-Focused Interface**: Professional SOC terminology and visual design optimized for security operations and client demonstrations
+- **Demo-Ready Platform**: Comprehensive SOC platform ready for client presentations and sales demonstrations
+
+### ✅ TC_ Properties System & Security Alarm Management (Previous)
 - **Advanced Property Framework**: Comprehensive TC_ property system for visual customization and security monitoring
 - **TC_ALARM Security System**: Five-level alarm severity system (Alert, Warning, Success, Info, None) with distinct visual styling
 - **Layout Preservation**: Graph positions remain stable during property updates for consistent visualization
@@ -1569,3 +1587,44 @@ TruContext is powered by TruAI, a leader in graph analytics and cybersecurity so
 - **Animations**: Smooth 60fps animations with proper cleanup
 - **Performance**: Optimized for mobile devices and slower connections
 - **Accessibility**: ARIA labels and keyboard navigation support 
+
+
+## 🛡️ Security Operations Center (SOC) Features
+
+The TruContext Demo has been transformed into a comprehensive Security Operations Center (SOC) platform with professional-grade features designed for real-world security operations. This includes right-click context menus, realistic SOC workflows, and a dedicated SOC Executive Dashboard.
+
+### SOC Executive Dashboard
+- **Real-time Security Overview**: Comprehensive dashboard with key security metrics
+- **Threat Level Indicator**: Current threat level with visual indicators (Elevated, Guarded, Normal)
+- **Incident Metrics**: Active incidents, alerts today, MTTR, and MTTD with trend indicators
+- **24-Hour Incident Trends**: Interactive chart showing new vs. resolved incidents over 24 hours
+- **Security Posture**: Overall security score with visual gauge and status (Good, Fair, Poor)
+- **Recent Incidents Table**: Detailed list of recent security incidents with severity and status
+- **Security Controls**: Tabs for viewing security control status and compliance
+- **Threat Intelligence**: Integrated threat intelligence feeds and indicators
+
+### Right-Click Context Menus
+- **Node & Edge Actions**: SOC-specific actions available on right-click for nodes and edges
+- **Professional SOC Workflows**: Access to realistic multi-step SOC engineer workflows
+- **Industry-Standard Actions**: Based on real-world SOC daily tasks and best practices
+
+#### Node Actions
+- **Monitor & Investigate**: Node health status, alert investigation, log analysis dialogs
+- **Security Operations**: Isolate host, endpoint security validation, access review
+- **Incident Response**: Forensic collection, remediation execution, patch management
+- **Threat Hunting**: Historical analysis, behavioral anomaly detection
+
+#### Edge Actions
+- **Traffic Analysis**: Network flow monitoring, bandwidth analysis, connection patterns
+- **Security Controls**: Block/allow connections, rate management, access path auditing
+- **Threat Detection**: Alert correlation, lateral movement detection, APT investigation
+- **Compliance**: Connection logging, audit trails, policy enforcement
+
+### Realistic SOC Workflows
+- **Multi-Step Dialogs**: Interactive dialogs with forms, progress tracking, and realistic SOC processes
+- **Mock Tool Integrations**: Simulated connections to SIEM, EDR, and SOAR platforms
+- **Sample Incident Workflows**: Pre-built workflows for common security incidents
+- **Compliance Reporting**: Generate mock compliance reports and audit trails
+
+
+
