@@ -69,7 +69,7 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
         nodeCount: simpleNodes.length,
         edgeCount: simpleEdges.length,
         sampleNode: simpleNodes[0],
-        tcPropertiesFound: simpleNodes.filter(n => Object.keys(n).some(k => k.startsWith('TC_'))).length
+        tcPropertiesFound: simpleNodes.filter((n: any) => Object.keys(n).some(k => k.startsWith('TC_'))).length
       })
 
       setGraphData({ nodes: simpleNodes, edges: simpleEdges })

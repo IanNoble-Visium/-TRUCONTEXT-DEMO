@@ -235,10 +235,10 @@ const AnimatedCounter: React.FC<{
           )}
         </VStack>
       </HStack>
-      {trend && trendValue && (
+      {trend && trendValue && getTrendIcon() && (
         <HStack spacing={1}>
           <Icon
-            as={getTrendIcon()}
+            as={getTrendIcon()!}
             boxSize={3}
             color={getTrendColor()}
             transform={trend === 'down' ? 'rotate(180deg)' : 'none'}
@@ -693,7 +693,7 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
               <AnimatedCounter
                 value={metrics?.totalNodes || 0}
                 title="Network Entities"
-                subtitle={metrics?.alarmCounts?.Alert > 0 || metrics?.alarmCounts?.Warning > 0
+                subtitle={(metrics?.alarmCounts?.Alert || 0) > 0 || (metrics?.alarmCounts?.Warning || 0) > 0
                   ? 'Some with alerts' : 'All monitored'}
                 icon={FiDatabase}
                 color="blue"
@@ -756,8 +756,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             whileHover="hover"
             _hover={{
               boxShadow: "xl",
-              borderColor: metrics?.alarmCounts?.Alert > 0 ? 'red.300' :
-                          metrics?.alarmCounts?.Warning > 0 ? 'orange.300' :
+              borderColor: (metrics?.alarmCounts?.Alert || 0) > 0 ? 'red.300' :
+                          (metrics?.alarmCounts?.Warning || 0) > 0 ? 'orange.300' :
                           (metrics?.securityScore || 0) >= 80 ? 'green.300' : 'yellow.300'
             }}
           >
@@ -767,8 +767,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 maxValue={100}
                 title="Network Health"
                 color={
-                  metrics?.alarmCounts?.Alert > 0 ? '#E53E3E' :
-                  metrics?.alarmCounts?.Warning > 0 ? '#DD6B20' :
+                  (metrics?.alarmCounts?.Alert || 0) > 0 ? '#E53E3E' :
+                  (metrics?.alarmCounts?.Warning || 0) > 0 ? '#DD6B20' :
                   (metrics?.securityScore || 0) >= 80 ? '#38A169' :
                   (metrics?.securityScore || 0) >= 60 ? '#D69E2E' : '#E53E3E'
                 }
@@ -808,8 +808,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
             whileHover="hover"
             _hover={{
               boxShadow: "xl",
-              borderColor: metrics?.alarmCounts?.Alert > 0 ? 'red.300' :
-                          metrics?.alarmCounts?.Warning > 0 ? 'orange.300' : 'purple.300'
+              borderColor: (metrics?.alarmCounts?.Alert || 0) > 0 ? 'red.300' :
+                          (metrics?.alarmCounts?.Warning || 0) > 0 ? 'orange.300' : 'purple.300'
             }}
           >
             <CardBody display="flex" justifyContent="center" alignItems="center">
@@ -818,8 +818,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                 maxValue={20}
                 title="Critical Assets"
                 color={
-                  metrics?.alarmCounts?.Alert > 0 ? '#E53E3E' :
-                  metrics?.alarmCounts?.Warning > 0 ? '#DD6B20' : '#805AD5'
+                  (metrics?.alarmCounts?.Alert || 0) > 0 ? '#E53E3E' :
+                  (metrics?.alarmCounts?.Warning || 0) > 0 ? '#DD6B20' : '#805AD5'
                 }
                 icon={FiTarget}
                 size={100}
@@ -877,28 +877,28 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   <Text fontSize="sm" color={grayTextColor}>Overall Risk Level</Text>
                   <Badge
                     colorScheme={
-                      metrics?.alarmCounts?.Alert > 0 ? 'red' :
-                      metrics?.alarmCounts?.Warning > 0 ? 'orange' :
+                      (metrics?.alarmCounts?.Alert || 0) > 0 ? 'red' :
+                      (metrics?.alarmCounts?.Warning || 0) > 0 ? 'orange' :
                       (metrics?.securityScore || 0) >= 80 ? 'green' : 'yellow'
                     }
                     fontSize="sm"
                     px={3}
                     py={1}
                   >
-                    {metrics?.alarmCounts?.Alert > 0 ? 'HIGH RISK' :
-                     metrics?.alarmCounts?.Warning > 0 ? 'MEDIUM RISK' :
+                    {(metrics?.alarmCounts?.Alert || 0) > 0 ? 'HIGH RISK' :
+                     (metrics?.alarmCounts?.Warning || 0) > 0 ? 'MEDIUM RISK' :
                      (metrics?.securityScore || 0) >= 80 ? 'LOW RISK' : 'MODERATE RISK'}
                   </Badge>
                 </HStack>
                 <Progress
                   value={
-                    metrics?.alarmCounts?.Alert > 0 ? 90 :
-                    metrics?.alarmCounts?.Warning > 0 ? 60 :
+                    (metrics?.alarmCounts?.Alert || 0) > 0 ? 90 :
+                    (metrics?.alarmCounts?.Warning || 0) > 0 ? 60 :
                     (metrics?.securityScore || 0) >= 80 ? 20 : 40
                   }
                   colorScheme={
-                    metrics?.alarmCounts?.Alert > 0 ? 'red' :
-                    metrics?.alarmCounts?.Warning > 0 ? 'orange' :
+                    (metrics?.alarmCounts?.Alert || 0) > 0 ? 'red' :
+                    (metrics?.alarmCounts?.Warning || 0) > 0 ? 'orange' :
                     (metrics?.securityScore || 0) >= 80 ? 'green' : 'yellow'
                   }
                   size="lg"
@@ -1015,8 +1015,8 @@ const ExecutiveDashboard: React.FC<ExecutiveDashboardProps> = ({
                   </HStack>
                   <HStack justify="space-between" w="full">
                     <Text fontSize="xs" color={grayTextColor}>GDPR</Text>
-                    <Badge colorScheme={metrics?.alarmCounts?.Alert > 0 ? 'orange' : 'green'} fontSize="xs">
-                      {metrics?.alarmCounts?.Alert > 0 ? 'Review Required' : 'Compliant'}
+                    <Badge colorScheme={(metrics?.alarmCounts?.Alert || 0) > 0 ? 'orange' : 'green'} fontSize="xs">
+                      {(metrics?.alarmCounts?.Alert || 0) > 0 ? 'Review Required' : 'Compliant'}
                     </Badge>
                   </HStack>
                 </VStack>

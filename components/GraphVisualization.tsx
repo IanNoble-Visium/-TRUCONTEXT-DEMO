@@ -381,6 +381,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     controlsExpanded: false // Start collapsed for cleaner interface
   })
 
+  // Color mode values for video controls (moved to top level to avoid conditional hook calls)
+  const videoBgColor = useColorModeValue('gray.50', 'gray.700');
+  const videoBorderColor = useColorModeValue('gray.200', 'gray.600');
+  const videoIconColor = useColorModeValue('gray.700', 'gray.200');
+  const videoTextColor = useColorModeValue('gray.700', 'gray.200');
+  const videoLabelColor = useColorModeValue('gray.500', 'gray.400');
+
   // Color mode values
   const bgColor = useColorModeValue("white", "gray.800")
   const borderColor = useColorModeValue("gray.200", "gray.600")
@@ -544,7 +551,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             if (tcProperty && value !== undefined && value !== null) {
               // Handle animation separately
               if (key === 'TC_ANIMATION') {
-                animationType = value
+                animationType = typeof value === 'string' ? value : null
                 return
               }
 
@@ -558,13 +565,15 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                     tcStyles['background-color'] = alarmConfig.bgColor
                   }
                   // Add alarm indicator class for additional styling
-                  element.addClass(`alarm-${value.toLowerCase()}`)
-                  // Remove other alarm classes
-                  Object.keys(TC_ALARM_LEVELS).forEach(level => {
-                    if (level !== value) {
-                      element.removeClass(`alarm-${level.toLowerCase()}`)
-                    }
-                  })
+                  if (typeof value === 'string') {
+                    element.addClass(`alarm-${value.toLowerCase()}`)
+                    // Remove other alarm classes
+                    Object.keys(TC_ALARM_LEVELS).forEach(level => {
+                      if (level !== value) {
+                        element.removeClass(`alarm-${level.toLowerCase()}`)
+                      }
+                    })
+                  }
                 }
                 return
               }
@@ -842,7 +851,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             console.log(`  ✅ Applying ${key}=${value} to element ${data.id}`)
 
             if (key === 'TC_ANIMATION') {
-              animationType = value as string
+              animationType = typeof value === 'string' ? value : null
               return
             }
 
@@ -860,13 +869,15 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                   'border-width': alarmConfig.borderWidth
                 })
                 // Add alarm indicator class for additional styling
-                element.addClass(`alarm-${(value as string).toLowerCase()}`)
-                // Remove other alarm classes
-                Object.keys(TC_ALARM_LEVELS).forEach(level => {
-                  if (level !== value) {
-                    element.removeClass(`alarm-${level.toLowerCase()}`)
-                  }
-                })
+                if (typeof value === 'string') {
+                  element.addClass(`alarm-${value.toLowerCase()}`)
+                  // Remove other alarm classes
+                  Object.keys(TC_ALARM_LEVELS).forEach(level => {
+                    if (level !== value) {
+                      element.removeClass(`alarm-${level.toLowerCase()}`)
+                    }
+                  })
+                }
               }
               return
             }
@@ -4774,9 +4785,9 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           {/* Video Controls - expanded panel when icon is clicked */}
           <Collapse in={videoSettings.controlsExpanded} animateOpacity>
             <Box
-              bg={useColorModeValue('gray.50', 'gray.700')}
+              bg={videoBgColor}
               border="1px solid"
-              borderColor={useColorModeValue('gray.200', 'gray.600')}
+              borderColor={videoBorderColor}
               borderRadius="md"
               p={3}
               mt={2}
@@ -4785,8 +4796,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 {/* Header with video toggle */}
                 <HStack justify="space-between" align="center">
                   <HStack spacing={2}>
-                    <ViewIcon boxSize={4} color={useColorModeValue('gray.700', 'gray.200')} />
-                    <Text fontSize="sm" fontWeight="medium" color={useColorModeValue('gray.700', 'gray.200')}>
+                    <ViewIcon boxSize={4} color={videoIconColor} />
+                    <Text fontSize="sm" fontWeight="medium" color={videoTextColor}>
                       Background Video
                     </Text>
                     {videoSettings.isEnabled && (
@@ -4807,7 +4818,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 <VStack spacing={3} align="stretch">
                   {/* Video selection */}
                   <FormControl>
-                    <FormLabel fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>
+                    <FormLabel fontSize="xs" color={videoLabelColor}>
                       Video Theme
                     </FormLabel>
                     <Select
@@ -4827,7 +4838,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
                   {/* Opacity control */}
                   <FormControl>
-                    <FormLabel fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>
+                    <FormLabel fontSize="xs" color={videoLabelColor}>
                       Opacity: {videoSettings.opacity}%
                     </FormLabel>
                     <Slider
@@ -4845,7 +4856,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                       </SliderTrack>
                       <SliderThumb />
                     </Slider>
-                    <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')} mt={1}>
+                    <Text fontSize="xs" color={videoLabelColor} mt={1}>
                       Recommended: 15-25% for optimal visibility
                     </Text>
                   </FormControl>
