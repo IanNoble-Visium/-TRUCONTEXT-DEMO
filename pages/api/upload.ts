@@ -58,10 +58,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await clearDatabase()
     await importDataset(processedData)
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: 'Dataset uploaded successfully',
       nodes: processedData.nodes.length,
-      edges: processedData.edges.length
+      edges: processedData.edges.length,
+      currentDatasetName: 'uploaded-dataset' // Default name for uploaded datasets
     })
   } catch (error) {
     console.error('Upload error:', error)

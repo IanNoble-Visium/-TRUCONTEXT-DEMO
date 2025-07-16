@@ -346,3 +346,106 @@ export async function getAvailableNodes(): Promise<Array<{uid: string, showname:
     await session.close()
   }
 }
+
+// Property Synchronization Functions
+
+/**
+ * Update node properties in Neo4j
+ * @param nodeUid - UID of the node to update
+ * @param properties - Properties to update
+ * @returns Promise<boolean> - Success status
+ */
+export async function updateNodePropertiesInNeo4j(
+  nodeUid: string,
+  properties: Record<string, any>
+): Promise<boolean> {
+  const session = await getSession()
+
+  try {
+    // Build the SET clause dynamically for all properties
+    const setClause = Object.keys(properties)
+      .map(key => `n.${key} = $${key}`)
+      .join(', ')
+
+    const query = `
+      MATCH (n {uid: $uid})
+      SET ${setClause}
+      RETURN n
+    `
+
+    const parameters = {
+      uid: nodeUid,
+      ...properties
+    }
+
+    console.log('Neo4j update query:', query)
+    console.log('Neo4j update parameters:', parameters)
+
+    const result = await session.run(query, parameters)
+
+    if (result.records.length > 0) {
+      console.log(`✅ Successfully updated node ${nodeUid} properties in Neo4j`)
+      return true
+    } else {
+      console.warn(`⚠️ Node ${nodeUid} not found in Neo4j`)
+      return false
+    }
+  } catch (error) {
+    console.error('❌ Error updating node properties in Neo4j:', error)
+    throw error
+  } finally {
+    await session.close()
+  }
+}
+
+/**
+ * Update edge properties in Neo4j
+ * @param fromUid - UID of the source node
+ * @param toUid - UID of the target node
+ * @param properties - Properties to update
+ * @returns Promise<boolean> - Success status
+ */
+export async function updateEdgePropertiesInNeo4j(
+  fromUid: string,
+  toUid: string,
+  properties: Record<string, any>
+): Promise<boolean> {
+  const session = await getSession()
+
+  try {
+    // Build the SET clause dynamically for all properties
+    const setClause = Object.keys(properties)
+      .map(key => `r.${key} = $${key}`)
+      .join(', ')
+
+    const query = `
+      MATCH (from {uid: $fromUid})-[r]-(to {uid: $toUid})
+      SET ${setClause}
+      RETURN r
+    `
+
+    const parameters = {
+      fromUid,
+      toUid,
+      ...properties
+    }
+
+    console.log('Neo4j edge update query:', query)
+    console.log('Neo4j edge update parameters:', parameters)
+
+    const result = await session.run(query, parameters)
+
+    if (result.records.length > 0) {
+      console.log(`✅ Successfully updated edge ${fromUid}->${toUid} properties in Neo4j`)
+      return true
+    } else {
+      console.warn(`⚠️ Edge ${fromUid}->${toUid} not found in Neo4j`)
+      return false
+    }
+  } catch (error) {
+    console.error('❌ Error updating edge properties in Neo4j:', error)
+    throw error
+  } finally {
+    await session.close()
+  }
+}

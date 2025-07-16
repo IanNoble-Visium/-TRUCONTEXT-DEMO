@@ -14,6 +14,7 @@ const Header: React.FC = () => {
   return (
     <Box bg={bgColor} color={textColor} py={4} px={6} boxShadow="lg">
       <Flex align="center" justify="space-between" maxW="1400px" mx="auto">
+        {/* Left-aligned logo and branding */}
         <Flex align="center">
           <Box mr={4}>
             <Image
@@ -29,16 +30,17 @@ const Header: React.FC = () => {
               TruContext Demo
             </Heading>
             <Text fontSize="sm" opacity={0.9}>
-              Graph Analytics Platform
+              TruContext Application
             </Text>
           </Box>
         </Flex>
-        
+
+        {/* Right-aligned attribution and controls */}
         <Flex align="center" gap={4}>
           <Text fontSize="sm" opacity={0.8}>
-            Powered by Neo4j & Cytoscape.js
+            Powered by TruAI & Neo4j
           </Text>
-          
+
           <MotionIconButton
             aria-label="Toggle color mode"
             icon={colorMode === 'light' ? <MoonIcon /> : <SunIcon />}

@@ -77,6 +77,8 @@ export async function initializeDatabase(): Promise<void> {
         showname VARCHAR(255) NOT NULL,
         properties JSONB DEFAULT '{}',
         icon VARCHAR(255),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(dataset_id, uid)
       )
     `)
@@ -90,24 +92,47 @@ export async function initializeDatabase(): Promise<void> {
         to_uid VARCHAR(255) NOT NULL,
         type VARCHAR(100) NOT NULL,
         properties JSONB DEFAULT '{}',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (dataset_id, from_uid) REFERENCES nodes(dataset_id, uid),
         FOREIGN KEY (dataset_id, to_uid) REFERENCES nodes(dataset_id, uid)
       )
     `)
 
+    // Add missing columns to existing tables (migration)
+    try {
+      await client.query(`
+        ALTER TABLE nodes
+        ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      `)
+    } catch (error) {
+      console.log('Nodes table columns already exist or migration not needed')
+    }
+
+    try {
+      await client.query(`
+        ALTER TABLE edges
+        ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      `)
+    } catch (error) {
+      console.log('Edges table columns already exist or migration not needed')
+    }
+
     // Create indexes for better performance
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_nodes_dataset_id ON nodes(dataset_id)
     `)
-    
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_nodes_uid ON nodes(uid)
     `)
-    
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_edges_dataset_id ON edges(dataset_id)
     `)
-    
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_edges_from_to ON edges(from_uid, to_uid)
     `)
@@ -186,6 +211,69 @@ export async function saveDataset(
   } catch (error) {
     await client.query('ROLLBACK')
     console.error('Error saving dataset:', error)
+    throw error
+  } finally {
+    client.release()
+  }
+}
+
+// Update node properties in PostgreSQL
+export async function updateNodeProperties(
+  datasetId: number,
+  nodeUid: string,
+  properties: Record<string, any>
+): Promise<void> {
+  const client = await getClient()
+
+  try {
+    await client.query(`
+      UPDATE nodes
+      SET properties = $1, updated_at = CURRENT_TIMESTAMP
+      WHERE dataset_id = $2 AND uid = $3
+    `, [JSON.stringify(properties), datasetId, nodeUid])
+  } catch (error) {
+    console.error('Error updating node properties:', error)
+    throw error
+  } finally {
+    client.release()
+  }
+}
+
+// Update edge properties in PostgreSQL
+export async function updateEdgeProperties(
+  datasetId: number,
+  fromUid: string,
+  toUid: string,
+  properties: Record<string, any>
+): Promise<void> {
+  const client = await getClient()
+
+  try {
+    await client.query(`
+      UPDATE edges
+      SET properties = $1, updated_at = CURRENT_TIMESTAMP
+      WHERE dataset_id = $2 AND from_uid = $3 AND to_uid = $4
+    `, [JSON.stringify(properties), datasetId, fromUid, toUid])
+  } catch (error) {
+    console.error('Error updating edge properties:', error)
+    throw error
+  } finally {
+    client.release()
+  }
+}
+
+// Get current dataset ID by name (helper function)
+export async function getDatasetIdByName(name: string): Promise<number | null> {
+  const client = await getClient()
+
+  try {
+    const result = await client.query(`
+      SELECT id FROM datasets WHERE name = $1
+    `, [name])
+
+    return result.rows.length > 0 ? result.rows[0].id : null
+  } catch (error) {
+    console.error('Error getting dataset ID:', error)
     throw error
   } finally {
     client.release()

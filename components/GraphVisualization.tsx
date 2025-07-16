@@ -8,12 +8,12 @@ import {
   Tooltip, useDisclosure, useColorModeValue, Portal, List,
   ListItem, UnorderedList, Accordion, AccordionItem,
   AccordionButton, AccordionPanel, AccordionIcon, Checkbox,
-  Switch, SimpleGrid
+  Switch, SimpleGrid, Slider, SliderTrack, SliderFilledTrack, SliderThumb
 } from '@chakra-ui/react'
 import {
   ChevronDownIcon, ChevronUpIcon, SettingsIcon,
   ArrowUpIcon, ArrowDownIcon, ViewIcon, ViewOffIcon,
-  RepeatIcon
+  RepeatIcon, WarningIcon, AddIcon, DragHandleIcon
 } from '@chakra-ui/icons'
 import cytoscape, { Core, NodeSingular, Collection } from 'cytoscape'
 // @ts-ignore
@@ -370,6 +370,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   // Add debounce ref for property changes to prevent loops
   const propertyChangeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastPropertyChangeRef = useRef<{ elementId: string, properties: Record<string, any> } | null>(null)
+  const databaseUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isPropertyUpdateRef = useRef<boolean>(false)
 
   // Background video state
   const [videoSettings, setVideoSettings] = useState({
@@ -509,9 +511,23 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       try {
         // Update the element's data
         const currentData = element.data()
+
+        // Separate TC_ properties from regular properties
+        const tcProperties: any = {}
+        const regularProperties: any = {}
+
+        Object.entries(properties).forEach(([key, value]) => {
+          if (key.startsWith('TC_')) {
+            tcProperties[key] = value
+          } else {
+            regularProperties[key] = value
+          }
+        })
+
         const updatedData = {
           ...currentData,
-          properties: properties
+          ...tcProperties, // Merge TC_ properties into main data object
+          properties: regularProperties // Keep regular properties in properties object
         }
 
         // Apply the updated data
@@ -521,7 +537,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         const tcStyles: any = {}
         let animationType: string | null = null
 
-        Object.entries(properties).forEach(([key, value]) => {
+        // Process TC_ properties from the updated data
+        Object.entries(updatedData).forEach(([key, value]) => {
           if (key.startsWith('TC_')) {
             const tcProperty = TC_PROPERTIES.find(p => p.key === key)
             if (tcProperty && value !== undefined && value !== null) {
@@ -600,12 +617,17 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         }
 
       // Update the graph data state to keep it in sync
+      // Set flag to prevent Cytoscape re-initialization
+      isPropertyUpdateRef.current = true
+
       setGraphData(prevData => {
         if (!prevData) return prevData
 
+        let updatedData_local: { nodes: any[], edges: any[] }
+
         if (elementType === 'node') {
           const updatedNodes = prevData.nodes.map(node => {
-            if (node.data.id === elementId) {
+            if (node.data.id === elementId || node.data.uid === elementId) {
               return {
                 ...node,
                 data: updatedData
@@ -613,7 +635,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             }
             return node
           })
-          return { ...prevData, nodes: updatedNodes }
+          updatedData_local = { ...prevData, nodes: updatedNodes }
         } else {
           const updatedEdges = prevData.edges.map(edge => {
             if (edge.data.id === elementId) {
@@ -624,9 +646,123 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             }
             return edge
           })
-          return { ...prevData, edges: updatedEdges }
+          updatedData_local = { ...prevData, edges: updatedEdges }
         }
+
+        // Notify parent component of data changes for cross-view consistency
+        if (onDataLoad) {
+          // Transform to simple format for other views
+          const simpleNodes = updatedData_local.nodes.map((node: any) => ({
+            uid: node.data.id,
+            id: node.data.id, // Add id for consistency
+            type: node.data.type,
+            showname: node.data.label,
+            timestamp: node.data.timestamp,
+            latitude: node.data.latitude,
+            longitude: node.data.longitude,
+            color: node.data.color,
+            properties: node.data.properties || {},
+            icon: node.data.icon,
+            // Preserve ALL TC_ properties from node.data
+            ...Object.fromEntries(
+              Object.entries(node.data).filter(([key]) => key.startsWith('TC_'))
+            )
+          }))
+
+          const simpleEdges = updatedData_local.edges.map((edge: any) => ({
+            from: edge.data.source,
+            to: edge.data.target,
+            type: edge.data.type,
+            timestamp: edge.data.timestamp,
+            properties: edge.data.properties || {},
+            // Preserve ALL TC_ properties from edge.data
+            ...Object.fromEntries(
+              Object.entries(edge.data).filter(([key]) => key.startsWith('TC_'))
+            )
+          }))
+
+          console.log('GraphVisualization: Property update - transformed data with TC_ properties:', {
+            nodeCount: simpleNodes.length,
+            edgeCount: simpleEdges.length,
+            tcPropertiesInNodes: simpleNodes.filter(n => Object.keys(n).some(k => k.startsWith('TC_'))).length,
+            sampleNodeWithTC: simpleNodes.find(n => Object.keys(n).some(k => k.startsWith('TC_')))
+          })
+
+          // Use setTimeout to avoid state update conflicts
+          setTimeout(() => {
+            onDataLoad({ nodes: simpleNodes, edges: simpleEdges })
+          }, 0)
+        }
+
+        return updatedData_local
       })
+
+      // Persist TC_ property changes to database
+      const hasTCProperties = Object.keys(properties).some(key => key.startsWith('TC_'))
+      if (hasTCProperties) {
+        // Debounce database updates to avoid excessive API calls
+        if (databaseUpdateTimeoutRef.current) {
+          clearTimeout(databaseUpdateTimeoutRef.current)
+        }
+
+        databaseUpdateTimeoutRef.current = setTimeout(async () => {
+          try {
+            const currentDatasetName = localStorage.getItem('currentDatasetName') || 'default'
+
+            const updatePayload: any = {
+              elementType,
+              elementId: elementId,
+              properties,
+              datasetName: currentDatasetName
+            }
+
+            // For edges, we need to provide fromUid and toUid
+            if (elementType === 'edge') {
+              const edgeData = element.data()
+              updatePayload.fromUid = edgeData.source
+              updatePayload.toUid = edgeData.target
+            }
+
+            console.log('Attempting to persist properties:', updatePayload)
+
+            const response = await fetch('/api/properties/update', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(updatePayload)
+            })
+
+            console.log('API response status:', response.status)
+
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+              console.error('Failed to persist property changes:', errorData)
+
+              // Show user-friendly error message
+              toast({
+                title: 'Property Save Failed',
+                description: `Failed to save ${Object.keys(properties).filter(k => k.startsWith('TC_')).join(', ')} to database`,
+                status: 'warning',
+                duration: 3000,
+                isClosable: true,
+              })
+            } else {
+              console.log(`Successfully persisted ${elementType} ${elementId} properties to database`)
+            }
+          } catch (error) {
+            console.error('Error persisting property changes:', error)
+
+            toast({
+              title: 'Database Error',
+              description: 'Failed to save property changes to database',
+              status: 'error',
+              duration: 3000,
+              isClosable: true,
+            })
+          }
+        }, 1000) // 1 second debounce for database updates
+      }
 
       // Update the properties panel with debouncing to prevent loops
       propertyChangeTimeoutRef.current = setTimeout(() => {
@@ -679,18 +815,32 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   const applyTCPropertiesToGraph = useCallback(() => {
     if (!cyRef.current || !animationEngineRef.current) return
 
+    console.log('🔧 Applying TC properties to graph...')
+
     cyRef.current.elements().forEach(element => {
       const data = element.data()
       const properties = data.properties || {}
+
+      // Combine TC properties from both data and properties objects
+      const allProperties = { ...data, ...properties }
 
       // Apply TC styling properties
       const tcStyles: any = {}
       let animationType: string | null = null
 
-      Object.entries(properties).forEach(([key, value]) => {
+      // Find TC_ properties
+      const tcProperties = Object.entries(allProperties).filter(([key]) => key.startsWith('TC_'))
+
+      if (tcProperties.length > 0) {
+        console.log(`🎯 Element ${data.id}: Found ${tcProperties.length} TC_ properties:`, tcProperties.map(([k, v]) => `${k}=${v}`))
+      }
+
+      Object.entries(allProperties).forEach(([key, value]) => {
         if (key.startsWith('TC_')) {
           const tcProperty = TC_PROPERTIES.find(p => p.key === key)
           if (tcProperty && value !== undefined && value !== null) {
+            console.log(`  ✅ Applying ${key}=${value} to element ${data.id}`)
+
             if (key === 'TC_ANIMATION') {
               animationType = value as string
               return
@@ -705,6 +855,10 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 if (alarmConfig.bgColor !== 'transparent') {
                   tcStyles['background-color'] = alarmConfig.bgColor
                 }
+                console.log(`  🚨 Applied alarm styling for ${key}=${value}:`, {
+                  'border-color': alarmConfig.color,
+                  'border-width': alarmConfig.borderWidth
+                })
                 // Add alarm indicator class for additional styling
                 element.addClass(`alarm-${(value as string).toLowerCase()}`)
                 // Remove other alarm classes
@@ -732,17 +886,21 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             } else {
               tcStyles[tcProperty.cytoscapeProperty] = value
             }
+          } else if (key.startsWith('TC_')) {
+            console.log(`  ⚠️ TC property ${key}=${value} not found in TC_PROPERTIES mapping`)
           }
         }
       })
 
       // Apply styling
       if (Object.keys(tcStyles).length > 0) {
+        console.log(`  🎨 Applying styles to element ${data.id}:`, tcStyles)
         element.style(tcStyles)
       }
 
       // Apply animation
       if (animationType && animationType !== 'none' && animationEngineRef.current) {
+        console.log(`  🎬 Starting animation ${animationType} for element ${data.id}`)
         animationEngineRef.current.startAnimation(data.id, {
           type: animationType as any,
           duration: 1000,
@@ -751,6 +909,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         })
       }
     })
+
+    console.log('✅ TC properties application completed')
   }, [])
 
   const toggleVideoControls = useCallback(() => {
@@ -931,29 +1091,31 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
     // Convert type to lowercase for filename matching
     const filename = nodeType.toLowerCase()
-    const primaryPath = `/icons-svg/${filename}.svg`
 
-    // Check if the primary icon exists
-    const exists = await checkGraphIconExists(primaryPath)
-    if (exists) {
-      console.log(`✓ Graph: Found icon for ${nodeType}: ${primaryPath}`)
-      return primaryPath
-    }
-
-    // Fallback mappings for common variations
+    // Fallback mappings for common variations - check these first to avoid 404s
     const fallbackMappings: { [key: string]: string } = {
       'threatactor': 'actor',
       'workstation': 'client',
+      'cvssmetrics': 'cvsssmetrics', // Fix for CvssMetrics -> cvsssmetrics.svg
     }
 
+    // If we have a known fallback mapping, use it directly
     const fallbackType = fallbackMappings[filename]
     if (fallbackType) {
       const fallbackPath = `/icons-svg/${fallbackType}.svg`
       const fallbackExists = await checkGraphIconExists(fallbackPath)
       if (fallbackExists) {
-        console.log(`✓ Graph: Using fallback icon for ${nodeType}: ${fallbackPath}`)
+        console.log(`✓ Graph: Using mapped icon for ${nodeType}: ${fallbackPath}`)
         return fallbackPath
       }
+    }
+
+    // Otherwise try the primary path
+    const primaryPath = `/icons-svg/${filename}.svg`
+    const exists = await checkGraphIconExists(primaryPath)
+    if (exists) {
+      console.log(`✓ Graph: Found icon for ${nodeType}: ${primaryPath}`)
+      return primaryPath
     }
 
     console.warn(`⚠ Graph: No icon found for ${nodeType}, using unknown.svg`)
@@ -1889,12 +2051,18 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       }
       
       const data = await response.json()
-      
+
       if (!data.nodes || !data.edges) {
         throw new Error('Invalid graph data format')
       }
 
       console.log('Loaded graph data:', data)
+
+      // Store current dataset name in localStorage for property persistence
+      if (data.currentDatasetName) {
+        localStorage.setItem('currentDatasetName', data.currentDatasetName)
+        console.log('Stored dataset name for property persistence:', data.currentDatasetName)
+      }
       
       // Store original data for reference
       setOriginalGraphData(data)
@@ -1906,6 +2074,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         // Transform cytoscape format to simple format for other views
         const simpleNodes = data.nodes.map((node: any) => ({
           uid: node.data.id,
+          id: node.data.id, // Add id for consistency
           type: node.data.type,
           showname: node.data.label,
           timestamp: node.data.timestamp, // Preserve timestamp as direct property
@@ -1913,14 +2082,22 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           longitude: node.data.longitude, // Preserve longitude as direct property
           color: node.data.color, // Preserve color as direct property
           properties: node.data.properties || {},
-          icon: node.data.icon
+          icon: node.data.icon,
+          // Preserve ALL TC_ properties from node.data
+          ...Object.fromEntries(
+            Object.entries(node.data).filter(([key]) => key.startsWith('TC_'))
+          )
         }))
         const simpleEdges = data.edges.map((edge: any) => ({
           from: edge.data.source,
           to: edge.data.target,
           type: edge.data.type,
           timestamp: edge.data.timestamp, // Preserve timestamp as direct property
-          properties: edge.data.properties || {}
+          properties: edge.data.properties || {},
+          // Preserve ALL TC_ properties from edge.data
+          ...Object.fromEntries(
+            Object.entries(edge.data).filter(([key]) => key.startsWith('TC_'))
+          )
         }))
         console.log('GraphVisualization: Transformed data for other views:', {
           nodeCount: simpleNodes.length,
@@ -4237,6 +4414,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
   // Simplified Cytoscape initialization when container and data are ready
   useEffect(() => {
+    // Skip re-initialization if this is just a property update
+    if (isPropertyUpdateRef.current) {
+      isPropertyUpdateRef.current = false
+      return
+    }
+
     if (graphData && graphData.nodes.length > 0 && containerReady && containerRef.current) {
       console.log('Initializing Cytoscape with ready container and data...')
 
@@ -4431,6 +4614,58 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                 width={isMobile ? "250px" : "280px"}
               />
 
+              {/* Video Controls - moved from separate section */}
+              <Tooltip label={`Background Video: ${videoSettings.isEnabled ? 'Enabled' : 'Disabled'}`}>
+                <IconButton
+                  icon={<ViewIcon />}
+                  aria-label="Background Video"
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
+                  colorScheme={videoSettings.isEnabled ? "purple" : "gray"}
+                  onClick={toggleVideoControls}
+                />
+              </Tooltip>
+
+              {/* Alarm Filters - moved from collapsible section */}
+              <Tooltip label="Alarm Filters">
+                <IconButton
+                  icon={<WarningIcon />}
+                  aria-label="Alarm Filters"
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
+                  colorScheme="orange"
+                  onClick={onAlarmFilterOpen}
+                  isDisabled={nodeCount === 0}
+                />
+              </Tooltip>
+
+              {/* Create Threat Path - moved from collapsible section */}
+              <Tooltip label="Create Threat Path">
+                <IconButton
+                  icon={<AddIcon />}
+                  aria-label="Create Threat Path"
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
+                  colorScheme="blue"
+                  onClick={onThreatPathDialogOpen}
+                  isDisabled={nodeCount === 0}
+                />
+              </Tooltip>
+
+              {/* Node Overlap Prevention - moved from collapsible section */}
+              <Tooltip label={overlapPreventionEnabled
+                ? "Node overlap prevention enabled - nodes automatically space apart"
+                : "Node overlap prevention disabled - nodes can overlap"}>
+                <IconButton
+                  icon={<DragHandleIcon />}
+                  aria-label="Node Overlap Prevention"
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
+                  colorScheme={overlapPreventionEnabled ? "green" : "gray"}
+                  onClick={() => handleOverlapPreventionToggle(!overlapPreventionEnabled)}
+                />
+              </Tooltip>
+
               <Tooltip label="Toggle grouping controls">
                 <IconButton
                   icon={showControls ? <ChevronUpIcon /> : <ChevronDownIcon />}
@@ -4536,17 +4771,88 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             </HStack>
           )}
 
-          {/* Video Controls - now available on mobile with collapsible interface */}
-          <VideoControls
-            isEnabled={videoSettings.isEnabled}
-            onToggle={toggleVideo}
-            selectedVideo={videoSettings.selectedVideo}
-            onVideoChange={changeVideo}
-            opacity={videoSettings.opacity}
-            onOpacityChange={changeOpacity}
-            isExpanded={videoSettings.controlsExpanded}
-            onToggleExpanded={toggleVideoControls}
-          />
+          {/* Video Controls - expanded panel when icon is clicked */}
+          <Collapse in={videoSettings.controlsExpanded} animateOpacity>
+            <Box
+              bg={useColorModeValue('gray.50', 'gray.700')}
+              border="1px solid"
+              borderColor={useColorModeValue('gray.200', 'gray.600')}
+              borderRadius="md"
+              p={3}
+              mt={2}
+            >
+              <VStack spacing={3} align="stretch">
+                {/* Header with video toggle */}
+                <HStack justify="space-between" align="center">
+                  <HStack spacing={2}>
+                    <ViewIcon boxSize={4} color={useColorModeValue('gray.700', 'gray.200')} />
+                    <Text fontSize="sm" fontWeight="medium" color={useColorModeValue('gray.700', 'gray.200')}>
+                      Background Video
+                    </Text>
+                    {videoSettings.isEnabled && (
+                      <Badge colorScheme="purple" size="sm">
+                        Active
+                      </Badge>
+                    )}
+                  </HStack>
+                  <Switch
+                    size="sm"
+                    isChecked={videoSettings.isEnabled}
+                    onChange={(e) => toggleVideo(e.target.checked)}
+                    colorScheme="purple"
+                  />
+                </HStack>
+
+                {/* Video configuration controls */}
+                <VStack spacing={3} align="stretch">
+                  {/* Video selection */}
+                  <FormControl>
+                    <FormLabel fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>
+                      Video Theme
+                    </FormLabel>
+                    <Select
+                      size="sm"
+                      value={videoSettings.selectedVideo}
+                      onChange={(e) => changeVideo(e.target.value)}
+                      isDisabled={!videoSettings.isEnabled}
+                      opacity={videoSettings.isEnabled ? 1 : 0.6}
+                    >
+                      <option value="neural_data_flow">Neural Data Flow</option>
+                      <option value="quantum_entanglement">Quantum Entanglement</option>
+                      <option value="dna_anomaly_scan">DNA Anomaly Scan</option>
+                      <option value="gravitational_data">Gravitational Data</option>
+                      <option value="ecosystem_predator">Ecosystem Predator-Prey</option>
+                    </Select>
+                  </FormControl>
+
+                  {/* Opacity control */}
+                  <FormControl>
+                    <FormLabel fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>
+                      Opacity: {videoSettings.opacity}%
+                    </FormLabel>
+                    <Slider
+                      value={videoSettings.opacity}
+                      onChange={changeOpacity}
+                      min={5}
+                      max={50}
+                      step={5}
+                      size="sm"
+                      isDisabled={!videoSettings.isEnabled}
+                      opacity={videoSettings.isEnabled ? 1 : 0.6}
+                    >
+                      <SliderTrack>
+                        <SliderFilledTrack />
+                      </SliderTrack>
+                      <SliderThumb />
+                    </Slider>
+                    <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')} mt={1}>
+                      Recommended: 15-25% for optimal visibility
+                    </Text>
+                  </FormControl>
+                </VStack>
+              </VStack>
+            </Box>
+          </Collapse>
         </VStack>
 
         <Collapse in={showControls} animateOpacity>
@@ -4582,28 +4888,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                   Ungroup
                 </Button>
               </WrapItem>
-              <WrapItem>
-                <Button
-                  size={isMobile ? "md" : "sm"}
-                  colorScheme="purple"
-                  variant="outline"
-                  onClick={onAlarmFilterOpen}
-                  isDisabled={nodeCount === 0}
-                >
-                  Alarm Filters
-                </Button>
-              </WrapItem>
-              <WrapItem>
-                <Button
-                  size={isMobile ? "md" : "sm"}
-                  colorScheme="blue"
-                  variant="outline"
-                  onClick={onThreatPathDialogOpen}
-                  isDisabled={nodeCount === 0}
-                >
-                  Create Threat Path
-                </Button>
-              </WrapItem>
+
               <WrapItem>
                 <Button
                   size={isMobile ? "md" : "sm"}
@@ -4662,34 +4947,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
               </WrapItem>
             </Wrap>
 
-            {/* Node Overlap Prevention Toggle */}
-            <Box mt={3} p={3} bg={overlapPreventionBg} borderRadius="md">
-              <HStack justify="space-between" align="center">
-                <VStack align="start" spacing={0}>
-                  <Text fontSize="sm" fontWeight="medium" color={textColor}>
-                    Node Overlap Prevention
-                  </Text>
-                  <Text fontSize="xs" color={overlapPreventionTextColor}>
-                    Automatically prevents nodes from overlapping when dragging
-                  </Text>
-                </VStack>
-                <Tooltip
-                  label={overlapPreventionEnabled
-                    ? "Nodes will automatically move apart when dragged close together"
-                    : "Nodes can overlap when dragged - manual positioning required"
-                  }
-                  placement="top"
-                  hasArrow
-                >
-                  <Switch
-                    isChecked={overlapPreventionEnabled}
-                    onChange={(e) => handleOverlapPreventionToggle(e.target.checked)}
-                    colorScheme="blue"
-                    size={isMobile ? "md" : "sm"}
-                  />
-                </Tooltip>
-              </HStack>
-            </Box>
+
 
             {nodeTypes.length > 0 && (
               <Box mt={3}>

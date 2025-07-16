@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { Box, Select, HStack, Text, useColorModeValue } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
+import dynamic from 'next/dynamic'
 
 // Import view components
 import TableView from './TableView'
@@ -8,7 +9,16 @@ import TimelineView from './TimelineView'
 import CardsView from './CardsView'
 import DashboardView from './DashboardView'
 import GeoMapView from './GeoMapView'
-import ExecutiveDashboard from '../ExecutiveDashboard'
+
+// Dynamic import for ExecutiveDashboard to prevent SSR hydration issues
+const ExecutiveDashboard = dynamic(() => import('../ExecutiveDashboard'), {
+  ssr: false,
+  loading: () => (
+    <Box p={6} minH="100vh" display="flex" alignItems="center" justifyContent="center">
+      <Text>Loading Executive Dashboard...</Text>
+    </Box>
+  )
+})
 
 export type ViewType = 'executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
 
@@ -117,7 +127,11 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       </Box>
 
       {/* View Content */}
-      <Box flex="1" position="relative" overflow="hidden">
+      <Box
+        flex="1"
+        position="relative"
+        overflow={currentView === 'executive' ? 'auto' : 'hidden'}
+      >
         <AnimatePresence mode="wait">
           <MotionBox
             key={currentView}
@@ -125,11 +139,12 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            height="100%"
+            height={currentView === 'executive' ? 'auto' : '100%'}
             width="100%"
-            position="absolute"
-            top={0}
-            left={0}
+            position={currentView === 'executive' ? 'relative' : 'absolute'}
+            top={currentView === 'executive' ? 'auto' : 0}
+            left={currentView === 'executive' ? 'auto' : 0}
+            minHeight={currentView === 'executive' ? '100%' : 'auto'}
           >
             {renderedView}
           </MotionBox>

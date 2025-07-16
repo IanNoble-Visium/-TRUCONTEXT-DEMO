@@ -92,6 +92,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
         throw new Error(result.error || 'Upload failed')
       }
 
+      // Store current dataset name in localStorage for property persistence
+      if (result.currentDatasetName) {
+        localStorage.setItem('currentDatasetName', result.currentDatasetName)
+      }
+
       toast({
         title: 'Upload Successful',
         description: `Imported ${result.nodes} nodes and ${result.edges} edges`,
@@ -157,6 +162,11 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
 
       if (!response.ok) {
         throw new Error(result.error || 'Upload failed')
+      }
+
+      // Store current dataset name in localStorage for property persistence
+      if (result.currentDatasetName) {
+        localStorage.setItem('currentDatasetName', result.currentDatasetName)
       }
 
       toast({

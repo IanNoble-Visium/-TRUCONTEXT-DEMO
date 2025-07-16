@@ -1,4 +1,4 @@
-# TruContext Demo - Graph Analytics Platform
+# TruContext Demo - TruContext Application
 
 A cutting-edge Next.js application that enables users to upload JSON datasets, save them to a PostgreSQL database, and visualize them as interactive graph topologies using Cytoscape.js. Features persistent dataset storage, seamless data management, modern graph-focused responsive design with advanced animations, mobile gesture support, interactive tooltips, and dynamic grouping capabilities.
 
@@ -74,7 +74,7 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 - **Page Transitions**: Smooth enter/exit animations with staggered effects
 - **Micro-interactions**: Enhanced button hover effects and visual feedback
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Visium Branding**: UI styled with Visium Technologies logo and colors
+- **TruContext Branding**: UI styled with TruContext/TruAI branding and colors
 
 ### 🔧 Technical Features
 - **Dynamic Type Detection**: Automatically discovers and displays all node types in dataset
@@ -978,7 +978,7 @@ The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved
 - **Tablet**: Optimized touch controls and spacing
 - **Mobile**: Simplified interface with drawer navigation
 
-### Color Scheme (Visium Technologies)
+### Color Scheme (TruContext)
 - Primary Blue: `#003087`
 - Node Border Colors: Type-specific for quick identification
 - Group Nodes: Gold accent (`#ffcc00`)
@@ -1448,13 +1448,13 @@ A sample dataset (`sample-dataset.json`) is included with:
 
 This project is licensed under the MIT License.
 
-## 🏢 About Visium Technologies
+## 🏢 About TruContext
 
-TruContext is powered by Visium Technologies, a leader in graph analytics and cybersecurity solutions. Learn more at [visiumtechnologies.com](https://www.visiumtechnologies.com/).
+TruContext is powered by TruAI, a leader in graph analytics and cybersecurity solutions. This application demonstrates advanced graph visualization and analysis capabilities.
 
 ---
 
-**Built with ❤️ by the Visium Technologies team**
+**Built with ❤️ by the TruContext team**
 
 ## 🌟 Recent Updates & Improvements
 

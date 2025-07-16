@@ -218,8 +218,8 @@ const HomePage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>TruContext Demo - Graph Analytics Platform</title>
-        <meta name="description" content="TruContext graph analytics platform powered by Neo4j and Cytoscape.js" />
+        <title>TruContext Demo - TruContext Application</title>
+        <meta name="description" content="TruContext application powered by TruAI and Neo4j" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

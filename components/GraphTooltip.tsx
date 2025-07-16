@@ -110,6 +110,43 @@ export const NodeTooltip: React.FC<NodeTooltipProps> = ({ node }) => {
             </HStack>
           )}
           
+          {/* TC Properties Section */}
+          {(() => {
+            const tcProperties = Object.entries(node).filter(([key]) => key.startsWith('TC_'))
+            return tcProperties.length > 0 && (
+              <>
+                <Text fontWeight="semibold" color="blue.500" mt={2}>TruContext Properties:</Text>
+                <VStack align="start" spacing={1} pl={2}>
+                  {tcProperties.map(([key, value]) => {
+                    let displayValue = String(value)
+                    let valueColor = textColor
+
+                    // Special formatting for TC_ALARM
+                    if (key === 'TC_ALARM') {
+                      const alarmColors: Record<string, string> = {
+                        'Alert': '#dc3545',
+                        'Warning': '#fd7e14',
+                        'Success': '#198754',
+                        'Info': '#0dcaf0',
+                        'None': mutedColor
+                      }
+                      valueColor = alarmColors[value as string] || textColor
+                    }
+
+                    return (
+                      <HStack key={key}>
+                        <Text fontSize="xs" color={mutedColor}>{key.replace('TC_', '')}:</Text>
+                        <Text fontSize="xs" color={valueColor} fontWeight={key === 'TC_ALARM' ? 'semibold' : 'normal'}>
+                          {displayValue}
+                        </Text>
+                      </HStack>
+                    )
+                  })}
+                </VStack>
+              </>
+            )
+          })()}
+
           {node.properties && Object.keys(node.properties).length > 0 && (
             <>
               <Text fontWeight="semibold" color={textColor} mt={2}>Properties:</Text>
@@ -191,6 +228,43 @@ export const EdgeTooltip: React.FC<EdgeTooltipProps> = ({ edge }) => {
             </HStack>
           )}
           
+          {/* TC Properties Section */}
+          {(() => {
+            const tcProperties = Object.entries(edge).filter(([key]) => key.startsWith('TC_'))
+            return tcProperties.length > 0 && (
+              <>
+                <Text fontWeight="semibold" color="blue.500" mt={2}>TruContext Properties:</Text>
+                <VStack align="start" spacing={1} pl={2}>
+                  {tcProperties.map(([key, value]) => {
+                    let displayValue = String(value)
+                    let valueColor = textColor
+
+                    // Special formatting for TC_ALARM
+                    if (key === 'TC_ALARM') {
+                      const alarmColors: Record<string, string> = {
+                        'Alert': '#dc3545',
+                        'Warning': '#fd7e14',
+                        'Success': '#198754',
+                        'Info': '#0dcaf0',
+                        'None': mutedColor
+                      }
+                      valueColor = alarmColors[value as string] || textColor
+                    }
+
+                    return (
+                      <HStack key={key}>
+                        <Text fontSize="xs" color={mutedColor}>{key.replace('TC_', '')}:</Text>
+                        <Text fontSize="xs" color={valueColor} fontWeight={key === 'TC_ALARM' ? 'semibold' : 'normal'}>
+                          {displayValue}
+                        </Text>
+                      </HStack>
+                    )
+                  })}
+                </VStack>
+              </>
+            )
+          })()}
+
           {edge.properties && Object.keys(edge.properties).length > 0 && (
             <>
               <Text fontWeight="semibold" color={textColor} mt={2}>Properties:</Text>

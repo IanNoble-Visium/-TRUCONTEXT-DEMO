@@ -43,7 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         description: dataset.description
       },
       nodes: processedData.nodes.length,
-      edges: processedData.edges.length
+      edges: processedData.edges.length,
+      currentDatasetName: dataset.name // Include dataset name for client-side storage
     })
   } catch (error) {
     console.error('Load dataset error:', error)

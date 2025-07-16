@@ -137,6 +137,9 @@ const DatasetManager: React.FC<DatasetManagerProps> = ({ onDatasetLoaded, curren
         throw new Error(result.error || 'Failed to save dataset')
       }
 
+      // Store current dataset name in localStorage for property persistence
+      localStorage.setItem('currentDatasetName', saveForm.name.trim())
+
       toast({
         title: 'Success',
         description: `Dataset "${saveForm.name}" saved successfully`,
@@ -149,7 +152,7 @@ const DatasetManager: React.FC<DatasetManagerProps> = ({ onDatasetLoaded, curren
       setSaveForm({ name: '', description: '' })
       setSaveErrors({})
       onSaveClose()
-      
+
       // Reload datasets list
       loadDatasets()
     } catch (error) {
@@ -177,6 +180,11 @@ const DatasetManager: React.FC<DatasetManagerProps> = ({ onDatasetLoaded, curren
 
       if (!response.ok) {
         throw new Error(result.error || 'Failed to load dataset')
+      }
+
+      // Store current dataset name in localStorage for property persistence
+      if (result.currentDatasetName) {
+        localStorage.setItem('currentDatasetName', result.currentDatasetName)
       }
 
       toast({

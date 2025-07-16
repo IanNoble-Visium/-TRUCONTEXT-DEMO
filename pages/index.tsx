@@ -52,6 +52,7 @@ const HomePage: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [showHeader, setShowHeader] = useState(true)
   const [currentGraphData, setCurrentGraphData] = useState<{ nodes: any[], edges: any[] } | undefined>(undefined)
+  const [currentView, setCurrentView] = useState<'executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'>('executive')
   const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure()
   const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
 
@@ -85,9 +86,13 @@ const HomePage: React.FC = () => {
     onUploadClose() // Auto-close upload panel after successful dataset load
   }
 
-  const handleGraphDataLoad = (data: { nodes: any[], edges: any[] }) => {
+  const handleGraphDataLoad = useCallback((data: { nodes: any[], edges: any[] }) => {
     setCurrentGraphData(data)
-  }
+  }, [])
+
+  const handleViewChange = useCallback((view: 'executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap') => {
+    setCurrentView(view)
+  }, [])
 
   // Fullscreen functionality
   const toggleFullscreen = useCallback(() => {
@@ -213,14 +218,14 @@ const HomePage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>TruContext Demo - Graph Analytics Platform</title>
-        <meta name="description" content="TruContext graph analytics platform powered by Neo4j and Cytoscape.js" />
+        <title>TruContext Demo - TruContext Application</title>
+        <meta name="description" content="TruContext application powered by TruAI and Neo4j" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <PageTransition animationKey="home" direction="up" duration={0.5}>
-        <Box height="100dvh" bg={bgColor} overflow="hidden">
+        <Box height="100dvh" bg={bgColor} overflow={currentView === 'executive' ? 'auto' : 'hidden'}>
           {/* Animated Header - Hidden in fullscreen mode */}
           {!isFullscreen && (
             <MotionBox variants={headerVariants}>
@@ -365,6 +370,7 @@ const HomePage: React.FC = () => {
                   <EnhancedGraphVisualization
                     refreshTrigger={refreshTrigger}
                     onGraphDataLoad={handleGraphDataLoad}
+                    onViewChange={handleViewChange}
                     isFullscreen={isFullscreen}
                   />
                 </Box>

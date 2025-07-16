@@ -1112,11 +1112,15 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   const tcProperties: { [key: string]: any } = {}
 
   // Add all custom properties, separating TC_ properties
-  if (data.properties && typeof data.properties === 'object') {
-    Object.entries(data.properties).forEach(([key, value]) => {
+  // Check both data.properties and main data object for TC_ properties
+  const allDataProperties = { ...data.properties, ...data }
+
+  if (allDataProperties && typeof allDataProperties === 'object') {
+    Object.entries(allDataProperties).forEach(([key, value]) => {
       if (key.startsWith('TC_')) {
         tcProperties[key] = value
-      } else {
+      } else if (data.properties && data.properties.hasOwnProperty(key)) {
+        // Only add non-TC properties from data.properties to avoid duplicates
         allProperties[key] = value
       }
     })
