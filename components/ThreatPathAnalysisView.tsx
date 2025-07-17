@@ -103,7 +103,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
     severity: [],
     attackerType: [],
     targetAsset: [],
-    riskScore: [0, 10],
+    riskScore: [0, 20], // Increased range to accommodate API risk scores up to 12+
     searchTerm: ''
   })
   const [sortBy, setSortBy] = useState<'riskScore' | 'likelihood' | 'impact' | 'createdAt'>('riskScore')
@@ -157,7 +157,6 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
             console.log(`ThreatPathAnalysisView: Scenario ${scenarioIndex} has ${scenario.paths.length} paths`)
             scenario.paths.forEach((path: any, index: number) => {
               console.log(`ThreatPathAnalysisView: Processing path ${index} in scenario ${scenarioIndex}:`, path)
-              console.log(`ThreatPathAnalysisView: Path ${index} riskScore from API:`, path.riskScore, typeof path.riskScore)
               const threatPathScenario: ThreatPathScenario = {
                 id: `${scenario.id}-path-${index}`,
                 name: path.name || `${scenario.name} - Path ${index + 1}`,
@@ -244,9 +243,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
       
       // Risk score filter
       const riskScore = path.riskScore || 5 // Default to middle value if not set
-      console.log(`ThreatPathAnalysisView: Risk score check for path "${path.name}": score=${riskScore}, range=[${filters.riskScore[0]}, ${filters.riskScore[1]}]`)
       if (riskScore < filters.riskScore[0] || riskScore > filters.riskScore[1]) {
-        console.log(`ThreatPathAnalysisView: Path "${path.name}" filtered out by risk score. Score: ${riskScore}, Range: [${filters.riskScore[0]}, ${filters.riskScore[1]}]`)
         return false
       }
       
