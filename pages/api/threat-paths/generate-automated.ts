@@ -155,7 +155,16 @@ export default async function handler(
       topAttackVectors: [],
       topTargetAssets: []
     }
-    
+
+    // Generate recommendations based on analysis
+    const recommendations = [
+      'Implement network segmentation to limit lateral movement',
+      'Deploy endpoint detection and response (EDR) solutions',
+      'Establish privileged access management (PAM) controls',
+      'Conduct regular vulnerability assessments and patching',
+      'Implement zero-trust network architecture principles'
+    ]
+
     // Return successful response
     return res.status(200).json({
       success: true,
@@ -165,7 +174,7 @@ export default async function handler(
         edges: enhancedData.edges
       },
       analytics,
-      recommendations: analytics.recommendations
+      recommendations
     })
 
   } catch (error) {
