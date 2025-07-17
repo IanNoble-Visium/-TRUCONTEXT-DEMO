@@ -112,8 +112,12 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
             edges={edges}
             onPathHighlight={(pathNodes) => {
               console.log('Highlighting path nodes:', pathNodes)
-              // Highlight multiple nodes in the graph
-              pathNodes.forEach(nodeId => onNodeSelect(nodeId))
+              // Highlight multiple nodes in the graph - ensure pathNodes is an array
+              if (pathNodes && Array.isArray(pathNodes) && pathNodes.length > 0) {
+                pathNodes.forEach(nodeId => onNodeSelect(nodeId))
+              } else {
+                console.warn('Invalid or empty path nodes provided for highlighting:', pathNodes)
+              }
             }}
             onNodeSelect={onNodeSelect}
             onGenerateNewPaths={() => {

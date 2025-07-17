@@ -113,9 +113,15 @@ export default async function handler(
     const threatScenarios = generateMockThreatScenarios(enhancedData.nodes, enhancedData.edges)
 
     // Calculate analytics
+    const allPaths = threatScenarios.flatMap(s => s.paths)
+    const totalRiskScore = allPaths.reduce((sum, path) => sum + (path.riskScore || 0), 0)
+    const averageRiskScore = allPaths.length > 0 ? totalRiskScore / allPaths.length : 0
+
     const analytics = {
       totalPaths: threatScenarios.length,
-      averageLength: threatScenarios.reduce((sum, scenario) => sum + scenario.paths.length, 0) / threatScenarios.length,
+      activePaths: threatScenarios.filter(s => s.paths.some(p => p.severity === 'Critical' || p.severity === 'High')).length,
+      mitigatedPaths: 0, // Mock value for demo
+      averageRiskScore: averageRiskScore,
       riskDistribution: {
         critical: threatScenarios.filter(s => s.paths.some(p => p.severity === 'Critical')).length,
         high: threatScenarios.filter(s => s.paths.some(p => p.severity === 'High')).length,
@@ -125,15 +131,24 @@ export default async function handler(
       coverageMetrics: {
         nodesInvolved: enhancedData.nodes.length,
         edgesInvolved: enhancedData.edges.length,
-        networkSegments: [...new Set(enhancedData.nodes.map(n => n.properties?.networkSegment).filter(Boolean))]
+        networkSegments: [...new Set(enhancedData.nodes.map(n => n.properties?.networkSegment).filter(Boolean))],
+        assetTypes: [...new Set(enhancedData.nodes.map(n => n.type).filter(Boolean))]
       },
-      attackTypes: [...new Set(threatScenarios.flatMap(s => s.paths.map(p => p.attackType)))],
-      recommendations: [
-        'Implement network segmentation to limit lateral movement',
-        'Deploy endpoint detection and response (EDR) solutions',
-        'Enhance privileged access management controls',
-        'Conduct regular vulnerability assessments'
-      ]
+      timeMetrics: {
+        averageDetectionTime: '8.5 minutes',
+        averageResponseTime: '15.2 minutes',
+        averageResolutionTime: '45.8 minutes'
+      },
+      actionMetrics: {
+        totalActions: 0,
+        completedActions: 0,
+        automatedActions: 0,
+        manualActions: 0,
+        averageActionTime: '12.3 minutes'
+      },
+      trends: [],
+      topAttackVectors: [],
+      topTargetAssets: []
     }
     
     // Return successful response
