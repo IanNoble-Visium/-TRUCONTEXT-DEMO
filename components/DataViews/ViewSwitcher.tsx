@@ -30,7 +30,17 @@ const ExecutiveDashboardSOC = dynamic(() => import('../ExecutiveDashboardSOC'), 
   )
 })
 
-export type ViewType = 'executive' | 'soc-executive' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
+// Dynamic import for Threat Path Analysis View
+const ThreatPathAnalysisView = dynamic(() => import('../ThreatPathAnalysisView'), {
+  ssr: false,
+  loading: () => (
+    <Box p={6} minH="100vh" display="flex" alignItems="center" justifyContent="center">
+      <Text>Loading Threat Path Analysis...</Text>
+    </Box>
+  )
+})
+
+export type ViewType = 'executive' | 'soc-executive' | 'threat-analysis' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
 
 interface ViewSwitcherProps {
   currentView: ViewType
@@ -60,6 +70,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
   const viewOptions = [
     { value: 'executive', label: 'Executive Dashboard', icon: '📊' },
     { value: 'soc-executive', label: 'SOC Executive Dashboard', icon: '🛡️' },
+    { value: 'threat-analysis', label: '⭐ Threat Path Analysis', icon: '🎯' },
     { value: 'graph', label: 'Topology View', icon: '🕸️' },
     { value: 'table', label: 'Table View', icon: '📋' },
     { value: 'timeline', label: 'Timeline View', icon: '⏰' },
@@ -92,6 +103,23 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
           <ExecutiveDashboardSOC 
             graphData={{ nodes, edges }}
             isLoading={false}
+          />
+        )
+      case 'threat-analysis':
+        return (
+          <ThreatPathAnalysisView 
+            nodes={nodes}
+            edges={edges}
+            onPathHighlight={(pathNodes) => {
+              console.log('Highlighting path nodes:', pathNodes)
+              // Highlight multiple nodes in the graph
+              pathNodes.forEach(nodeId => onNodeSelect(nodeId))
+            }}
+            onNodeSelect={onNodeSelect}
+            onGenerateNewPaths={() => {
+              console.log('Generating new threat paths')
+              // Trigger threat path regeneration
+            }}
           />
         )
       case 'graph':
@@ -142,7 +170,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       {/* View Content */}
       <Box
         flex="1"
-        overflow={currentView === 'executive' || currentView === 'soc-executive' ? 'auto' : 'hidden'}
+        overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' ? 'auto' : 'hidden'}
         position="relative"
         minHeight={0}
       >

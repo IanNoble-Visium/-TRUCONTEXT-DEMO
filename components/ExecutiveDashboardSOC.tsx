@@ -39,7 +39,12 @@ import {
   TabList,
   TabPanels,
   Tab,
-  TabPanel
+  TabPanel,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon
 } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import CountUp from 'react-countup'
@@ -62,7 +67,11 @@ import {
   RadialBarChart,
   RadialBar,
   LineChart,
-  Line
+  Line,
+  ComposedChart,
+  Scatter,
+  ScatterChart,
+  ZAxis
 } from 'recharts'
 import {
   FiActivity,
@@ -86,7 +95,12 @@ import {
   FiSearch,
   FiBell,
   FiFileText,
-  FiTool
+  FiTool,
+  FiTrendingDown,
+  FiBarChart3,
+  FiPieChart,
+  FiMap,
+  FiLayers
 } from 'react-icons/fi'
 
 // Import TC_ALARM levels for alarm integration
@@ -483,6 +497,7 @@ const ExecutiveDashboardSOC: React.FC<ExecutiveDashboardSOCProps> = ({
                 <Tab>Recent Incidents</Tab>
                 <Tab>Security Controls</Tab>
                 <Tab>Threat Intelligence</Tab>
+                <Tab>Threat Path Analysis</Tab>
               </TabList>
 
               <TabPanels>
@@ -588,6 +603,266 @@ const ExecutiveDashboardSOC: React.FC<ExecutiveDashboardSOCProps> = ({
                       ))}
                     </VStack>
                   </Grid>
+                </TabPanel>
+
+                {/* Threat Path Analysis Tab */}
+                <TabPanel>
+                  <VStack spacing={6} align="stretch">
+                    {/* Threat Path KPIs */}
+                    <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4}>
+                      <Card bg="blue.50" borderLeft="4px solid" borderLeftColor="blue.500">
+                        <CardBody textAlign="center">
+                          <VStack spacing={2}>
+                            <Icon as={FiTarget} size="24px" color="blue.500" />
+                            <Stat>
+                              <StatNumber fontSize="2xl">
+                                <CountUp end={47} duration={2} />
+                              </StatNumber>
+                              <StatLabel fontSize="sm">Total Threat Paths</StatLabel>
+                              <StatHelpText>
+                                <StatArrow type="increase" />
+                                12.5%
+                              </StatHelpText>
+                            </Stat>
+                          </VStack>
+                        </CardBody>
+                      </Card>
+
+                      <Card bg="orange.50" borderLeft="4px solid" borderLeftColor="orange.500">
+                        <CardBody textAlign="center">
+                          <VStack spacing={2}>
+                            <Icon as={FiActivity} size="24px" color="orange.500" />
+                            <Stat>
+                              <StatNumber fontSize="2xl">
+                                <CountUp end={12} duration={2} />
+                              </StatNumber>
+                              <StatLabel fontSize="sm">Active Paths</StatLabel>
+                              <StatHelpText>
+                                <StatArrow type="decrease" />
+                                8.3%
+                              </StatHelpText>
+                            </Stat>
+                          </VStack>
+                        </CardBody>
+                      </Card>
+
+                      <Card bg="red.50" borderLeft="4px solid" borderLeftColor="red.500">
+                        <CardBody textAlign="center">
+                          <VStack spacing={2}>
+                            <Icon as={FiAlertTriangle} size="24px" color="red.500" />
+                            <Stat>
+                              <StatNumber fontSize="2xl">
+                                <CountUp end={3} duration={2} />
+                              </StatNumber>
+                              <StatLabel fontSize="sm">Critical Paths</StatLabel>
+                              <StatHelpText>
+                                <StatArrow type="decrease" />
+                                25.0%
+                              </StatHelpText>
+                            </Stat>
+                          </VStack>
+                        </CardBody>
+                      </Card>
+
+                      <Card bg="green.50" borderLeft="4px solid" borderLeftColor="green.500">
+                        <CardBody textAlign="center">
+                          <VStack spacing={2}>
+                            <Icon as={FiZap} size="24px" color="green.500" />
+                            <Stat>
+                              <StatNumber fontSize="2xl">
+                                <CountUp end={73.2} decimals={1} duration={2} />%
+                              </StatNumber>
+                              <StatLabel fontSize="sm">Automation Rate</StatLabel>
+                              <StatHelpText>
+                                <StatArrow type="increase" />
+                                18.9%
+                              </StatHelpText>
+                            </Stat>
+                          </VStack>
+                        </CardBody>
+                      </Card>
+                    </SimpleGrid>
+
+                    {/* Threat Path Response Times */}
+                    <Grid templateColumns={{ base: "1fr", lg: "2fr 1fr" }} gap={6}>
+                      <Card>
+                        <CardHeader>
+                          <Heading size="sm">Mean Time Metrics (Minutes)</Heading>
+                        </CardHeader>
+                        <CardBody>
+                          <Box height="200px">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart data={[
+                                { metric: 'Detection', time: 8.5, target: 15 },
+                                { metric: 'Response', time: 15.2, target: 30 },
+                                { metric: 'Containment', time: 45.8, target: 60 },
+                                { metric: 'Recovery', time: 180.5, target: 240 }
+                              ]}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="metric" />
+                                <YAxis />
+                                <RechartsTooltip />
+                                <Bar dataKey="time" fill="#4299E1" name="Actual" />
+                                <Bar dataKey="target" fill="#E2E8F0" name="Target" />
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </Box>
+                        </CardBody>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <Heading size="sm">Success Rate</Heading>
+                        </CardHeader>
+                        <CardBody>
+                          <VStack spacing={4}>
+                            <Box width="100px" height="100px">
+                              <CircularProgressbar
+                                value={94.7}
+                                text="94.7%"
+                                styles={buildStyles({
+                                  textColor: '#38A169',
+                                  pathColor: '#38A169',
+                                  trailColor: '#E2E8F0'
+                                })}
+                              />
+                            </Box>
+                            <Text textAlign="center" fontSize="sm" color={mutedColor}>
+                              Overall Success Rate
+                            </Text>
+                            <Badge colorScheme="green" size="sm">
+                              +5.2% from last month
+                            </Badge>
+                          </VStack>
+                        </CardBody>
+                      </Card>
+                    </Grid>
+
+                    {/* Business Impact Metrics */}
+                    <Card>
+                      <CardHeader>
+                        <Heading size="sm">Business Impact & ROI</Heading>
+                      </CardHeader>
+                      <CardBody>
+                        <SimpleGrid columns={{ base: 2, md: 4 }} spacing={6}>
+                          <VStack spacing={2}>
+                            <Icon as={FiShield} size="24px" color="green.500" />
+                            <Stat textAlign="center">
+                              <StatNumber fontSize="xl" color="green.600">
+                                $2.45M
+                              </StatNumber>
+                              <StatLabel fontSize="sm">Cost Avoidance</StatLabel>
+                            </Stat>
+                          </VStack>
+
+                          <VStack spacing={2}>
+                            <Icon as={FiLock} size="24px" color="blue.500" />
+                            <Stat textAlign="center">
+                              <StatNumber fontSize="xl" color="blue.600">
+                                156
+                              </StatNumber>
+                              <StatLabel fontSize="sm">Protected Assets</StatLabel>
+                            </Stat>
+                          </VStack>
+
+                          <VStack spacing={2}>
+                            <Icon as={FiEye} size="24px" color="purple.500" />
+                            <Stat textAlign="center">
+                              <StatNumber fontSize="xl" color="purple.600">
+                                89
+                              </StatNumber>
+                              <StatLabel fontSize="sm">Blocked Attacks</StatLabel>
+                            </Stat>
+                          </VStack>
+
+                          <VStack spacing={2}>
+                            <Icon as={FiTrendingUp} size="24px" color="orange.500" />
+                            <Stat textAlign="center">
+                              <StatNumber fontSize="xl" color="orange.600">
+                                87.3%
+                              </StatNumber>
+                              <StatLabel fontSize="sm">Risk Reduction</StatLabel>
+                            </Stat>
+                          </VStack>
+                        </SimpleGrid>
+                      </CardBody>
+                    </Card>
+
+                    {/* Top Threat Vectors */}
+                    <Card>
+                      <CardHeader>
+                        <Heading size="sm">Top Threat Vectors (Last 30 Days)</Heading>
+                      </CardHeader>
+                      <CardBody>
+                        <TableContainer>
+                          <Table size="sm">
+                            <Thead>
+                              <Tr>
+                                <Th>Threat Vector</Th>
+                                <Th isNumeric>Paths Detected</Th>
+                                <Th>Trend</Th>
+                                <Th isNumeric>Avg. Severity</Th>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              <Tr>
+                                <Td fontWeight="bold">Phishing</Td>
+                                <Td isNumeric>18</Td>
+                                <Td>
+                                  <HStack>
+                                    <Icon as={FiTrendingUp} color="red.500" />
+                                    <Text fontSize="sm" color="red.500">+12.5%</Text>
+                                  </HStack>
+                                </Td>
+                                <Td isNumeric>
+                                  <Badge colorScheme="orange">High</Badge>
+                                </Td>
+                              </Tr>
+                              <Tr>
+                                <Td fontWeight="bold">Malware</Td>
+                                <Td isNumeric>14</Td>
+                                <Td>
+                                  <HStack>
+                                    <Icon as={FiTrendingDown} color="green.500" />
+                                    <Text fontSize="sm" color="green.500">-8.3%</Text>
+                                  </HStack>
+                                </Td>
+                                <Td isNumeric>
+                                  <Badge colorScheme="red">Critical</Badge>
+                                </Td>
+                              </Tr>
+                              <Tr>
+                                <Td fontWeight="bold">Insider Threat</Td>
+                                <Td isNumeric>8</Td>
+                                <Td>
+                                  <HStack>
+                                    <Icon as={FiTrendingUp} color="red.500" />
+                                    <Text fontSize="sm" color="red.500">+25.0%</Text>
+                                  </HStack>
+                                </Td>
+                                <Td isNumeric>
+                                  <Badge colorScheme="yellow">Medium</Badge>
+                                </Td>
+                              </Tr>
+                              <Tr>
+                                <Td fontWeight="bold">Supply Chain</Td>
+                                <Td isNumeric>5</Td>
+                                <Td>
+                                  <HStack>
+                                    <Icon as={FiActivity} color="gray.500" />
+                                    <Text fontSize="sm" color="gray.500">+2.1%</Text>
+                                  </HStack>
+                                </Td>
+                                <Td isNumeric>
+                                  <Badge colorScheme="orange">High</Badge>
+                                </Td>
+                              </Tr>
+                            </Tbody>
+                          </Table>
+                        </TableContainer>
+                      </CardBody>
+                    </Card>
+                  </VStack>
                 </TabPanel>
               </TabPanels>
             </Tabs>
