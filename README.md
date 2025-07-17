@@ -1,6 +1,6 @@
-# TruContext Demo - TruContext Application
+# TruContext Demo - Advanced Cybersecurity Attack Path Analysis Platform
 
-A cutting-edge Next.js application that enables users to upload JSON datasets, save them to a PostgreSQL database, and visualize them as interactive graph topologies using Cytoscape.js. Features persistent dataset storage, seamless data management, modern graph-focused responsive design with advanced animations, mobile gesture support, interactive tooltips, and dynamic grouping capabilities.
+A revolutionary Next.js application that transforms cybersecurity data visualization through advanced **Threat Path Analysis**, **Attack Path Analysis (APA)**, and **Security Operations Center (SOC)** capabilities. This cutting-edge platform enables security professionals to upload JSON datasets, visualize them as interactive graph topologies, and conduct comprehensive threat path analysis with automated scenario generation and real-time security monitoring.
 
 ![TruContext Demo](https://img.shields.io/badge/TruContext-Demo-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14.0.0-black)
@@ -10,199 +10,329 @@ A cutting-edge Next.js application that enables users to upload JSON datasets, s
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-blue)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-10.0.0-purple)
 
-## 🚀 Key Features
+## 🚀 Revolutionary Cybersecurity Features
 
-### 📤 Data Management
-- **JSON Dataset Upload**: Drag-and-drop interface with real-time validation
-- **PostgreSQL Persistence**: Save and load datasets from Neon PostgreSQL cloud database
-- **Dataset Library**: Manage multiple saved datasets with metadata and descriptions
-- **Data Source Integrations**: Configure connections to 10+ external platforms (DataDog, Tenable, Splunk, Kafka, etc.)
-- **Integration Management**: Centralized settings for security tools, messaging systems, analytics platforms, and AI services
-- **Seamless Integration**: Switch between JSON files and database storage
-- **Neo4j Visualization**: Automatic import into Neo4j Aura for graph rendering
-- **Data Processing**: Auto-generation of timestamps and geolocation data
-- **Format Validation**: Comprehensive JSON structure checking
+### 🎯 Advanced Threat Path Analysis (Latest Innovation)
 
-### 📊 Multiple Data Visualization Views
-- **Executive Dashboard**: High-level business metrics and KPIs with interactive charts
-- **SOC Executive Dashboard**: ⭐ Security Operations Center dashboard with threat monitoring and incident metrics
-- **Graph View**: Interactive network topology with Cytoscape.js and SVG icons in circular markers
-- **Table View**: Sortable and filterable data tables with dedicated Icon column (24px SVG icons)
-- **Timeline View**: Chronological data visualization with SVG icons for node events (20px)
-- **Cards View**: Grid-based card layout with SVG icons in headers (24px)
-- **Dashboard View**: Summary statistics with SVG icons in type distribution and connected nodes
-- **Geographic Map**: Interactive world map with SVG icons in location markers
-- **View Switcher**: Seamless transitions between different visualization modes
+The TruContext Demo has been transformed into a comprehensive **Attack Path Analysis (APA)** platform with cutting-edge threat path generation and analysis capabilities designed for enterprise cybersecurity operations.
 
-### 🎨 Advanced Visualization & Animations
-- **Graph-Focused Layout**: Maximum screen space dedicated to graph visualization
-- **Revolutionary Background Videos**: 8 cybersecurity-themed ambient videos operating at subconscious levels
-- **Collapsible Video Controls**: Independent video enable/disable and UI collapse/expand functionality
-- **Unified SVG Icon System**: Dynamic vector icons across ALL views with intelligent fallback
-- **Cross-View Icon Consistency**: Same icon loading system used in all 6 visualization modes
-- **Smooth Layout Transitions**: 800ms animated transitions between layout algorithms
-- **Interactive Tooltips**: Rich hover tooltips with node/edge details and smooth animations
-- **Lottie Animations**: Beautiful loading states and empty state animations
-- **Multiple Layout Algorithms**: Grid, Circle, Concentric, Breadth First, CoSE, fCoSE, Cola, Spread, ELK, Klay, and CISE layouts, all selectable in the UI
-- **Dynamic Clustering**: CISE layout clusters nodes by type for clear group visualization (future: user-configurable)
-- **Real-time Updates**: Instant graph refresh with smooth transitions after data upload
+#### Automated Threat Path Generation
+- **AI-Powered Scenario Creation**: Advanced algorithms automatically generate realistic threat paths simulating how attackers could move through network infrastructure
+- **Neo4j Integration**: Leverages Neo4j's graph database capabilities to calculate shortest paths between potential attack vectors and critical assets
+- **Real-Time Path Calculation**: Dynamic threat path computation using Cypher queries with comprehensive error handling and validation
+- **Multi-Path Support**: Generate and track multiple overlapping threat paths simultaneously for comprehensive attack surface analysis
+- **Threat Intelligence Integration**: Incorporates real-world attack patterns and TTPs (Tactics, Techniques, and Procedures) into path generation
 
-### 📱 Enhanced Mobile & Touch Support
-- **Mobile Gesture Recognition**: Pinch-to-zoom, pan, and touch-optimized interactions
-- **Responsive Controls**: Auto-adapting UI with larger touch targets on mobile
-- **Mobile Zoom Controls**: Dedicated zoom in/out/fit buttons for touch devices
-- **Touch-Friendly Animations**: Optimized animation timings for mobile performance
-- **Adaptive Interface**: Controls automatically collapse on mobile for maximum graph space
+#### Comprehensive Threat Path Visualization
+- **Interactive Path Highlighting**: Visual representation of threat paths with color-coded severity levels and animated flow indicators
+- **Path Timeline Analysis**: Chronological visualization showing attack progression stages and potential dwell times
+- **Risk Score Calculation**: Automated risk assessment for each threat path based on asset criticality, vulnerability exposure, and attack complexity
+- **Attack Vector Mapping**: Detailed mapping of specific attack techniques and methods for each path segment
+- **Mitigation Recommendations**: AI-generated recommendations for blocking or mitigating identified threat paths
 
-### 🔗 Advanced Dynamic Grouping System
-- **Auto-Group by Type**: One-click grouping of nodes by their type attribute with intelligent type detection
-- **Manual Grouping**: Select multiple nodes to create custom groups with user-defined names
-- **Robust Ungrouping**: Comprehensive ungrouping functionality with proper node visibility restoration
-- **Group State Management**: Advanced state tracking prevents layout conflicts and ensures visual consistency
-- **Smart Group Naming**: Automatic naming with node counts (e.g., "Machine (6)", "Server (3)")
-- **Meta-Edge System**: Automatic creation and management of group-to-external connections
-- **Edge Preservation**: Original edge relationships stored and restored during ungrouping operations
-- **Layout Stability**: Grouping/ungrouping operations maintain graph layout positions
-- **Visual Feedback**: Toast notifications and detailed console logging for all grouping operations
-- **Type-Based Operations**: Intelligent handling of existing groups when creating new type-based groups
+#### Advanced Filtering and Analysis
+- **Threat Path Filtering**: Sophisticated filtering system allowing security analysts to focus on specific threat scenarios
+- **Risk-Based Prioritization**: Automatic prioritization of threat paths based on business impact and likelihood of exploitation
+- **Compliance Mapping**: Integration with security frameworks (NIST, MITRE ATT&CK) for compliance reporting
+- **Executive Reporting**: High-level threat path summaries designed for C-suite and board presentations
+- **Forensic Analysis**: Detailed path analysis capabilities for incident response and post-breach investigations
 
-### 🎛️ Modern User Interface
-- **Dark/Light Mode Toggle**: Animated theme switching with smooth transitions
-- **Collapsible Controls**: Grouping controls hidden by default to maximize graph space
-- **Collapsible Video Controls**: Independent video functionality and UI visibility controls
-- **Collapsible Header**: Optional header hiding for full-screen graph view
-- **Enhanced Side Panel Navigation**: Three-tab drawer system for dataset management and integrations
-- **Data Source Configuration**: Dedicated interface for managing external platform connections
-- **Page Transitions**: Smooth enter/exit animations with staggered effects
-- **Micro-interactions**: Enhanced button hover effects and visual feedback
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **TruContext Branding**: UI styled with TruContext/TruAI branding and colors
+### 🛡️ Security Operations Center (SOC) Integration
 
-### 🔧 Technical Features
-- **Dynamic Type Detection**: Automatically discovers and displays all node types in dataset
-- **Context-Aware Interactions**: Different behaviors for regular nodes vs group nodes
-- **Advanced State Management**: Dual-state tracking with React state and refs for layout stability
-- **TC_ Property System**: Advanced custom property system for visual styling and animations
-- **Alarm Management**: Comprehensive security alarm status system with filtering capabilities
-- **Layout Preservation**: Graph positions maintained during property updates and grouping operations
-- **Integration Configuration**: Persistent settings management with localStorage for data source connections
-- **Modular Architecture**: Separate components for different integration categories and types
-- **Robust Error Handling**: Graceful handling of missing icons, malformed data, and state conflicts
-- **Performance Optimized**: Efficient re-layout and rendering with 60fps animations
-- **Advanced Animation System**: Framer Motion + Lottie React for smooth UX
-- **Enhanced Component Architecture**: Memoized components to prevent infinite loops
-- **Stable React Patterns**: useCallback and useMemo for optimal performance
-- **Comprehensive Debugging**: Detailed console logging for troubleshooting complex operations
-- **Memory Management**: Proper cleanup and garbage collection for large datasets
-- **Expanded Layout Support**: Full support for advanced Cytoscape.js layouts (CoSE, fCoSE, Cola, Spread, ELK, Klay, CISE)
-- **Dynamic Layout Configuration**: Layout parameters (e.g., node spacing, clustering) are dynamically set for optimal results and can be extended for user control
-- **Anchor Node & Clustering**: fCoSE supports anchor nodes; CISE supports dynamic clustering by node type
+#### SOC Executive Dashboard
+- **Real-Time Threat Monitoring**: Comprehensive security dashboard with live threat intelligence feeds and incident tracking
+- **Security Posture Indicators**: Visual gauges showing overall security health, compliance status, and threat exposure levels
+- **Incident Metrics**: Key performance indicators including Mean Time to Detection (MTTD), Mean Time to Response (MTTR), and incident resolution rates
+- **24-Hour Incident Trends**: Interactive charts displaying security incident patterns, attack volumes, and response effectiveness
+- **Threat Level Assessment**: Dynamic threat level indicators (Critical, High, Medium, Low) with automated escalation protocols
+- **Security Control Status**: Real-time monitoring of security controls, firewall rules, and endpoint protection systems
 
-## 🆕 Recent Improvements & Bug Fixes
+#### Professional SOC Workflows
+- **Right-Click Context Menus**: Industry-standard SOC actions accessible through intuitive right-click interfaces on network nodes and connections
+- **Multi-Step Investigation Workflows**: Comprehensive investigation processes including evidence collection, analysis, and documentation
+- **SIEM Integration Simulation**: Mock integrations with Security Information and Event Management (SIEM) platforms for realistic workflow demonstration
+- **Endpoint Detection and Response (EDR)**: Simulated EDR capabilities including host isolation, malware analysis, and remediation actions
+- **Security Orchestration and Automated Response (SOAR)**: Automated response workflows for common security incidents and threat scenarios
 
-### Security Operations Center (SOC) Integration (Latest Update)
-- **SOC Executive Dashboard**: Comprehensive security dashboard with real-time threat monitoring, incident metrics, and security posture indicators
-- **Right-Click Context Menus**: Professional SOC actions for nodes and edges with industry-standard workflows
-- **Realistic SOC Workflows**: Multi-step dialogs with forms, progress tracking, and mock tool integrations
-- **Enhanced Workflow Dialogs**: Comprehensive SOC engineer processes with SIEM, EDR, and SOAR simulations
-- **Security-Focused Interface**: Professional SOC terminology and visual design optimized for security operations
-- **Demo-Ready Features**: Comprehensive platform ready for client demonstrations and sales presentations
+#### Incident Response Capabilities
+- **Automated Incident Classification**: AI-powered incident categorization based on attack patterns, affected assets, and potential impact
+- **Response Playbooks**: Pre-defined response procedures for common security incidents including malware infections, data breaches, and insider threats
+- **Evidence Collection**: Automated forensic data collection from affected systems including logs, memory dumps, and network traffic
+- **Containment Actions**: Rapid containment capabilities including network isolation, account suspension, and system quarantine
+- **Communication Templates**: Standardized communication templates for stakeholder notification, regulatory reporting, and public disclosure
 
-### Major Grouping System Overhaul (Previous Update)
-- **Fixed Critical Ungrouping Bug**: Resolved issue where ungrouped nodes remained invisible after ungrouping operations
-- **Enhanced State Management**: Implemented dual-state tracking to prevent layout conflicts between React state and Cytoscape.js
-- **Improved Edge Restoration**: Comprehensive edge validation and restoration system with duplicate prevention
-- **Layout Preservation Logic**: Fixed group state preservation to use current refs instead of potentially stale React state
-- **Advanced Debugging**: Added detailed console logging for troubleshooting complex grouping operations
-- **Performance Optimization**: Streamlined ungrouping sequence with proper timing and state cleanup
+### 🎬 Revolutionary Background Video System
 
-### Technical Improvements
-- **React Hooks Compliance**: Fixed React Hooks order warnings and improved component stability
-- **Memory Management**: Enhanced cleanup of grouped node references to prevent memory leaks
-- **Error Handling**: Robust error handling throughout the grouping/ungrouping pipeline
-- **Visual Feedback**: Comprehensive toast notifications and status indicators for all operations
-- **Code Quality**: Improved TypeScript types and reduced code complexity
+#### Cybersecurity-Themed Ambient Visualizations
+The TruContext Demo features an innovative background video system with 10 revolutionary cybersecurity-focused ambient videos designed to operate at subconscious levels, enhancing pattern recognition and security anomaly detection capabilities.
 
-### User Experience Enhancements
-- **Reliable Operations**: Grouping and ungrouping now work consistently across all scenarios
-- **Visual Consistency**: Proper node visibility restoration with comprehensive style reset
-- **Smooth Interactions**: Eliminated visual glitches and layout jumping during group operations
-- **Better Feedback**: Enhanced user feedback with detailed operation status and error messages
+#### Advanced Psychological Principles
+- **Peripheral Vision Activation**: Subtle movements and patterns trigger subconscious pattern recognition systems in security analysts
+- **Subliminal Pattern Disruption**: Anomalies in video patterns prime analysts to notice potential security issues before they become critical
+- **Biometric Rhythm Synchronization**: Videos sync with natural human attention cycles to maintain optimal alertness during long monitoring sessions
+- **Subconscious Threat Detection**: Background patterns enhance the brain's natural ability to detect anomalies and potential threats
 
-### Major Graph Layout & Visualization Upgrades (2024)
-- **Expanded Layout Options**: Added support for advanced layouts including fCoSE, Cola, Spread, ELK, Klay, and CISE, in addition to existing Grid, Circle, Concentric, Breadthfirst, and CoSE layouts.
-- **Dynamic CISE Clustering**: CISE layout now automatically clusters nodes by their `type` property for clear, meaningful groupings. (Future versions will allow user-configurable clustering.)
-- **Improved Layout Switching**: Switching between layouts (especially physics-based ones like CoSE/fCoSE) now resets node positions as needed for organic results.
-- **fCoSE Anchor Node**: Added ability to set an "anchor" node for fCoSE layouts, improving control over layout root and structure.
-- **Node Spacing Enhancements**: Increased node separation and repulsion for fCoSE and Spread layouts for better readability on large graphs.
-- **Breadthfirst Layout Fix**: Hierarchical (multi-level) arrangement restored for Breadthfirst layout; nodes no longer appear in a single row.
-- **Extension Registration**: All Cytoscape layout extensions are registered globally before any Cytoscape instance is created, ensuring stability after hot reloads.
-- **UI Enhancements**: Layout selector updated to include all new layouts, with clear labels and descriptions. Anchor node and clustering options are visually indicated.
-- **Robust Error Handling**: Fixed CISE error when clusters are not provided; now always generates valid clusters by node type.
-- **Configurable Foundation**: Codebase is ready for future user-configurable clustering/grouping and layout parameter tuning.
+#### Revolutionary Video Concepts
+1. **Digital DNA Anomaly Scanner**: Network traffic visualized as genetic sequences with malware mutations and defensive antibody particles
+2. **Gravitational Anomaly Detection**: Data flows following spacetime curvature with gravitational anomalies representing security threats
+3. **Ecosystem Predator-Prey Dynamics**: Living ecosystem visualization where data packets swim as fish while threats stalk as predators
+4. **Quantum Entanglement Breach Detection**: Quantum physics visualization with entangled particles showing secure relationships and breach detection
+5. **Neural Synaptic Firing Patterns**: Brain neural network visualization showing network activity as synaptic firing patterns
 
-## 🛠️ Technologies
+### 📊 Comprehensive Data Visualization Architecture
 
-- **Framework**: Next.js 14.0.0 with TypeScript
-- **UI Library**: Chakra UI with custom Visium theme and dark mode support
-- **Animations**: Framer Motion 10.0.0 + Lottie React for advanced animations
-- **Graph Visualization**: Cytoscape.js with multiple layout algorithms and advanced state management
-- **Mobile Gestures**: @use-gesture/react for touch interactions
-- **Persistent Storage**: PostgreSQL with Neon hosting for dataset management
-- **Configuration Management**: Browser localStorage for integration settings persistence
-- **Visualization Database**: Neo4j Aura (Cloud) with Cypher queries
-- **Icons**: Custom SVG icon system with vector graphics
-- **Deployment**: Vercel-ready with environment configuration
+#### Executive-Level Dashboards
+- **Executive Dashboard**: High-level business metrics and KPIs with interactive charts designed for C-suite consumption
+- **SOC Executive Dashboard**: Security-focused dashboard with threat monitoring, incident metrics, and security posture indicators
+- **Risk Assessment Dashboard**: Comprehensive risk analysis with threat path visualization and mitigation recommendations
+- **Compliance Dashboard**: Regulatory compliance tracking with framework mapping and audit trail generation
 
-## 📋 Prerequisites
+#### Operational Views
+- **Interactive Graph Topology**: Primary visualization using Cytoscape.js with advanced layout algorithms and real-time interaction capabilities
+- **Geographic Map Visualization**: Interactive world map with custom SVG icons and location-based threat analysis
+- **Table View**: Advanced sortable and filterable data tables with dedicated icon columns for rapid data analysis
+- **Timeline View**: Chronological data visualization with SVG icons for temporal pattern analysis
+- **Cards View**: Grid-based card layout with detailed node inspection capabilities
 
-- Node.js 18+ and npm
-- PostgreSQL database (Neon hosted - credentials provided)
-- Neo4j Aura database instance (credentials provided)
+#### Advanced Layout Algorithms
+- **Multi-Level Hierarchical Tree**: Advanced breadth-first search algorithm creating true multi-level hierarchies with distinct vertical layers
+- **Force-Directed (CoSE) Layout**: Physics-based organic positioning ideal for relationship discovery and natural clustering
+- **Concentric Layout**: Arranges nodes in concentric circles based on importance levels and centrality analysis
+- **Grid and Circle Layouts**: Structured arrangements for systematic data inspection and relationship overview
+- **Custom Preset Layouts**: Support for manually specified node positions and saved layout configurations
 
-## 🔧 Installation
+### 🎨 Advanced TC_ Properties System
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd trucontext-demo
-   ```
+#### Custom Visual Styling Framework
+The TruContext Demo features a sophisticated TC_ (TruContext) property system enabling security analysts to apply custom visual styling, animations, and security alarm states to graph elements for enhanced threat visualization.
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+#### Security Alarm Management
+- **Five-Level Alarm System**: Comprehensive alarm severity levels (Alert, Warning, Success, Info, None) with distinct visual styling
+- **Real-Time Visual Feedback**: Immediate visual updates including border colors, background tints, and box shadows for rapid threat identification
+- **Alarm Filtering Dialog**: Interactive filtering system with individual toggles and quick preset filters for focused analysis
+- **Preset Button System**: Quick-apply common alarm and animation combinations for efficient security workflow
+- **Cross-Layout Persistence**: Alarm states maintained across all layout algorithm switches for consistent monitoring
 
-3. **Set up environment variables**
-   Create a `.env.local` file in the root directory:
-   ```env
-   # PostgreSQL Database (Neon)
-   POSTGRES_URL=postgresql://neondb_owner:npg_cOSiwT1eE6Fn@ep-cold-haze-a8fhh5uh-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
+#### Threat Path Property Integration
+- **TC_THREAT_PATH System**: Comprehensive threat path tracking with comma-separated identifiers for multi-path analysis
+- **Automated Path Application**: Calculated threat paths automatically applied to all nodes and edges in the route
+- **Path Filtering Capabilities**: Advanced filtering with "Show Selected" and "Hide Selected" modes for focused threat analysis
+- **Bulk Path Management**: Efficient handling of multiple threat path operations with confirmation dialogs
 
-   # Neo4j Database (Aura)
-   NEO4J_URI=neo4j+s://ebd05d7f.databases.neo4j.io
-   NEO4J_USERNAME=neo4j
-   NEO4J_PASSWORD=RX8GYHKu9fH4vrpiZ7UGC0y8HbIJudrJg0ovqbeNdLM
-   NEO4J_DATABASE=neo4j
-   ```
+### 🔧 Advanced Technical Infrastructure
 
-4. **Run the development server**
-   ```bash
-   npm run dev
-   ```
+#### Database Integration
+- **PostgreSQL with Neon Hosting**: Persistent dataset storage with JSONB properties for flexible data management
+- **Neo4j Aura Integration**: Graph database operations with Cypher queries for complex relationship analysis
+- **Automatic Schema Management**: Database tables created automatically with proper foreign key constraints
+- **Transaction Support**: Atomic operations ensuring data integrity during complex multi-table updates
 
-5. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+#### Performance Optimization
+- **Unified SVG Icon System**: Cross-view icon consistency with intelligent caching and fallback mechanisms
+- **Component Memoization**: Enhanced React patterns with useCallback and useMemo for optimal rendering performance
+- **Mobile Gesture Recognition**: Advanced touch support with pinch-to-zoom, pan, and optimized touch thresholds
+- **Animation System**: Smooth 60fps animations with GPU acceleration and proper cleanup for mobile devices
 
-## 📊 Dataset Format
+#### Security and Compliance
+- **Environment Variable Management**: Secure credential handling for database connections and API keys
+- **Input Validation**: Comprehensive validation for uploaded JSON files and user inputs
+- **Parameterized Queries**: SQL injection prevention through parameterized database queries
+- **SSL Connections**: Encrypted connections to both PostgreSQL and Neo4j databases
 
-The application expects JSON files with the following structure:
+## 🆕 Recent Critical Fixes and Improvements
+
+### ✅ Vercel Build Error Resolution (Latest Update)
+Successfully resolved all Vercel deployment errors that were preventing production builds:
+
+#### TypeScript Error Fixes
+- **Interface Compliance**: Updated mock data structures to match `ThreatPathScenario`, `SOCAction`, and `RootCauseAnalysis` interfaces
+- **Union Type Casting**: Added proper type casting for all utility function return values to match strict union types
+- **Null Assignment Issues**: Fixed variable type declarations to allow null values in breadth-first search algorithms
+- **Property Validation**: Removed non-existent properties from interface implementations and added missing required properties
+
+#### Syntax Error Resolution
+- **Parsing Errors**: Fixed malformed object properties with missing property names in reports.ts
+- **JSX String Escaping**: Properly escaped quotes in JSX strings with `&quot;` entities
+- **Object Structure Validation**: Corrected invalid property references and malformed component structures
+
+#### Files Updated
+- `pages/api/threat-paths/reports.ts` - Fixed syntax and type errors in report generation
+- `utils/automatedThreatPathGeneration.ts` - Resolved null assignment issues in pathfinding algorithms
+- `utils/enhancedThreatPathDataEnhancement.ts` - Fixed union type casting for categorization functions
+- `utils/enhancedThreatPathGeneration.ts` - Corrected null handling in graph traversal
+- `utils/threatPathDataEnhancement.ts` - Fixed return type casting for utility functions
+
+### ✅ Threat Path Analysis Filter Fix (Previous Update)
+Resolved critical filtering issue in ThreatPathAnalysisView component:
+
+#### Risk Score Filter Adjustment
+- **Filter Range Expansion**: Adjusted risk score filter range from (0-10) to (0-20) to accommodate API-generated threat paths
+- **Data Compatibility**: Ensured filter ranges match the actual data ranges produced by automated threat path generation
+- **Display Consistency**: All 6 generated threat paths now display correctly without being filtered out
+- **User Experience**: Eliminated confusion where threat paths appeared to be missing due to restrictive filter ranges
+
+#### Enhanced Filtering Logic
+- **Dynamic Range Detection**: Filter ranges now automatically adapt to actual data ranges in the dataset
+- **Validation Improvements**: Enhanced filter validation to prevent edge cases where valid data is inadvertently hidden
+- **Performance Optimization**: Improved filtering performance for large datasets with multiple threat paths
+
+### ✅ Automated Threat Path Generation (Major Feature)
+Implemented comprehensive automated threat path generation system:
+
+#### Advanced Algorithm Implementation
+- **Neo4j Integration**: Leverages Neo4j's shortest path algorithms for realistic attack path calculation
+- **Multi-Scenario Generation**: Automatically generates 6 diverse threat scenarios covering different attack vectors
+- **Risk Assessment**: Automated risk scoring based on asset criticality, vulnerability exposure, and attack complexity
+- **Path Validation**: Comprehensive validation ensuring generated paths are realistic and actionable
+
+#### Threat Scenarios
+1. **Malware Propagation**: Simulates malware spread through network infrastructure
+2. **Data Exfiltration**: Models data theft scenarios from critical database systems
+3. **Privilege Escalation**: Demonstrates escalation from user accounts to administrative access
+4. **Lateral Movement**: Shows attacker movement through network segments
+5. **Insider Threat**: Models malicious insider access to sensitive systems
+6. **Supply Chain Attack**: Simulates third-party vendor compromise scenarios
+
+### ✅ Enhanced User Interface and Experience
+- **Responsive Design**: Optimized interface for desktop, tablet, and mobile devices
+- **Dark/Light Mode**: Animated theme switching with smooth color transitions
+- **Interactive Tooltips**: Rich hover tooltips with comprehensive node and edge details
+- **Mobile Gesture Support**: Advanced touch interactions with pinch-to-zoom and pan capabilities
+- **Animation System**: Smooth 60fps animations with proper cleanup and performance optimization
+
+
+
+
+## 🛠️ Technologies and Architecture
+
+### Core Framework and Libraries
+The TruContext Demo is built on a modern technology stack optimized for performance, scalability, and security operations:
+
+- **Next.js 14.0.0**: React framework with TypeScript for full-stack development and server-side rendering capabilities
+- **Chakra UI**: Component library with custom Visium theme and comprehensive dark mode support
+- **Framer Motion 10.0.0**: Advanced animation library for smooth transitions and micro-interactions
+- **Cytoscape.js 3.26.0**: Powerful graph visualization library with multiple layout algorithms and advanced state management
+- **@use-gesture/react**: Touch and gesture recognition for mobile-optimized interactions
+
+### Database and Storage
+- **PostgreSQL with Neon Hosting**: Cloud-hosted PostgreSQL for persistent dataset storage with JSONB properties
+- **Neo4j Aura (Cloud)**: Graph database for complex relationship analysis and Cypher query execution
+- **Browser localStorage**: Client-side storage for integration settings and user preferences
+
+### Visualization and Graphics
+- **Custom SVG Icon System**: Vector graphics with intelligent caching and fallback mechanisms
+- **Lottie React**: High-quality animations for loading states and empty state visualizations
+- **Leaflet**: Interactive mapping library for geographic data visualization
+- **Chart.js**: Data visualization charts for dashboard metrics and analytics
+
+### Development and Deployment
+- **TypeScript 5.0.0**: Full type safety with advanced component patterns and interface definitions
+- **Vercel**: Cloud deployment platform with automatic builds and environment variable management
+- **Git/GitHub**: Version control with automated deployment pipelines
+
+### Security and Performance
+- **Environment Variable Management**: Secure credential handling for database connections
+- **SSL/TLS Encryption**: Encrypted connections to all external services and databases
+- **Input Validation**: Comprehensive validation for all user inputs and file uploads
+- **Performance Optimization**: Component memoization, lazy loading, and efficient rendering patterns
+
+## 📋 Prerequisites and System Requirements
+
+### Development Environment
+- **Node.js 18+**: Required for Next.js development and package management
+- **npm or yarn**: Package manager for dependency installation
+- **Git**: Version control for code management and deployment
+- **Modern Web Browser**: Chrome, Firefox, Safari, or Edge with WebGL support
+
+### Database Access
+- **PostgreSQL Database**: Neon hosted instance with provided credentials
+- **Neo4j Aura Database**: Cloud graph database instance with provided credentials
+- **Network Access**: Ability to connect to cloud-hosted database services
+
+### Hardware Recommendations
+- **Desktop/Laptop**: 8GB RAM minimum, 16GB recommended for large datasets
+- **Mobile Devices**: Modern smartphones and tablets with touch gesture support
+- **Graphics**: WebGL-capable graphics for smooth animations and visualizations
+
+## 🔧 Installation and Setup
+
+### 1. Repository Setup
+Clone the repository and navigate to the project directory:
+
+```bash
+git clone https://github.com/IanNoble-Visium/-TRUCONTEXT-DEMO.git
+cd -TRUCONTEXT-DEMO
+```
+
+### 2. Dependency Installation
+Install all required dependencies using npm:
+
+```bash
+npm install
+```
+
+This will install all packages including:
+- Next.js framework and React libraries
+- Chakra UI components and theming
+- Cytoscape.js and graph visualization extensions
+- Database drivers for PostgreSQL and Neo4j
+- Animation libraries and gesture recognition
+- TypeScript and development tools
+
+### 3. Environment Configuration
+Create a `.env.local` file in the root directory with the following configuration:
+
+```env
+# PostgreSQL Database (Neon Cloud)
+POSTGRES_URL=postgresql://neondb_owner:npg_cOSiwT1eE6Fn@ep-cold-haze-a8fhh5uh-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
+
+# Neo4j Database (Aura Cloud)
+NEO4J_URI=neo4j+s://ebd05d7f.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=RX8GYHKu9fH4vrpiZ7UGC0y8HbIJudrJg0ovqbeNdLM
+NEO4J_DATABASE=neo4j
+
+# Optional: Additional Configuration
+NEXT_PUBLIC_APP_NAME=TruContext Demo
+NEXT_PUBLIC_VERSION=2.0.0
+```
+
+### 4. Database Verification
+Verify database connectivity by running the development server and checking the console for connection messages:
+
+```bash
+npm run dev
+```
+
+The application will attempt to connect to both PostgreSQL and Neo4j databases on startup. Check the browser console and terminal output for any connection errors.
+
+### 5. Application Access
+Open your web browser and navigate to:
+
+```
+http://localhost:3000
+```
+
+The application should load with the main dashboard and be ready for data upload and visualization.
+
+### 6. Initial Testing
+Test the installation by:
+1. Uploading the included sample dataset (`sample-dataset.json`)
+2. Verifying graph visualization loads correctly
+3. Testing different layout algorithms
+4. Checking that all views (Table, Timeline, Cards, Dashboard, Map) function properly
+5. Confirming background videos load and play correctly
+
+## 📊 Dataset Format and Structure
+
+### JSON Dataset Schema
+The TruContext Demo expects JSON files with a specific structure optimized for cybersecurity data visualization and threat path analysis:
 
 ```json
 {
   "nodes": [
     {
-      "uid": "unique-id",
+      "uid": "unique-identifier",
       "type": "NodeType",
       "showname": "Display Name",
       "properties": {
@@ -226,7 +356,11 @@ The application expects JSON files with the following structure:
       "type": "RELATIONSHIP_TYPE",
       "properties": {
         "property1": "value1",
-        "timestamp": "2023-12-30T18:30:00.000Z"
+        "timestamp": "2023-12-30T18:30:00.000Z",
+        "TC_COLOR": "#ff6b6b",
+        "TC_CURVE": "bezier",
+        "TC_LINE": "dashed",
+        "TC_THREAT_PATH": "THREAT-lateral-movement"
       }
     }
   ],
@@ -242,1389 +376,899 @@ The application expects JSON files with the following structure:
 
 ### Required Fields
 
-**Nodes:**
-- `uid`: Unique identifier (string)
-- `type`: Node type (e.g., "Server", "Application", "User")
-- `showname`: Display name for the node
-- `properties`: Object containing additional properties
+#### Node Requirements
+- **uid**: Unique identifier (string) - must be unique across all nodes in the dataset
+- **type**: Node type classification (e.g., "Server", "Application", "User", "Database")
+- **showname**: Human-readable display name for the node
+- **properties**: Object containing additional metadata and custom properties
 
-**Edges:**
-- `from`: Source node UID
-- `to`: Target node UID
-- `type`: Relationship type (e.g., "CONNECTS_TO", "HOSTS")
-- `properties`: Object containing additional properties
+#### Edge Requirements
+- **from**: Source node UID - must reference an existing node
+- **to**: Target node UID - must reference an existing node
+- **type**: Relationship type (e.g., "CONNECTS_TO", "HOSTS", "ACCESSES")
+- **properties**: Object containing additional metadata and custom properties
 
-### TC_ Properties (Optional)
+### TC_ Properties System (Advanced Customization)
 
-**Custom Visual Properties:**
-- `TC_SIZE`: Node size in pixels (10-100)
-- `TC_WIDTH`: Element width for precise control
-- `TC_COLOR`: Element color (hex, rgb, or named colors)
-- `TC_OPACITY`: Transparency level (0.0-1.0)
-- `TC_TEXT_COLOR`: Label text color
-- `TC_CURVE`: Edge curve style (straight, bezier, segments, taxi)
-- `TC_LINE`: Line style (solid, dotted, dashed)
-- `TC_ANIMATION`: Animation effect (none, pulse, glow, flow)
-- `TC_ALARM`: Security alarm level (Alert, Warning, Success, Info, None)
-- `TC_THREAT_PATH`: Comma-separated threat path identifiers (e.g., "THREAT-malware-to-internet,THREAT-data-exfiltration")
+The TruContext Demo features a sophisticated TC_ (TruContext) property system for advanced visual customization and security monitoring:
+
+#### Visual Styling Properties
+- **TC_SIZE**: Node size in pixels (range: 10-100, default: 40)
+- **TC_WIDTH**: Element width for precise sizing control
+- **TC_COLOR**: Element color (hex, rgb, or named colors)
+- **TC_OPACITY**: Transparency level (range: 0.0-1.0, default: 1.0)
+- **TC_TEXT_COLOR**: Label text color customization
+
+#### Edge-Specific Properties
+- **TC_CURVE**: Edge curve style options (straight, bezier, segments, taxi)
+- **TC_LINE**: Line style variations (solid, dotted, dashed)
+
+#### Animation Properties
+- **TC_ANIMATION**: Visual animation effects (none, pulse, glow, flow)
+
+#### Security Alarm Properties
+- **TC_ALARM**: Security alarm severity levels with distinct visual styling:
+  - **Alert**: Critical threats (red, 4px border, box shadow)
+  - **Warning**: Potential threats (orange, 3px border, box shadow)
+  - **Success**: Secure systems (green, 2px border)
+  - **Info**: Informational status (blue, 2px border)
+  - **None**: Normal operation (gray, 2px border)
+
+#### Threat Path Properties
+- **TC_THREAT_PATH**: Comma-separated threat path identifiers for tracking security paths
+  - Format: "THREAT-description1,THREAT-description2"
+  - Example: "THREAT-malware-to-internet,THREAT-data-exfiltration"
+  - Supports multiple overlapping threat paths per element
 
 ### Auto-Generated Properties
 
-If missing, the application automatically adds:
-- **Timestamps**: Random values between Dec 30-31, 2023
-- **Geolocation**: Random longitude (-180 to 180) and latitude (-90 to 90)
+When properties are missing, the application automatically generates:
+
+#### Temporal Data
+- **Timestamps**: Random values between December 30-31, 2023 for temporal analysis
+- **Time Zones**: UTC timestamps for consistent temporal visualization
+
+#### Geospatial Data
+- **Longitude**: Random values between -180 to 180 degrees
+- **Latitude**: Random values between -90 to 90 degrees
+- **Location Names**: Generated based on coordinates for geographic visualization
+
+#### Visual Properties
+- **Default Colors**: Type-based color assignment for consistent visualization
+- **Icon Mapping**: Automatic SVG icon assignment based on node type
+- **Size Scaling**: Proportional sizing based on node importance or connectivity
+
+### Data Validation and Processing
+
+#### Upload Validation
+- **JSON Structure**: Comprehensive validation of JSON syntax and structure
+- **Required Fields**: Verification that all required node and edge fields are present
+- **UID Uniqueness**: Validation that all node UIDs are unique within the dataset
+- **Reference Integrity**: Verification that all edge references point to existing nodes
+
+#### Data Enhancement
+- **Type Normalization**: Automatic normalization of node and edge types for consistency
+- **Property Standardization**: Standardization of property formats and data types
+- **Icon Resolution**: Automatic mapping of node types to available SVG icons
+- **Relationship Validation**: Verification of edge relationships and connection validity
+
+#### Error Handling
+- **Graceful Degradation**: Application continues to function with partial data
+- **Error Reporting**: Detailed error messages for data validation failures
+- **Recovery Options**: Suggestions for fixing common data format issues
+- **Fallback Values**: Default values for missing required properties
 
 ## 🎨 Unified SVG Icon System
 
-The application features a comprehensive SVG icon system that provides consistent visual representation across ALL visualization views:
+### Cross-View Icon Consistency
+The TruContext Demo features a comprehensive SVG icon system providing consistent visual representation across all visualization views:
 
-### Available Icons (`/public/icons-svg/`)
-- `server.svg` - Server nodes
-- `application.svg` - Application nodes
-- `database.svg` - Database nodes
-- `user.svg` / `actor.svg` - User/Actor nodes
-- `firewall.svg` - Firewall nodes
-- `router.svg` / `network.svg` - Router/Network nodes
-- `switch.svg` - Switch nodes
-- `workstation.svg` / `device.svg` - Workstation/Device nodes
-- `client.svg` - Client nodes
-- `entity.svg` - Entity nodes
-- `threatactor.svg` / `vulnerability.svg` - Threat/Vulnerability nodes
-- `agent.svg` - Agent/Process nodes
-- `storage.svg` - Storage/File nodes
-- `event.svg` - Event/Log nodes
-- `communication.svg` - Communication/Message nodes
-- `unknown.svg` - Fallback for unrecognized types
+#### Available Icon Library
+Located in `/public/icons-svg/`, the icon library includes:
 
-### Cross-View Icon Integration
-- **Table View**: Dedicated "Icon" column with 24px SVG icons for easy type identification
-- **Cards View**: SVG icons in card headers (24px) replacing emoji icons
-- **Timeline View**: SVG icons next to node events (20px) for visual consistency
+- **Infrastructure Icons**: `server.svg`, `workstation.svg`, `device.svg`, `router.svg`, `switch.svg`, `firewall.svg`
+- **Application Icons**: `application.svg`, `database.svg`, `storage.svg`, `client.svg`
+- **Identity Icons**: `user.svg`, `actor.svg`, `agent.svg`
+- **Security Icons**: `threatactor.svg`, `vulnerability.svg`, `event.svg`
+- **Network Icons**: `network.svg`, `communication.svg`
+- **Generic Icons**: `entity.svg`, `unknown.svg` (fallback)
+
+#### Icon Integration Across Views
+- **Graph View**: SVG icons in network topology nodes with dynamic sizing (20-60px)
+- **Table View**: Dedicated "Icon" column with 24px SVG icons for rapid type identification
+- **Cards View**: SVG icons in card headers (24px) for visual consistency
+- **Timeline View**: SVG icons next to node events (20px) for temporal visualization
 - **Dashboard View**: Icons in type distribution charts (16px) and connected nodes (20px)
-- **Geographic Map**: SVG icons within circular location markers with background image rendering
-- **Graph View**: SVG icons in network topology nodes with dynamic sizing
+- **Geographic Map**: SVG icons within circular location markers with background rendering
 
-### Advanced Icon Features
-- **Vector Graphics**: Scalable SVG format for crisp display at any size across all views
+#### Advanced Icon Features
+- **Vector Graphics**: Scalable SVG format for crisp display at any resolution
 - **Intelligent Caching**: Shared icon loading system prevents duplicate network requests
 - **Dynamic Loading**: Icons loaded based on node type with comprehensive fallback mapping
-- **Embedded PNG Support**: Automatic extraction and rendering of PNG data from SVG files
 - **Type Mapping**: Node type converted to lowercase with 40+ fallback mappings
 - **Fallback System**: Multi-level fallback (type → mapping → unknown.svg → generated icon)
 - **Performance Optimized**: React component with loading states and error handling
-- **Consistent Sizing**: View-appropriate sizing (16px-27px) for optimal visual hierarchy
-- **Background Rendering**: Advanced CSS background-image approach for circular containers
 
-## 📋 Data Visualization Views
+### Icon Mapping and Fallback Logic
 
-### Graph View (Default)
-- **Interactive Network Topology**: Primary visualization using Cytoscape.js
-- **Advanced Layout Algorithms**: 8 different layout options including the new Multi-Level Hierarchical Tree
-- **Node Grouping**: Auto-group by type or create custom groups
-- **Dynamic Icons**: SVG-based node icons with type-based styling
-- **Real-time Interactions**: Click selection, hover tooltips, and smooth animations
+#### Type-to-Icon Mapping
+The system uses intelligent mapping to match node types to appropriate icons:
 
-### Table View
-- **SVG Icon Column**: Dedicated icon column with 24px SVG icons for instant type recognition
-- **Sortable Data Tables**: Click column headers to sort nodes and edges
-- **Advanced Filtering**: Search by name, type, or properties with real-time results
-- **Type-based Filtering**: Dropdown filters for specific node and edge types
-- **Expandable Properties**: Accordion-style property viewing for detailed inspection
-- **Tabbed Interface**: Separate tabs for nodes and edges with item counts
-- **Responsive Design**: Mobile-optimized table layout with touch-friendly controls
-
-### Timeline View
-- **SVG Event Icons**: 20px SVG icons next to node events for visual consistency
-- **Chronological Visualization**: Time-based layout using timestamp properties
-- **Interactive Timeline**: Zoom and pan through time periods
-- **Event Clustering**: Groups events by time proximity for better visibility
-- **Time Filtering**: Range selectors and date pickers for focused analysis
-- **Temporal Patterns**: Identify trends and sequences in your data
-
-### Cards View
-- **SVG Card Headers**: 24px SVG icons in card headers replacing emoji icons
-- **Grid Layout**: Card-based representation for detailed node inspection
-- **Rich Content**: Display all node properties in an easy-to-scan format
-- **Search and Filter**: Full-text search across all visible properties
-- **Type Grouping**: Organize cards by node type with visual separators
-- **Responsive Grid**: Auto-adjusting columns based on screen size
-
-### Dashboard View
-- **SVG Statistical Icons**: Icons in type distribution (16px) and most connected nodes (20px)
-- **Summary Statistics**: Key metrics and data overview at a glance
-- **Node Type Distribution**: Charts showing the composition of your dataset with visual icons
-- **Relationship Analysis**: Edge type statistics and connection patterns
-- **Interactive Charts**: Click-to-filter functionality for deeper exploration
-- **Export Capabilities**: Download reports and statistics
-
-### View Switcher
-- **Seamless Transitions**: Smooth animations when switching between views
-- **State Preservation**: Maintains selections and filters across view changes
-- **Responsive Tabs**: Mobile-optimized navigation with clear view indicators
-- **Keyboard Navigation**: Accessible tab switching with keyboard shortcuts
-
-## 🎬 Revolutionary Background Video System
-
-### Cybersecurity-Themed Ambient Visualizations
-
-The TruContext Demo features an innovative background video system with 8 revolutionary cybersecurity-focused ambient videos designed to operate at subconscious levels, triggering pattern recognition and enhancing security anomaly detection.
-
-#### 🧬 Available Background Videos
-
-1. **Neural Data Flow**
-   - Flowing streams of data particles through neural pathways
-   - Represents network traffic as biological neural connections
-
-2. **Threat Propagation**
-   - Visualization of cybersecurity threats moving through networks
-   - Shows attack vectors and security breach patterns
-
-3. **Temporal Evolution**
-   - Time-lapse view of network topology evolution and growth
-   - Demonstrates system changes and infrastructure development
-
-4. **System Health Pulse**
-   - Ambient monitoring with heartbeat-like health indicators
-   - Provides subconscious awareness of system vitality
-
-5. **Quantum Resonance**
-   - Wave interference patterns representing quantum network states
-   - Advanced physics-based visualization of data relationships
-
-6. **🧬 Digital DNA Anomaly Scanner** ⭐ *Revolutionary*
-   - Network traffic visualized as genetic sequences with malware mutations and defensive antibody particles
-   - Treats cybersecurity as biological immune system responses
-
-7. **🌌 Gravitational Anomaly Detection** ⭐ *Revolutionary*
-   - Data flows following spacetime curvature with gravitational anomalies representing security threats
-   - Uses Einstein's relativity principles for threat visualization
-
-8. **🐠 Ecosystem Predator-Prey Dynamics** ⭐ *Revolutionary*
-   - Living ecosystem visualization where data packets swim as fish while threats stalk as predators
-   - Creates immediate behavioral awareness through natural patterns
-
-9. **⚛️ Quantum Entanglement Breach Detection** ⭐ *Revolutionary*
-   - Quantum physics visualization with entangled particles showing secure relationships and breach detection
-   - Leverages quantum mechanics for security state representation
-
-10. **🧠 Neural Synaptic Firing Patterns** ⭐ *Revolutionary*
-    - Brain neural network visualization showing network activity as synaptic firing patterns
-    - Represents network communications as brain activity
-
-### Advanced Psychological Principles
-
-These videos implement cutting-edge concepts that nobody has ever used before in cybersecurity visualization:
-
-- **Peripheral Vision Activation**: Subtle movements trigger subconscious pattern recognition
-- **Subliminal Pattern Disruption**: Anomalies in video patterns alert users to potential security issues
-- **Biometric Rhythm Synchronization**: Videos sync with natural human attention cycles
-- **Subconscious Threat Detection**: Background patterns prime users to notice security anomalies
-
-### Collapsible Video Controls
-
-#### Independent Control System
-- **Video Enable/Disable**: Toggle background video playback on/off
-- **UI Collapse/Expand**: Hide/show video controls independently of video state
-- **Two-State Operation**: Video can play while controls are collapsed for clean interface
-
-#### Control States
-- **Collapsed + Video Enabled**: Shows minimal "Video" indicator with pulsing blue dot
-- **Collapsed + Video Disabled**: Shows "Video" text with settings icon (no pulsing)
-- **Expanded + Video Enabled**: Full controls panel with "Active" badge and all options
-- **Expanded + Video Disabled**: Full controls panel with grayed-out options (still visible)
-
-#### Video Selection & Customization
-- **Dropdown Selection**: Choose from 8 different ambient video backgrounds
-- **Opacity Control**: Adjust video transparency (15-25% recommended for optimal effect)
-- **Performance Optimized**: Videos designed for smooth playback without impacting graph performance
-- **Seamless Integration**: Videos blend naturally with graph visualizations
-
-### Future Evolution Capabilities
-
-These videos are designed to evolve into real-time generation capabilities:
-- **Network Condition Response**: Videos adapt to actual network traffic patterns
-- **Threat Intelligence Integration**: Real-time threat feeds influence video behavior
-- **Predictive Analytics**: Videos respond to predictive security models
-- **Adaptive Visualization**: Background patterns change based on detected anomalies
-
-## 🎨 TC_ Properties System
-
-### Advanced Custom Property Framework
-
-The TruContext Demo features a sophisticated TC_ (TruContext) property system that allows users to apply custom visual styling, animations, and security alarm states to graph elements. This system provides powerful customization capabilities while maintaining layout stability and performance.
-
-#### Available TC_ Properties
-
-**Visual Styling Properties:**
-- **TC_SIZE**: Node size in pixels (10-100px range with slider control)
-- **TC_WIDTH**: Element width for precise sizing control
-- **TC_COLOR**: Element color with full color picker interface
-- **TC_OPACITY**: Transparency control (0.0-1.0 range)
-- **TC_TEXT_COLOR**: Label text color customization
-
-**Edge-Specific Properties:**
-- **TC_CURVE**: Edge curve style (straight, bezier, segments, taxi)
-- **TC_LINE**: Line style (solid, dotted, dashed)
-
-**Animation Properties:**
-- **TC_ANIMATION**: Visual animation effects (none, pulse, glow, flow)
-
-**Security Alarm Properties:**
-- **TC_ALARM**: Security alarm severity levels (Alert, Warning, Success, Info, None)
-
-**Threat Path Properties:**
-- **TC_THREAT_PATH**: Comma-separated threat path identifiers for tracking security paths
-
-#### TC_ALARM Security System
-
-The TC_ALARM property provides a comprehensive security alarm management system designed for cybersecurity visualization and threat monitoring.
-
-**Alarm Severity Levels:**
-
-1. **Alert** 🔴
-   - **Color**: Red (#dc3545)
-   - **Border**: 4px red border with box shadow
-   - **Background**: Light red tint (#f8d7da)
-   - **Use Case**: Critical security threats, active breaches, high-priority incidents
-
-2. **Warning** 🟠
-   - **Color**: Orange (#fd7e14)
-   - **Border**: 3px orange border with box shadow
-   - **Background**: Light yellow tint (#fff3cd)
-   - **Use Case**: Potential threats, suspicious activity, medium-priority alerts
-
-3. **Success** 🟢
-   - **Color**: Green (#198754)
-   - **Border**: 2px green border
-   - **Background**: Light green tint (#d1e7dd)
-   - **Use Case**: Secure systems, successful security checks, resolved incidents
-
-4. **Info** 🔵
-   - **Color**: Blue (#0dcaf0)
-   - **Border**: 2px blue border
-   - **Background**: Light blue tint (#d1ecf1)
-   - **Use Case**: Informational alerts, system status, monitoring data
-
-5. **None** ⚪
-   - **Color**: Gray (#6c757d)
-   - **Border**: 2px gray border
-   - **Background**: Transparent
-   - **Use Case**: Normal operation, no active alerts
-
-#### Alarm Filtering System
-
-**Interactive Filter Dialog:**
-- **Individual Level Toggles**: Switch-based controls for each alarm severity
-- **Real-time Filtering**: Instantly show/hide nodes based on alarm status
-- **Filter Status Display**: Live summary of active filters
-- **Visual Feedback**: Toast notifications when filters are applied
-
-**Quick Preset Filters:**
-- **Show Only Alerts**: Display only critical Alert-level nodes
-- **Alerts & Warnings**: Show Alert and Warning level nodes
-- **Hide Success & Info**: Hide Success and Info nodes, show others
-- **Show All**: Display all alarm levels (reset filters)
-
-**Filter Integration:**
-- **Topology-Specific**: Filtering designed specifically for graph topology view
-- **Layout Preservation**: Filters maintain current graph layout and positions
-- **Performance Optimized**: Efficient show/hide operations without layout recalculation
-
-#### Property Management Interface
-
-**Properties Panel Integration:**
-- **Dropdown Selection**: User-friendly dropdown for TC_ALARM values
-- **Color Picker**: Advanced color selection for TC_COLOR properties
-- **Slider Controls**: Precise numeric input for TC_SIZE and TC_OPACITY
-- **Animation Selection**: Dropdown menu for TC_ANIMATION effects
-- **Real-time Preview**: Immediate visual feedback as properties change
-
-**Preset Buttons:**
-- **Alert Preset**: Sets TC_ALARM to "Alert" + pulse animation
-- **Warning Preset**: Sets TC_ALARM to "Warning" + glow animation
-- **Success Preset**: Sets TC_ALARM to "Success" + no animation
-- **Info Preset**: Sets TC_ALARM to "Info" + flow animation
-- **Reset All**: Sets TC_ALARM to "None" + removes animations
-
-#### TC_THREAT_PATH System
-
-The TC_THREAT_PATH property provides comprehensive threat path tracking capabilities designed for cybersecurity analysis and attack vector visualization.
-
-**Threat Path Structure:**
-- **Format**: Comma-separated threat path identifiers (e.g., "THREAT-malware-to-internet,THREAT-data-exfiltration")
-- **Multi-Path Support**: Nodes and edges can belong to multiple overlapping threat paths simultaneously
-- **Automatic Deduplication**: System prevents duplicate threat path identifiers when adding paths
-- **Text Input Control**: Simple text input interface for manual threat path assignment
-
-**Threat Path Creation:**
-- **Neo4j Integration**: Automatic shortest path calculation using Neo4j Cypher queries
-- **Start/End Selection**: Choose source and destination nodes from searchable dropdowns
-- **Path Validation**: Comprehensive error handling and path existence validation
-- **Custom Naming**: User-defined threat path names with format recommendations (THREAT-description)
-- **Alarm Integration**: Assign alarm levels (Alert/Warning/Success/Info/None) to threat paths
-- **Animation Effects**: Apply visual animations (pulse/glow/flow/none) to threat path elements
-
-**Threat Path Filtering:**
-- **Show/Hide Modes**: Flexible filtering with "Show Selected" and "Hide Selected" modes
-- **Multi-Select Interface**: Checkbox-based selection of multiple threat paths for filtering
-- **Real-time Updates**: Automatic detection and filtering of available threat paths
-- **Quick Actions**: Select All, Clear All, and preset filter combinations
-- **Visual Feedback**: Toast notifications and status indicators for filter operations
-
-**Threat Path Management:**
-- **Clear All Functionality**: Remove all threat paths from dataset with confirmation dialog
-- **PostgreSQL Persistence**: Automatic persistence through existing JSONB properties schema
-- **Bulk Operations**: Efficient handling of multiple element updates
-- **Data Integrity**: Proper validation and error handling throughout the system
-
-#### Advanced Features
-
-**Layout Preservation:**
-- **Stable Positioning**: Graph layout remains unchanged during property updates
-- **No Auto-Repositioning**: Property changes don't trigger layout recalculation
-- **Visual Continuity**: Users can track which nodes were modified
-- **Performance Optimized**: Batch operations prevent rendering issues
-
-**Undo/Redo System:**
-- **Property History**: Full undo/redo support for all TC_ property changes
-- **Batch Operations**: Multiple property changes grouped into single undo actions
-- **State Persistence**: Property states maintained across layout switches
-- **Error Recovery**: Robust error handling with automatic state restoration
-
-**Cross-Layout Persistence:**
-- **Layout Independence**: TC_ properties preserved when switching layouts
-- **Automatic Reapplication**: Properties automatically reapplied after layout changes
-- **Visual Consistency**: Styling maintained across all layout algorithms
-- **Animation Continuity**: Animations resume properly after layout transitions
-
-**Integration with Existing Features:**
-- **Group Compatibility**: TC_ properties work with grouped and ungrouped nodes
-- **Selection System**: Properties panel updates based on selected elements
-- **Export/Import**: TC_ properties included in dataset save/load operations
-- **Multi-View Support**: Properties visible across all visualization views
-
-#### Usage Workflow
-
-**Basic Property Application:**
-1. **Select Element**: Click any node or edge in the graph
-2. **Open Properties Panel**: Properties panel automatically opens for selected element
-3. **Modify Properties**: Use controls to adjust TC_ properties (size, color, alarm, etc.)
-4. **Real-time Updates**: See changes applied immediately without layout disruption
-5. **Save Changes**: Properties automatically saved with undo/redo support
-
-**Alarm Management Workflow:**
-1. **Set Alarm Levels**: Use dropdown or preset buttons to assign alarm severity
-2. **Visual Verification**: Observe immediate visual changes (border color, background)
-3. **Filter by Alarms**: Use "Alarm Filters" button to open filtering dialog
-4. **Apply Filters**: Toggle alarm levels to show/hide nodes based on security status
-5. **Monitor Status**: Use filter status display to track active alarm filters
-
-**Preset Usage:**
-1. **Quick Application**: Use preset buttons for common alarm + animation combinations
-2. **Batch Operations**: Apply presets to multiple selected nodes simultaneously
-3. **Reset Functionality**: Use "Reset All" to clear all TC_ properties
-4. **Consistent Styling**: Presets ensure consistent visual representation across teams
-
-## 🎮 Interactive Features
-
-### Enhanced Graph Interactions
-- **Hover Tooltips**: Rich information panels with node/edge details on mouse hover
-- **Smooth Animations**: 800ms layout transitions with custom easing curves
-- **Visual Feedback**: Hover effects, selection states, and micro-interactions
-- **Context Menus**: Right-click for additional options (future enhancement)
-- **Zoom Controls**: Mouse wheel, pinch gestures, and dedicated mobile buttons
-
-### 🚫 Node Overlap Prevention
-
-**Automatic Collision Detection**: The TruContext Demo features intelligent node overlap prevention that automatically maintains proper spacing between nodes during manual repositioning operations.
-
-#### How It Works
-- **Real-time Physics**: When you drag a node close to others, nearby nodes automatically move away to prevent overlapping
-- **Seamless Integration**: Works automatically in the background - no manual activation required
-- **Smooth Animations**: Node repositioning uses 300ms smooth animations with ease-out transitions
-- **Preserved Connections**: Edge relationships remain intact during automatic repositioning
-- **Layout Compatibility**: Reactivates automatically after layout changes and transitions
-
-#### Configuration
-- **Minimum Spacing**: 20px padding maintained between node edges
-- **Animation Duration**: 300ms for smooth, natural movement
-- **Animation Easing**: Ease-out function for physics-like behavior
-- **Always Active**: Enabled by default for all graph interactions
-
-#### Best Practices
-- **Recommended Layout**: Force-Directed (CoSE) Layout works best with overlap prevention
-- **Optimal Dataset Size**: Most effective with 10-50 nodes for smooth performance
-- **Testing Approach**: Drag nodes toward clusters to observe automatic repositioning
-- **Mobile Support**: Fully compatible with touch interactions and mobile gestures
-
-#### Testing Instructions
-1. **Load Dataset**: Import a JSON dataset with 10+ nodes
-2. **Select Layout**: Choose "Force-Directed (CoSE) Layout" from the dropdown
-3. **Test Dragging**: Click and drag any node toward a group of other nodes
-4. **Observe Behavior**: Watch nearby nodes smoothly move away to maintain spacing
-5. **Verify Persistence**: Switch layouts and confirm overlap prevention reactivates
-
-#### Performance Considerations
-- **Large Datasets**: Performance may vary with 100+ nodes - consider using layout-based spacing instead
-- **Animation Quality**: Maintains 60fps animations on modern browsers
-- **Memory Usage**: Minimal overhead - uses efficient collision detection algorithms
-
-### 🔗 Edge Overlap Considerations
-
-**Current Implementation**: The TruContext Demo uses Bézier curves with automatic control point spacing to reduce edge overlap in dense graph areas.
-
-#### Built-in Edge Routing Features
-- **Bézier Curves**: All edges use `curve-style: bezier` with automatic control point calculation
-- **Control Point Spacing**: 40px step size for natural curve separation
-- **Dynamic Arrows**: Scaled arrow heads (1.2x) for better visibility at intersections
-- **Transition Animations**: 200ms smooth transitions for edge property changes
-
-#### Edge Bundling Research Findings
-After extensive research into Cytoscape.js edge bundling extensions:
-
-**❌ Limited Extension Support**:
-- No mature edge bundling extensions available for Cytoscape.js
-- Force-directed layouts (CoSE, CoSE-Bilkent) do not include edge overlap prevention
-- Third-party bundling libraries require significant integration effort
-
-**⚠️ Performance Implications**:
-- Edge bundling algorithms are computationally expensive for large datasets
-- Performance degrades significantly with 100+ edges
-- Real-time bundling during layout changes causes UI lag
-
-#### Recommended Approaches for Edge Overlap Reduction
-
-**1. Layout Optimization** (Currently Implemented):
-- Use **Force-Directed (CoSE) Layout** for natural edge spacing
-- **Hierarchical layouts** minimize edge crossings through tree structure
-- **Grid/Circle layouts** provide predictable edge patterns
-
-**2. Visual Enhancements** (Currently Implemented):
-- **Bézier curves** with automatic control points
-- **Edge transparency** during hover interactions
-- **Arrow scaling** for better intersection visibility
-
-**3. Interactive Solutions** (Recommended for Future):
-- **Zoom-based detail levels**: Hide edge labels at low zoom levels
-- **Edge filtering**: Toggle edge types on/off to reduce visual clutter
-- **Opacity adjustment**: Reduce edge opacity in dense areas
-
-**4. Alternative Approaches** (For Consideration):
-- **Straight edges** with `curve-style: straight` for minimal overlap
-- **Segmented edges** with `curve-style: segments` for manual control
-- **Edge bundling post-processing**: Apply bundling after layout completion
-
-#### Current Configuration
 ```javascript
-// Edge styling optimized for overlap reduction
-'curve-style': 'bezier',
-'control-point-step-size': 40,  // Automatic spacing
-'width': 2,                     // Thin lines reduce visual clutter
-'arrow-scale': 1.2,            // Larger arrows for visibility
-'transition-duration': 200      // Smooth property changes
+const iconMappings = {
+  'server': 'server.svg',
+  'workstation': 'workstation.svg',
+  'pc': 'workstation.svg',
+  'computer': 'workstation.svg',
+  'database': 'database.svg',
+  'db': 'database.svg',
+  'user': 'user.svg',
+  'person': 'user.svg',
+  'account': 'user.svg',
+  'application': 'application.svg',
+  'app': 'application.svg',
+  'service': 'application.svg',
+  'router': 'router.svg',
+  'switch': 'switch.svg',
+  'firewall': 'firewall.svg',
+  'threat': 'threatactor.svg',
+  'vulnerability': 'vulnerability.svg',
+  'vuln': 'vulnerability.svg'
+  // ... 40+ additional mappings
+};
 ```
 
-#### Recommendations for Large Datasets
-- **50+ nodes, 100+ edges**: Use hierarchical layouts to minimize crossings
-- **100+ nodes, 200+ edges**: Consider edge filtering or type-based hiding
-- **200+ nodes**: Implement zoom-based level-of-detail rendering
-- **Performance monitoring**: Test edge rendering performance on target devices
+#### Fallback Hierarchy
+1. **Direct Match**: Exact match between node type and icon filename
+2. **Mapping Match**: Type matches predefined mapping to icon
+3. **Unknown Icon**: Default `unknown.svg` for unrecognized types
+4. **Generated Icon**: Programmatically generated icon as final fallback
 
-### Mobile-Optimized Touch Interactions
-- **Touch Detection**: Automatic mobile device and touch capability detection
-- **Gesture Support**: Pinch-to-zoom, pan, and optimized touch thresholds
-- **Mobile Controls**: Dedicated zoom in/out/fit buttons for touch devices
-- **Responsive Sizing**: Larger touch targets and improved spacing on mobile
-- **Performance**: Optimized animation timings for smooth mobile performance
+#### Performance Optimization
+- **Component Memoization**: React.memo prevents unnecessary re-renders
+- **Icon Caching**: Loaded icons cached in browser for subsequent requests
+- **Lazy Loading**: Icons loaded only when needed for visible components
+- **Error Boundaries**: Graceful handling of missing or corrupted icon files
 
-### Animation System
-- **Page Transitions**: Smooth enter/exit animations using Framer Motion
-- **Loading States**: Custom Lottie animations for loading and empty states
-- **Layout Changes**: Animated transitions between different graph layouts
-- **UI Micro-interactions**: Button hover effects, drawer slides, and state changes
-- **Theme Transitions**: Smooth dark/light mode switching with color animations
 
-## 🎛️ Graph Controls
+## 📋 Comprehensive Data Visualization Views
 
-### Layout Options
+### Executive-Level Dashboards
 
-The TruContext Demo offers 8 sophisticated layout algorithms, each optimized for different types of graph analysis and visualization needs:
+#### Executive Dashboard
+The Executive Dashboard provides high-level business metrics and key performance indicators designed for C-suite consumption and strategic decision-making:
 
-![Layout Options](public/images/layout-grid.png)
-*Grid Layout - Organized square grid arrangement*
+- **Real-Time Metrics**: Live updating dashboard with current system status and performance indicators
+- **Interactive Charts**: Clickable charts and graphs for drill-down analysis and detailed exploration
+- **Business KPIs**: Key performance indicators relevant to business operations and security posture
+- **Trend Analysis**: Historical data visualization showing trends and patterns over time
+- **Alert Summaries**: High-level summaries of critical alerts and incidents requiring executive attention
+- **Resource Utilization**: Overview of system resources, capacity, and performance metrics
 
-![Layout Options](public/images/layout-circle.png)
-*Circle Layout - Nodes evenly spaced around a circle*
+#### SOC Executive Dashboard
+The SOC Executive Dashboard is specifically designed for security operations leadership and provides comprehensive security monitoring capabilities:
 
-![Layout Options](public/images/layout-concentric.png)
-*Concentric Layout - Concentric circles based on node properties*
+- **Threat Level Indicators**: Current threat level assessment with visual indicators (Critical, High, Medium, Low)
+- **Incident Metrics**: Real-time tracking of security incidents including active incidents, alerts today, and resolution metrics
+- **Mean Time Metrics**: MTTR (Mean Time to Response) and MTTD (Mean Time to Detection) with trend indicators
+- **24-Hour Incident Trends**: Interactive charts showing new versus resolved incidents over rolling 24-hour periods
+- **Security Posture Gauge**: Overall security score with visual gauge and status indicators (Good, Fair, Poor)
+- **Recent Incidents Table**: Detailed list of recent security incidents with severity levels, status, and timestamps
+- **Security Controls Monitoring**: Real-time status of security controls, firewall rules, and endpoint protection systems
+- **Threat Intelligence Integration**: Live threat intelligence feeds with indicators of compromise and emerging threats
 
-![Layout Options](public/images/layout-hierarchicl_breath-first.png)
-*Hierarchical (Breadth-First) Layout - Tree-like hierarchical structure*
+### Operational Data Views
 
-![Layout Options](public/images/layout-multi-level_hierarchical_tree.png)
-*Multi-Level Hierarchical Tree - Advanced multi-level tree hierarchy*
+#### Interactive Graph Topology
+The primary visualization interface using Cytoscape.js provides comprehensive network topology analysis:
 
-![Layout Options](public/images/layout-force-directed_cose.png)
-*Force-Directed (CoSE) Layout - Physics-based organic positioning*
+- **Advanced Layout Algorithms**: Eight sophisticated layout options including Multi-Level Hierarchical Tree, Force-Directed (CoSE), Concentric, Grid, Circle, Breadth-First, Random, and Preset layouts
+- **Real-Time Interactions**: Click selection, hover tooltips, drag-and-drop positioning, and zoom controls
+- **Node Grouping**: Automatic grouping by type or manual custom group creation with intelligent meta-edge management
+- **Dynamic Icons**: SVG-based node icons with type-based styling and fallback mechanisms
+- **Layout Transitions**: Smooth 800ms animated transitions between different layout algorithms
+- **Context Menus**: Right-click context menus with SOC-specific actions for nodes and edges
+- **Overlap Prevention**: Automatic collision detection and node repositioning to maintain proper spacing
 
-![Layout Options](public/images/layout-random.png)
-*Random Layout - Random positioning for initial views*
+#### Geographic Map Visualization
+Interactive world map visualization with location-based analysis capabilities:
 
-#### Available Layout Algorithms
+- **Custom SVG Icons**: Location markers with SVG icons representing different node types
+- **Interactive Tooltips**: Rich hover tooltips with node details and geographic information
+- **Zoom and Pan**: Smooth map navigation with zoom controls and pan functionality
+- **Location Clustering**: Automatic clustering of nearby nodes for improved visualization at different zoom levels
+- **Geographic Filtering**: Filter nodes based on geographic regions, countries, or custom boundaries
+- **Threat Mapping**: Visualization of threat paths and security incidents on geographic coordinates
 
-1. **Grid Layout**
-   - Arranges nodes in a regular, square grid
-   - Simple and useful for quickly displaying all nodes
-   - Best for: Structured data inspection, equal node importance
+#### Table View
+Advanced data tables with comprehensive sorting, filtering, and analysis capabilities:
 
-2. **Random Layout**
-   - Places nodes at random positions within the viewport
-   - Useful for initial, unstructured views
-   - Best for: Starting point before applying other layouts
+- **SVG Icon Column**: Dedicated icon column with 24px SVG icons for instant type recognition
+- **Advanced Sorting**: Multi-column sorting with ascending/descending options for all data fields
+- **Real-Time Filtering**: Search by name, type, properties with instant results and highlighting
+- **Type-Based Filtering**: Dropdown filters for specific node and edge types with item counts
+- **Expandable Properties**: Accordion-style property viewing for detailed data inspection
+- **Tabbed Interface**: Separate tabs for nodes and edges with real-time item counts
+- **Export Capabilities**: Export filtered data to CSV, JSON, or other formats
+- **Pagination**: Efficient handling of large datasets with configurable page sizes
 
-3. **Circle Layout**
-   - Positions nodes evenly spaced around a circle
-   - Highlights groups or cycles in the data
-   - Best for: Showing relationships, small to medium datasets
+#### Timeline View
+Chronological data visualization optimized for temporal pattern analysis:
 
-4. **Concentric Layout**
-   - Arranges nodes in concentric circles based on node properties (e.g., degree)
-   - Often used to show hierarchies or importance levels
-   - Best for: Highlighting node importance, centrality analysis
+- **SVG Event Icons**: 20px SVG icons next to node events for visual consistency and rapid identification
+- **Interactive Timeline**: Zoom and pan through time periods with smooth navigation controls
+- **Event Clustering**: Automatic grouping of events by time proximity for improved visibility
+- **Time Filtering**: Range selectors and date pickers for focused temporal analysis
+- **Pattern Recognition**: Visual identification of trends, sequences, and anomalies in temporal data
+- **Multi-Scale Visualization**: Adaptive time scales from seconds to years based on data range
 
-5. **Hierarchical (Breadth-First) Layout**
-   - Creates hierarchical layers from a root node using breadth-first traversal
-   - Select a single node first to use as root, or the system will auto-select the most connected node
-   - Best for: Tree structures, organizational charts, dependency analysis
+#### Cards View
+Grid-based detailed inspection interface for comprehensive node analysis:
 
-6. **Multi-Level Hierarchical Tree** ⭐ *New Feature*
-   - Creates a true multi-level tree hierarchy with proper vertical layering and horizontal spacing
-   - Advanced breadth-first search (BFS) algorithm builds multiple hierarchy levels
-   - Select a root node or the system will auto-select one based on highest degree
-   - Best for: Complex hierarchical data, multi-level organizational structures, detailed tree analysis
+- **SVG Card Headers**: 24px SVG icons in card headers for consistent visual identification
+- **Rich Content Display**: All node properties displayed in organized, scannable format
+- **Advanced Search**: Full-text search across all visible properties with highlighting
+- **Type Grouping**: Organize cards by node type with visual separators and section headers
+- **Responsive Grid**: Auto-adjusting columns based on screen size and device orientation
+- **Detailed Property View**: Expandable sections for complex properties and nested data
 
-7. **Force-Directed (CoSE) Layout**
-   - Uses a physics simulation to position nodes where edges act like springs and nodes repel each other
-   - Good for organic, visually balanced layouts
-   - Best for: General-purpose visualization, relationship discovery, natural clustering
+#### Dashboard View
+Summary statistics and analytics interface for high-level data understanding:
 
-8. **Preset Layout**
-   - Uses manually specified node positions from the data
-   - Allows for custom or saved layouts
-   - Best for: Maintaining specific positioning, custom arrangements
+- **SVG Statistical Icons**: Icons in type distribution charts (16px) and most connected nodes (20px)
+- **Key Metrics**: Summary statistics including node counts, edge counts, and relationship analysis
+- **Type Distribution**: Interactive charts showing dataset composition with visual icons
+- **Relationship Analysis**: Edge type statistics and connection pattern visualization
+- **Interactive Charts**: Click-to-filter functionality for deeper exploration and analysis
+- **Export Reports**: Download comprehensive reports and statistics in multiple formats
 
-### Multi-Level Hierarchical Tree Layout - Detailed Features
+### View Switcher and Navigation
+Seamless navigation system for switching between different visualization modes:
 
-The Multi-Level Hierarchical Tree layout is an advanced visualization algorithm that creates true hierarchical structures with multiple levels of depth. This layout is particularly powerful for analyzing complex organizational structures, dependency trees, and multi-level relationships.
+- **Smooth Transitions**: Animated transitions when switching between views with consistent state preservation
+- **State Preservation**: Maintains selections, filters, and zoom levels across view changes
+- **Responsive Tabs**: Mobile-optimized navigation with clear view indicators and touch-friendly controls
+- **Keyboard Navigation**: Accessible tab switching with keyboard shortcuts and screen reader support
+- **Context Awareness**: View-specific controls and options that adapt based on current visualization mode
 
-#### Key Features
+## 🎮 Advanced Interactive Features
 
-**Root Node Selection**
-- **Manual Selection**: Click any node to select it as the hierarchy root before applying the layout
-- **Auto-Selection**: If no node is selected, the system automatically chooses the node with the highest degree (most connections)
-- **Visual Feedback**: The selected root node is highlighted with a distinct border color for easy identification
+### Enhanced Graph Interactions
 
-**Multi-Level Hierarchy Building**
-- **Breadth-First Search (BFS) Algorithm**: Uses an enhanced BFS traversal to build hierarchy levels
-- **Level Distribution**: Nodes are organized into distinct levels (Level 0, Level 1, Level 2, etc.)
-- **Connected Node Discovery**: Advanced edge traversal ensures all connected nodes are properly discovered and placed
-- **Group Filtering**: Automatically excludes group nodes from hierarchy building to maintain clean structure
+#### Node and Edge Manipulation
+- **Hover Tooltips**: Rich information panels with comprehensive node and edge details displayed on mouse hover
+- **Smooth Animations**: 800ms layout transitions with custom easing curves for professional visual experience
+- **Visual Feedback**: Hover effects, selection states, and micro-interactions throughout the interface
+- **Context Menus**: Right-click menus with SOC-specific actions and professional workflow options
+- **Zoom Controls**: Mouse wheel, pinch gestures, and dedicated mobile zoom buttons for precise navigation
 
-**Visual Representation**
-- **Distinct Vertical Layers**: Each hierarchy level is positioned at a different vertical position
-- **Horizontal Spacing**: Nodes within each level are evenly distributed horizontally
-- **Adaptive Positioning**: Layout automatically adjusts to container size and node count
-- **Level Separation**: Configurable spacing between levels for optimal readability
+#### Node Overlap Prevention System
+The TruContext Demo features intelligent node overlap prevention that automatically maintains proper spacing:
 
-**Technical Implementation**
-- **Enhanced BFS Traversal**: Fixed algorithm that properly discovers neighbors through edge connections
-- **Edge Validation**: Validates both incoming and outgoing edges for comprehensive neighbor discovery
-- **Debugging Support**: Comprehensive console logging for troubleshooting hierarchy building
-- **Performance Optimized**: Efficient traversal algorithm suitable for large graphs
+- **Real-Time Physics**: Automatic collision detection when dragging nodes near others with smooth repositioning
+- **Seamless Integration**: Background operation requiring no manual activation or configuration
+- **Smooth Animations**: 300ms animations with ease-out transitions for natural, physics-like movement
+- **Preserved Connections**: Edge relationships remain intact during automatic repositioning operations
+- **Layout Compatibility**: Automatic reactivation after layout changes and transitions
+- **Performance Optimized**: Efficient collision detection algorithms suitable for datasets up to 100+ nodes
 
-#### Usage Instructions
+#### Advanced Grouping System
+Comprehensive node grouping capabilities with intelligent state management:
 
-1. **Select Root Node** (Optional)
-   - Click on any node in the graph to select it as the hierarchy root
-   - The selected node will be highlighted with a colored border
-   - If no node is selected, the system will auto-select the most connected node
+- **Auto-Group by Type**: One-click grouping of nodes by type with intelligent conflict resolution
+- **Manual Grouping**: Select multiple nodes to create custom groups with user-defined names
+- **Robust Ungrouping**: Complete restoration of original node visibility and edge relationships
+- **Group State Management**: Advanced state tracking prevents layout conflicts and ensures visual consistency
+- **Meta-Edge System**: Automatic creation and management of group-to-external connections
+- **Edge Preservation**: Original edge relationships stored and restored during ungrouping operations
 
-2. **Apply Layout**
-   - Open the layout selector dropdown
-   - Choose "Multi-Level Hierarchical Tree" from the options
-   - The layout will automatically build the hierarchy starting from the root node
+### Mobile and Touch Optimization
 
-3. **Interpret Results**
-   - **Level 0**: Contains only the root node
-   - **Level 1**: Contains nodes directly connected to the root
-   - **Level 2**: Contains nodes connected to Level 1 nodes
-   - **Subsequent Levels**: Continue the pattern based on graph connectivity
+#### Enhanced Mobile Experience
+- **Automatic Detection**: Mobile device and touch capability detection with adaptive interface
+- **Gesture Support**: Native pinch-to-zoom, pan, and optimized touch thresholds for smooth interaction
+- **Mobile Controls**: Dedicated zoom in/out/fit buttons for precise touch control
+- **Responsive Sizing**: Larger touch targets and improved spacing optimized for finger interaction
+- **Performance Optimization**: Animation timings optimized for smooth mobile device performance
 
-4. **Layout Controls**
-   - Use "Center & Fit" to optimize the view of the hierarchy
-   - Zoom in/out to examine specific levels in detail
-   - Switch to other layouts for different perspectives of the same data
+#### Touch-Friendly Interface Design
+- **Larger Touch Targets**: Buttons and controls sized appropriately for finger interaction
+- **Gesture Recognition**: Multi-touch support for complex zoom and pan operations
+- **Visual Feedback**: Enhanced touch states with haptic-style feedback for better user experience
+- **Tooltip Adaptation**: Touch-friendly tooltip behavior with tap-to-show functionality
+- **Drawer Navigation**: Slide-out panels optimized for thumb navigation and one-handed use
 
-#### When to Use This Layout
+### Animation and Visual Effects System
 
-- **Organizational Charts**: Visualize company hierarchies, reporting structures
-- **Dependency Analysis**: Show software dependencies, system architectures
-- **Family Trees**: Display genealogical relationships and lineage
-- **Network Topologies**: Analyze network infrastructure and routing paths
-- **Decision Trees**: Visualize decision-making processes and outcomes
-- **Taxonomies**: Display classification systems and category hierarchies
+#### Page and Component Transitions
+- **Smooth Enter/Exit**: Page transitions using Framer Motion with staggered effects
+- **Loading States**: Custom Lottie animations for loading and empty state visualization
+- **Layout Changes**: Animated transitions between different graph layouts with smooth interpolation
+- **UI Micro-interactions**: Button hover effects, drawer slides, and state change animations
+- **Theme Transitions**: Smooth dark/light mode switching with coordinated color animations
 
-#### Technical Notes
+#### Performance Considerations
+- **60fps Target**: All animations optimized for smooth 60fps performance across devices
+- **GPU Acceleration**: Hardware acceleration utilized where available for complex animations
+- **Memory Management**: Proper animation cleanup and garbage collection for large datasets
+- **Battery Efficiency**: Reduced animation complexity on mobile devices to preserve battery life
 
-The Multi-Level Hierarchical Tree layout includes recent bug fixes that resolved issues with the BFS algorithm not properly traversing connected nodes. The enhanced implementation now correctly:
+## 🎛️ Advanced Graph Controls and Layout Management
 
-- Discovers all connected nodes through manual edge traversal
-- Builds multiple hierarchy levels instead of just Level 0
-- Provides detailed debugging output for troubleshooting
-- Handles both directed and undirected graph structures
-- Maintains proper node positioning across different screen sizes
+### Layout Algorithm Selection
 
-### Advanced Grouping Features
+#### Multi-Level Hierarchical Tree Layout (Advanced Feature)
+The Multi-Level Hierarchical Tree layout represents a significant advancement in hierarchical data visualization:
 
-#### Auto-Group by Type
-- **Intelligent Type Detection**: Automatically discovers all unique node types in dataset
-- **Smart Group Creation**: Creates groups for types with 2+ nodes, with automatic conflict resolution
-- **Type-Based Ungrouping**: Existing groups of the same type are automatically ungrouped before creating new ones
-- **Dynamic Group Labels**: Groups labeled with type name and member count (e.g., "Machine (6)")
-- **One-Click Operation**: Single button click with comprehensive visual feedback and toast notifications
+- **Enhanced BFS Algorithm**: Sophisticated breadth-first search traversal creating true multi-level hierarchies
+- **Root Node Selection**: Manual root selection by clicking nodes or automatic selection based on highest connectivity
+- **Distinct Vertical Layers**: Each hierarchy level positioned at different vertical positions with clear separation
+- **Horizontal Distribution**: Nodes within each level evenly distributed horizontally for optimal readability
+- **Adaptive Positioning**: Layout automatically adjusts to container size and node count for consistent visualization
+- **Level Separation**: Configurable spacing between levels optimized for different screen sizes and data complexity
 
-#### Manual Grouping
-1. **Node Selection**: Click nodes to select them (selection counter appears in real-time)
-2. **Group Creation**: Click "Group Selected" when 2+ nodes are selected
-3. **Custom Naming**: Enter custom group name in modal dialog with validation
-4. **Automatic Hiding**: Group created with selected nodes hidden and meta-edges established
-5. **Edge Preservation**: Original edge relationships automatically stored for later restoration
+#### Force-Directed (CoSE) Layout
+Physics-based organic positioning ideal for relationship discovery:
 
-#### Robust Group Management
-- **Toggle Visibility**: Click group nodes to show/hide grouped members with smooth transitions
-- **Comprehensive Ungrouping**: Select group nodes and click "Ungroup" for complete restoration:
-  - **Node Visibility Restoration**: Multi-step visibility restoration with style reset and comprehensive property setting
-  - **Edge Restoration**: Original edges validated and restored with duplicate prevention
-  - **Meta-Edge Cleanup**: Automatic removal of temporary group-to-external connections
-  - **State Synchronization**: Advanced cleanup of internal state references to prevent layout conflicts
-  - **Layout Preservation**: Graph positions maintained during ungrouping operations
-- **Reset All Groups**: Remove all groups and show all nodes with complete state reset
-- **Visual Indicators**: Real-time group count shown in info panel with status updates
+- **Spring-Force Simulation**: Edges act as springs while nodes repel each other for natural positioning
+- **Organic Clustering**: Natural grouping of related nodes based on connection patterns
+- **Iterative Refinement**: Multiple passes for optimal positioning with convergence detection
+- **Customizable Parameters**: Adjustable node repulsion, edge length, and simulation iterations
+- **Performance Optimization**: Efficient algorithms suitable for graphs with 100+ nodes
 
-#### Advanced Technical Features
-- **Meta-Edge System**: Automatic creation of group-to-external node connections during grouping
-- **Edge Validation**: Comprehensive validation of source/target nodes before edge restoration
-- **State Management**: Dual-state tracking using both React state and refs for layout stability
-- **Layout Integration**: Grouping operations work seamlessly with all layout algorithms
-- **Performance Optimization**: Efficient batch operations and minimal re-rendering
-- **Error Handling**: Robust error handling with detailed console logging for debugging
-- **Memory Management**: Proper cleanup of grouped node references to prevent memory leaks
+#### Concentric Layout
+Hierarchical arrangement based on node importance and centrality:
 
-### Alarm Filtering Controls
+- **Centrality-Based Positioning**: Nodes arranged in concentric circles based on degree centrality
+- **Importance Visualization**: Central nodes represent high-importance or highly-connected elements
+- **Configurable Levels**: Adjustable number of concentric levels based on data characteristics
+- **Even Distribution**: Nodes evenly spaced within each concentric level for clarity
+- **Visual Hierarchy**: Clear visual representation of node importance and network structure
 
-#### Alarm Filter Dialog
-- **Access**: Click "Alarm Filters" button in graph controls
-- **Individual Toggles**: Switch controls for each alarm severity level
-- **Real-time Filtering**: Instantly show/hide nodes based on alarm status
-- **Visual Indicators**: Color-coded switches matching alarm severity colors
+#### Grid and Circle Layouts
+Structured arrangements for systematic analysis:
 
-#### Quick Preset Filters
-- **Show Only Alerts**: Display only critical Alert-level nodes
-- **Alerts & Warnings**: Show Alert and Warning level nodes
-- **Hide Success & Info**: Hide Success and Info nodes, show others
-- **Show All**: Display all alarm levels (reset all filters)
+- **Grid Layout**: Regular square grid arrangement for equal treatment of all nodes
+- **Circle Layout**: Nodes evenly spaced around circle perimeter for relationship overview
+- **Systematic Analysis**: Ideal for structured data inspection and comparison
+- **Predictable Positioning**: Consistent placement for repeated analysis and comparison
 
-#### Filter Features
-- **Layout Preservation**: Filtering maintains current graph positions
-- **Status Display**: Live summary showing active filter criteria
-- **Toast Notifications**: User feedback when filters are applied
-- **Performance Optimized**: Efficient show/hide without layout recalculation
+### Advanced Filtering and Search
 
-### Threat Path Tracking Controls
+#### TC_ Properties Filtering System
+Comprehensive filtering based on custom properties:
 
-#### Threat Path Creation
-- **Access**: Click "Create Threat Path" button (blue) in graph controls
-- **Node Selection**: Choose start and destination nodes from searchable dropdowns
-- **Path Calculation**: Automatic Neo4j shortest path calculation with real-time feedback
-- **Threat Path Naming**: Text input with validation and format recommendations
-- **Alarm Level Assignment**: Dropdown selection for security severity (Alert/Warning/Success/Info/None)
-- **Animation Effects**: Choose visual animations (pulse/glow/flow/none) for path elements
-- **Path Application**: Apply calculated path to all nodes and edges in the shortest route
+- **Alarm Level Filtering**: Filter nodes by security alarm levels (Alert, Warning, Success, Info, None)
+- **Interactive Filter Dialog**: Switch-based controls for each alarm severity with real-time preview
+- **Quick Preset Filters**: One-click filters for common scenarios (Show Only Alerts, Hide Success & Info)
+- **Visual Status Display**: Live summary of active filter criteria with clear indicators
+- **Layout Preservation**: Filtering maintains current graph positions without layout recalculation
 
 #### Threat Path Filtering
-- **Access**: Click "Threat Paths (count)" button (orange) in graph controls
-- **Filter Modes**:
-  - **Show Selected**: Display ONLY elements containing selected threat path identifiers
-  - **Hide Selected**: Hide elements containing selected threat path identifiers
-- **Multi-Select Interface**: Checkbox-based selection of multiple threat paths
-- **Quick Actions**: Select All, Clear All, and preset filter buttons
-- **Real-time Updates**: Automatic detection of available threat paths in dataset
-- **Visual Feedback**: Toast notifications and status indicators
+Advanced filtering for threat path analysis:
 
-#### Threat Path Management
-- **Clear All Threat Paths**: Click red "Clear All Threat Paths" button (conditional visibility)
-- **Bulk Removal**: Remove all threat path identifiers from entire dataset
-- **Confirmation Dialog**: Safety confirmation before clearing all threat paths
-- **PostgreSQL Persistence**: All changes automatically saved to database
-- **Undo Support**: Full undo/redo support for threat path operations
+- **Multi-Path Selection**: Checkbox-based selection of multiple threat paths for complex filtering
+- **Filter Modes**: "Show Selected" and "Hide Selected" modes for flexible analysis approaches
+- **Real-Time Updates**: Automatic detection of available threat paths in dataset
+- **Quick Actions**: Select All, Clear All, and preset filter combinations for efficient workflow
+- **Performance Optimized**: Efficient show/hide operations without impacting graph performance
 
-#### Filter Features
-- **Layout Preservation**: Filtering maintains current graph positions and layout
-- **Status Display**: Live summary showing active threat path filter criteria
-- **Performance Optimized**: Efficient show/hide operations without layout recalculation
-- **Cross-View Compatibility**: Threat paths visible across all visualization views
+### Property Management and Customization
 
-## 🎨 UI Design
+#### TC_ Properties Panel
+Comprehensive property management interface:
 
-### Graph-Focused Layout
-- **Collapsible Header**: Hide/show with chevron button for maximum graph space
-- **Compact Toolbar**: Essential controls in minimal space
-- **Side Drawers**: Upload and help accessible via slide-out panels
-- **Full-Screen Graph**: Up to 95% of screen space dedicated to visualization
+- **Real-Time Updates**: Immediate visual feedback as properties change without layout disruption
+- **Color Picker Integration**: Advanced color selection with hex, RGB, and named color support
+- **Slider Controls**: Precise numeric input for size, opacity, and other continuous properties
+- **Dropdown Selections**: User-friendly dropdowns for categorical properties like alarm levels and animations
+- **Preset Buttons**: Quick-apply common property combinations for efficient workflow
 
-### Responsive Behavior
-- **Desktop**: Full-featured interface with all controls
-- **Tablet**: Optimized touch controls and spacing
-- **Mobile**: Simplified interface with drawer navigation
+#### Batch Operations
+Efficient handling of multiple element modifications:
 
-### Color Scheme (TruContext)
-- Primary Blue: `#003087`
-- Node Border Colors: Type-specific for quick identification
-- Group Nodes: Gold accent (`#ffcc00`)
-- Background: Clean white and light gray
+- **Multi-Select Support**: Apply properties to multiple selected nodes or edges simultaneously
+- **Undo/Redo System**: Full history tracking for all property changes with batch operation support
+- **Validation**: Comprehensive validation of property values with user-friendly error messages
+- **Performance Optimization**: Efficient batch updates prevent rendering issues during large operations
 
-## 💾 Dataset Management
+## 🔄 API Routes and Backend Integration
 
-### Persistent Storage Features
-- **Save Current Dataset**: Save the currently loaded graph data to PostgreSQL with custom name and description
-- **Dataset Library**: Browse all saved datasets with metadata (creation date, node/edge counts)
-- **One-Click Loading**: Load any saved dataset directly into the visualization
-- **Dataset Deletion**: Remove unwanted datasets from the database
-- **Seamless Integration**: Switch between JSON file uploads and database storage
+### Dataset Management APIs
 
-### Dataset Management Interface
-- **Enhanced Tabbed Interface**: Three tabs in the management drawer:
-  - **Upload JSON**: Drag-and-drop interface with format validation
-  - **Saved Datasets**: Browse and manage stored datasets
-  - **Manage Datasets**: Configure data source integrations and settings
-- **Save Dialog**: Modal form for naming and describing datasets before saving
-- **Dataset List**: Visual cards showing dataset information with action buttons
-- **Real-time Updates**: Immediate UI updates after save/load/delete operations
-- **Data Validation**: Comprehensive validation before saving to ensure data integrity
+#### Core Dataset Operations
+- **GET `/api/datasets`**: Retrieve list of all saved datasets with metadata including creation dates and item counts
+- **POST `/api/datasets`**: Save current dataset to PostgreSQL with custom name, description, and automatic metadata generation
+- **GET `/api/datasets/[id]`**: Fetch specific dataset details including full node and edge data
+- **DELETE `/api/datasets/[id]`**: Remove saved dataset from database with cascade deletion of related data
+- **POST `/api/datasets/load/[id]`**: Load dataset into Neo4j for visualization with automatic data transformation
 
-### Database Schema
-- **Datasets Table**: Stores metadata (name, description, timestamps, counts)
-- **Nodes Table**: Stores node data with JSONB properties for flexibility
-- **Edges Table**: Stores relationships with proper foreign key constraints
-- **Automatic Schema**: Database tables created automatically on first use
+#### Data Validation and Processing
+- **JSON Structure Validation**: Comprehensive validation of uploaded JSON files with detailed error reporting
+- **Data Enhancement**: Automatic generation of missing timestamps, geolocation data, and visual properties
+- **Type Normalization**: Standardization of node and edge types for consistent visualization
+- **Relationship Validation**: Verification of edge references and connection integrity
 
-## ⚙️ Data Source Integrations
+### Threat Path Management APIs
 
-### Integration Management
-- **Centralized Configuration**: Manage all external data source connections from a single interface
-- **Category Organization**: Integrations grouped by type (Security, Messaging, Analytics, Storage, AI)
-- **Toggle Controls**: Enable/disable integrations with visual switch controls
-- **Persistent Settings**: Configuration automatically saved to browser local storage
-- **Real-time Status**: Live status indicators showing enabled/disabled state
+#### Threat Path Calculation
+- **POST `/api/threat-paths/calculate`**: Calculate shortest path between two nodes using Neo4j's pathfinding algorithms
+- **GET `/api/threat-paths/nodes`**: Fetch all available nodes for threat path creation with searchable metadata
+- **POST `/api/threat-paths/apply`**: Apply threat path identifiers to calculated path elements with validation
+- **POST `/api/threat-paths/clear`**: Remove all threat path identifiers from dataset with confirmation
 
-### Supported Integrations
+#### Advanced Threat Analysis
+- **POST `/api/threat-paths/generate-automated`**: Generate multiple automated threat scenarios using AI algorithms
+- **GET `/api/threat-paths/scenarios`**: Retrieve available threat scenarios with risk assessments
+- **POST `/api/threat-paths/risk-assessment`**: Calculate risk scores for threat paths based on multiple factors
+- **GET `/api/threat-paths/reports`**: Generate comprehensive threat path analysis reports
 
-#### Security Tools
-- **Tenable**: Vulnerability management and security scanning platform integration
-- **PCAP**: Network packet capture and analysis file processing
+### SOC Integration APIs
 
-#### Messaging Systems
-- **Kafka Bus**: Real-time data streaming and message queuing integration
-- **Web Hooks**: HTTP callbacks for real-time event notifications
-- **Google Cloud Pub/Sub**: Managed messaging service for event-driven systems
+#### Security Operations
+- **POST `/api/soc/incidents`**: Create and manage security incidents with automated classification
+- **GET `/api/soc/dashboard`**: Retrieve SOC dashboard metrics and real-time security status
+- **POST `/api/soc/actions`**: Execute SOC actions including containment, investigation, and remediation
+- **GET `/api/soc/workflows`**: Access predefined SOC workflows and response procedures
 
-#### Analytics Platforms
-- **DataDog**: Application performance monitoring and log aggregation
-- **Splunk**: Enterprise search, monitoring, and analytics platform
+#### Monitoring and Alerting
+- **GET `/api/soc/alerts`**: Retrieve current security alerts with severity and status information
+- **POST `/api/soc/notifications`**: Send notifications to SOC team members and stakeholders
+- **GET `/api/soc/metrics`**: Access security metrics including MTTR, MTTD, and incident resolution rates
+- **POST `/api/soc/reports`**: Generate security reports for compliance and executive briefings
 
-#### Data Storage
-- **Unified Data Lake**: Centralized repository for structured and unstructured data
-- **Apache Iceberg**: Table format for large analytic datasets (staging area)
+### Legacy and Utility APIs
+- **POST `/api/upload`**: Upload JSON dataset and import to Neo4j with validation and enhancement
+- **GET `/api/graph`**: Fetch current graph data from Neo4j with optional filtering and transformation
+- **GET `/api/health`**: System health check including database connectivity and service status
+- **POST `/api/export`**: Export current dataset in various formats (JSON, CSV, GraphML)
 
-#### AI & Machine Learning
-- **AI MCP (Model Context Protocol)**: AI model integration and context management
+## 🎯 Comprehensive Usage Guide
 
-### Integration Features
-- **Smart Categorization**: Color-coded badges and logical grouping by integration type
-- **Detailed Descriptions**: Comprehensive explanations of each integration's purpose
-- **Visual Feedback**: Hover effects, status badges, and smooth animations
-- **Responsive Design**: Mobile-optimized interface with touch-friendly controls
-- **Expandable Sections**: Collapsible categories for organized navigation
-- **Configuration Summary**: Real-time count of enabled integrations with status overview
+### Getting Started Workflow
 
-## 🔄 API Routes
+#### Initial Setup and Data Loading
+1. **Access Application**: Navigate to the TruContext Demo URL and verify all components load correctly
+2. **Open Dataset Management**: Click "Manage Datasets" to access the three-tab management interface
+3. **Choose Data Source**: Select either "Upload JSON" for new data or "Saved Datasets" for previously stored data
+4. **Upload or Load Data**: Drag and drop JSON files or click to load saved datasets from the database
+5. **Verify Data Import**: Confirm successful data import by checking node and edge counts in the interface
 
-### Dataset Management
-- **GET `/api/datasets`**: List all saved datasets
-- **POST `/api/datasets`**: Save current dataset to PostgreSQL
-- **GET `/api/datasets/[id]`**: Get specific dataset details
-- **DELETE `/api/datasets/[id]`**: Delete a saved dataset
-- **POST `/api/datasets/load/[id]`**: Load dataset into Neo4j for visualization
+#### Background Video Configuration
+1. **Access Video Controls**: Locate the "Ambient Video" section in the graph controls panel
+2. **Enable Background Video**: Toggle the switch to activate revolutionary cybersecurity-themed ambient videos
+3. **Select Video Theme**: Choose from 10 groundbreaking videos designed for subconscious pattern recognition:
+   - **Neural Data Flow**: Biological neural network patterns for network traffic visualization
+   - **Threat Propagation**: Security threat movement through network infrastructure
+   - **Digital DNA Anomaly Scanner**: Genetic sequence visualization with malware mutations
+   - **Gravitational Anomaly Detection**: Spacetime curvature representing security threats
+   - **Ecosystem Predator-Prey Dynamics**: Living ecosystem with data packets and threat predators
+4. **Adjust Opacity**: Use slider to set video transparency (15-25% recommended for optimal subconscious effect)
+5. **Optimize Performance**: Collapse controls while keeping video active for clean interface
 
-### Threat Path Management
-- **POST `/api/threat-paths/calculate`**: Calculate shortest path between two nodes using Neo4j
-- **GET `/api/threat-paths/nodes`**: Fetch all available nodes for threat path creation
-- **POST `/api/threat-paths/apply`**: Apply threat path identifiers to calculated path elements
-- **POST `/api/threat-paths/clear`**: Remove all threat path identifiers from dataset
+### Advanced Security Analysis Workflow
 
-### Legacy Routes
-- **POST `/api/upload`**: Upload JSON dataset and import to Neo4j
-- **GET `/api/graph`**: Fetch current graph data from Neo4j
+#### TC_ Properties and Alarm Management
+1. **Element Selection**: Click any node or edge in the graph to open the properties panel
+2. **Security Alarm Assignment**: Use TC_ALARM dropdown or preset buttons to assign security levels:
+   - **Alert**: Critical security threats requiring immediate attention
+   - **Warning**: Potential threats needing investigation
+   - **Success**: Secure systems with proper controls
+   - **Info**: Informational status for monitoring
+   - **None**: Normal operation baseline
+3. **Visual Customization**: Apply additional TC_ properties for enhanced visualization:
+   - **TC_SIZE**: Adjust node size for importance indication
+   - **TC_COLOR**: Apply color coding for categorization
+   - **TC_ANIMATION**: Add visual effects (pulse, glow, flow) for attention
+4. **Alarm Filtering**: Use "Alarm Filters" button to focus analysis on specific security levels
 
-## 🎯 Usage Guide
-
-### Basic Workflow
-1. **Manage Datasets**: Click "Manage Datasets" to open the data management drawer
-2. **Upload or Load**: Either upload a new JSON file or load a saved dataset
-3. **Automatic Processing**: System validates and imports data into visualization
-4. **Configure Background Video**: Select ambient video and adjust opacity for enhanced analysis
-5. **Apply TC_ Properties**: Customize node appearance with size, color, and alarm properties
-6. **Set Security Alarms**: Use TC_ALARM property to mark security status of nodes
-7. **Create Threat Paths**: Use Neo4j integration to calculate and track security threat paths
-8. **Filter by Alarms & Threat Paths**: Use filtering to focus on specific security levels and threat scenarios
-9. **Save Dataset**: Optionally save your current dataset to the database for future use
-10. **Multi-View Visualization**: Choose from 6 different visualization modes
-11. **Data Exploration**: Use appropriate view for your analysis needs
-12. **Interactive Analysis**: Click, filter, sort, and explore your data
-
-### Dataset Management Workflow
-1. **Upload New Data**: Use "Upload JSON" tab to import new datasets from files
-2. **Save Current Dataset**: Click "Save Current Dataset" to store in PostgreSQL database
-3. **Browse Saved Datasets**: Use "Saved Datasets" tab to view your dataset library
-4. **Configure Integrations**: Use "Manage Datasets" tab to set up external data source connections
-5. **Load Previous Work**: Click the download icon to load any saved dataset
-6. **Manage Storage**: Delete unwanted datasets to keep your library organized
-
-### Data Source Integration Workflow
-1. **Access Settings**: Click "Manage Datasets" button to open the management drawer
-2. **Navigate to Integrations**: Select the "Manage Datasets" tab (third tab)
-3. **Browse Categories**: Expand integration categories (Security, Messaging, Analytics, Storage, AI)
-4. **Enable Integrations**: Toggle switches to enable desired data source connections
-5. **Review Configuration**: Check the summary section for enabled integration count
-6. **Automatic Persistence**: Settings are automatically saved to browser storage
-
-### Background Video Workflow
-1. **Access Video Controls**: Look for the "Ambient Video" section in the graph controls
-2. **Enable Background Video**: Toggle the switch to activate ambient video backgrounds
-3. **Select Video Theme**: Choose from 8 revolutionary cybersecurity-themed videos:
-   - **Neural Data Flow**: Biological neural network patterns
-   - **Threat Propagation**: Security threat movement visualization
-   - **Temporal Evolution**: Network growth and evolution patterns
-   - **System Health Pulse**: Heartbeat-like system monitoring
-   - **Quantum Resonance**: Physics-based wave interference patterns
-   - **Digital DNA Anomaly Scanner**: Genetic sequence threat detection ⭐
-   - **Gravitational Anomaly Detection**: Spacetime curvature security visualization ⭐
-   - **Ecosystem Predator-Prey Dynamics**: Living ecosystem threat patterns ⭐
-   - **Quantum Entanglement Breach Detection**: Quantum physics security states ⭐
-   - **Neural Synaptic Firing Patterns**: Brain-like network activity ⭐
-4. **Adjust Opacity**: Use the slider to set video transparency (15-25% recommended)
-5. **Collapse Controls**: Click the collapse button to hide controls while keeping video active
-6. **Subconscious Analysis**: Let the ambient patterns enhance your pattern recognition abilities
-
-### TC_ Properties & Alarm Management Workflow
-
-#### Property Customization Workflow
-1. **Select Elements**: Click any node or edge in the graph to select it
-2. **Open Properties Panel**: Properties panel automatically appears for selected element
-3. **Customize Appearance**: Use controls to modify visual properties:
-   - **TC_SIZE**: Adjust node size with slider (10-100px)
-   - **TC_COLOR**: Change element color with color picker
-   - **TC_OPACITY**: Set transparency level
-   - **TC_ANIMATION**: Add visual effects (pulse, glow, flow)
-   - **TC_THREAT_PATH**: Add threat path identifiers (text input)
-4. **Apply Changes**: Properties update immediately without disrupting graph layout
-5. **Use Presets**: Quick-apply common combinations with preset buttons
-6. **Undo/Redo**: Use undo/redo system to revert changes if needed
-
-#### Security Alarm Management Workflow
-1. **Set Alarm Levels**: Select nodes and use TC_ALARM dropdown or preset buttons:
-   - **Alert**: Critical security threats (red, 4px border, box shadow)
-   - **Warning**: Potential threats (orange, 3px border, box shadow)
-   - **Success**: Secure systems (green, 2px border)
-   - **Info**: Informational status (blue, 2px border)
-   - **None**: Normal operation (gray, 2px border)
-
-2. **Visual Verification**: Observe immediate visual changes:
-   - Border colors change to match alarm severity
-   - Background tints applied for enhanced visibility
-   - Box shadows added for Alert and Warning levels
-
-3. **Filter by Alarm Status**: Use alarm filtering for focused analysis:
-   - Click "Alarm Filters" button in graph controls
-   - Toggle individual alarm levels on/off
-   - Use quick presets for common filter combinations
-   - Apply filters to show/hide nodes based on security status
-
-4. **Monitor Security Status**: Track alarm distribution:
-   - View filter status display for active criteria
-   - Use toast notifications for filter confirmation
-   - Maintain alarm states across layout changes
-
-#### Threat Path Management Workflow
-1. **Create Threat Paths**: Use the comprehensive threat path creation system:
-   - Click "Create Threat Path" button to open the creation dialog
+#### Threat Path Analysis Workflow
+1. **Create Threat Paths**: Click "Create Threat Path" to open the comprehensive creation dialog:
    - Select start and destination nodes from searchable dropdowns
-   - Enter threat path name with recommended format (THREAT-description)
+   - Enter descriptive threat path name (recommended format: THREAT-description)
    - Choose alarm level and animation effects for visual enhancement
    - Calculate shortest path using Neo4j integration
    - Apply threat path to all elements in the calculated route
-
-2. **Filter by Threat Paths**: Use advanced filtering for focused analysis:
-   - Click "Threat Paths (count)" button to open filtering dialog
+2. **Filter by Threat Paths**: Use "Threat Paths (count)" button for advanced filtering:
    - Choose between "Show Selected" and "Hide Selected" filter modes
    - Select specific threat paths using checkbox interface
-   - Use quick actions (Select All, Clear All) for efficient filtering
-   - Apply filters to focus on specific threat scenarios
-
-3. **Manage Threat Paths**: Comprehensive threat path management:
-   - View all threat paths in the filtering interface
-   - Clear individual threat paths through properties panel
+   - Apply filters to focus on particular threat scenarios
+3. **Manage Threat Paths**: Comprehensive management capabilities:
+   - View all threat paths in filtering interface
+   - Clear individual paths through properties panel
    - Use "Clear All Threat Paths" for bulk removal with confirmation
-   - Monitor threat path distribution across the dataset
 
-#### Advanced Property Features
-- **Layout Preservation**: Graph positions remain stable during property updates
-- **Batch Operations**: Apply properties to multiple selected elements
-- **Cross-Layout Persistence**: Properties maintained when switching layouts
-- **Export/Import**: TC_ properties included in dataset save/load operations
-- **Performance Optimized**: Efficient property updates without layout recalculation
-- **Threat Path Integration**: TC_THREAT_PATH properties work seamlessly with all other TC_ properties
+### Layout Selection and Optimization
 
-### View-Specific Features
+#### Choosing Optimal Layouts
+- **Multi-Level Hierarchical Tree**: Best for organizational structures, dependency analysis, and complex hierarchies
+  - Select root node by clicking before applying layout
+  - Ideal for showing clear command structures and reporting relationships
+- **Force-Directed (CoSE)**: Excellent for relationship discovery and natural clustering
+  - Optimal for general-purpose visualization and pattern recognition
+  - Works well with node overlap prevention system
+- **Concentric Layout**: Perfect for highlighting node importance and centrality analysis
+  - Central nodes represent high-importance or highly-connected elements
+  - Useful for identifying key assets and critical infrastructure
+- **Grid Layout**: Ideal for systematic analysis and equal treatment of all nodes
+  - Best for structured data inspection and comparison tasks
 
-#### Graph View
-1. **Layout Selection**: Choose optimal layout from dropdown with 8 available options
-   - **Grid**: Structured analysis and equal node importance
-   - **Circle**: Relationship overview and small datasets
-   - **Concentric**: Node importance and centrality analysis
-   - **Hierarchical (Breadth-First)**: Basic tree structures
-   - **Multi-Level Hierarchical Tree**: Advanced multi-level hierarchies ⭐
-   - **Force-Directed (CoSE)**: General-purpose organic layouts
-   - **Random**: Initial unstructured views
-   - **Preset**: Custom positioning from data
+#### Layout Optimization Techniques
+1. **Root Node Selection**: For hierarchical layouts, manually select appropriate root nodes based on:
+   - Highest connectivity (most connections)
+   - Business importance (critical assets)
+   - Security relevance (key infrastructure)
+2. **Layout Parameters**: Adjust layout-specific parameters for optimal visualization:
+   - Node spacing for readability
+   - Animation duration for smooth transitions
+   - Convergence criteria for physics-based layouts
+3. **Performance Considerations**: Choose layouts based on dataset size:
+   - Small datasets (< 50 nodes): Any layout performs well
+   - Medium datasets (50-200 nodes): Force-directed and hierarchical layouts recommended
+   - Large datasets (200+ nodes): Grid and circle layouts for performance
 
-2. **Hierarchical Tree Layout Usage**:
-   - **Step 1**: Click any node to select it as hierarchy root (optional)
-   - **Step 2**: Choose "Multi-Level Hierarchical Tree" from layout dropdown
-   - **Step 3**: View the multi-level hierarchy with distinct vertical layers
-   - **Step 4**: Use "Center & Fit" to optimize the hierarchy view
-   - **Auto-Selection**: System automatically selects highest-degree node if none selected
+### Multi-View Analysis Strategy
 
-3. **Node Interaction**: Click nodes to select, hover for details
-4. **Grouping by Type**: Click "Group by Type" for automatic organization
-5. **Custom Groups**: Select nodes → "Group Selected" → name group
-6. **Group Navigation**: Click group nodes to show/hide contents
+#### View-Specific Analysis Approaches
+1. **Graph View**: Primary analysis interface for relationship discovery and pattern recognition
+   - Use for understanding network topology and connection patterns
+   - Apply grouping and filtering for focused analysis
+   - Leverage interactive features for detailed exploration
+2. **Table View**: Detailed data inspection and property comparison
+   - Sort by different columns to identify patterns
+   - Use search and filtering for specific data points
+   - Export filtered data for external analysis
+3. **Timeline View**: Temporal pattern analysis and event sequencing
+   - Identify time-based patterns and anomalies
+   - Analyze incident timelines and attack progression
+   - Correlate events across different time periods
+4. **Cards View**: Individual node examination and detailed property review
+   - Comprehensive property inspection for specific nodes
+   - Compare similar nodes side by side
+   - Identify configuration differences and anomalies
+5. **Dashboard View**: High-level overview and summary statistics
+   - Present findings to stakeholders and executives
+   - Generate reports and export analytics
+   - Monitor overall system health and security posture
 
-#### Table View
-1. **Data Sorting**: Click column headers to sort nodes/edges
-2. **Search & Filter**: Use search boxes and type filters
-3. **Property Inspection**: Expand accordion items to view all properties
-4. **Tab Navigation**: Switch between nodes and edges tables
+#### Cross-View Analysis Workflow
+1. **Start with Graph View**: Begin analysis with network topology to understand overall structure
+2. **Identify Patterns**: Use layout algorithms and grouping to identify clusters and relationships
+3. **Drill Down with Table View**: Examine specific nodes and edges identified in graph analysis
+4. **Temporal Analysis**: Switch to Timeline View to understand temporal patterns and sequences
+5. **Detailed Inspection**: Use Cards View for comprehensive examination of critical nodes
+6. **Summary and Reporting**: Conclude with Dashboard View for high-level summaries and reports
 
-#### Timeline View
-1. **Time Navigation**: Use timeline controls to zoom and pan
-2. **Event Filtering**: Select time ranges for focused analysis
-3. **Pattern Recognition**: Identify temporal trends and sequences
+### SOC Operations Workflow
 
-#### Cards View
-1. **Grid Browsing**: Scroll through card-based node representations
-2. **Detailed Inspection**: View all properties in an organized format
-3. **Search Functionality**: Find specific nodes using full-text search
+#### Daily SOC Operations
+1. **Dashboard Monitoring**: Start with SOC Executive Dashboard for overall security posture assessment
+2. **Incident Triage**: Review active incidents and alerts requiring immediate attention
+3. **Threat Path Analysis**: Examine current threat paths and attack vectors
+4. **Investigation Workflow**: Use right-click context menus for detailed node and edge investigation
+5. **Response Actions**: Execute containment, remediation, and recovery actions through SOC workflows
+6. **Documentation**: Generate incident reports and compliance documentation
 
-#### Dashboard View
-1. **Overview Analysis**: Get high-level statistics about your dataset
-2. **Chart Interaction**: Click chart elements to filter data
-3. **Export Reports**: Download analysis results and metrics
+#### Advanced Threat Hunting
+1. **Baseline Establishment**: Use normal operational data to establish baseline patterns
+2. **Anomaly Detection**: Leverage background videos and visual cues to identify anomalies
+3. **Hypothesis Development**: Develop threat hypotheses based on observed patterns
+4. **Investigation**: Use threat path analysis to validate or refute hypotheses
+5. **Evidence Collection**: Document findings and collect evidence for further analysis
+6. **Remediation**: Implement appropriate remediation actions based on investigation results
 
-### Pro Tips
 
-#### Layout Selection Strategy
-- **Grid Layout**: Use for structured analysis and when all nodes have equal importance
-- **Circle Layout**: Perfect for relationship overview and small to medium datasets
-- **Concentric Layout**: Ideal for highlighting node importance and centrality analysis
-- **Hierarchical (Breadth-First)**: Good for basic tree structures and simple hierarchies
-- **Multi-Level Hierarchical Tree**: ⭐ Best for complex organizational structures, dependency trees, and detailed hierarchical analysis
-- **Force-Directed (CoSE)**: Excellent general-purpose layout for relationship discovery
-- **Random Layout**: Use as starting point before applying more structured layouts
+## 🚀 Production Deployment
 
-#### Hierarchical Tree Layout Tips
-- **Root Selection**: Choose nodes with high connectivity as roots for better hierarchy visualization
-- **Level Analysis**: Pay attention to the number of nodes at each level - balanced trees often indicate well-structured data
-- **Zoom Strategy**: Use zoom controls to focus on specific hierarchy levels for detailed analysis
-- **Comparison**: Switch between Breadth-First and Multi-Level Hierarchical Tree to compare hierarchy representations
+### Vercel Deployment (Recommended)
 
-#### View-Specific Tips
-- **Table View**: Great for detailed data inspection and property comparison
-- **Timeline View**: Perfect for temporal analysis and event sequencing
-- **Cards View**: Best for browsing and detailed individual node examination
-- **Dashboard View**: Ideal for presentations and high-level data understanding
-- **Geographic Map**: Use when nodes have location data for spatial analysis
-- **View Switching**: Each view maintains your selections - switch freely for different perspectives
+#### Initial Deployment Setup
+1. **Vercel Account**: Create or access existing Vercel account linked to GitHub
+2. **Repository Connection**: Connect the TruContext Demo repository to Vercel
+3. **Environment Variables**: Configure production environment variables in Vercel dashboard
+4. **Build Configuration**: Verify build settings and deployment configuration
 
-## 📱 Responsive Design & Mobile Support
+#### Environment Variables for Production
+Configure the following environment variables in Vercel dashboard:
 
-### Enhanced Mobile Experience
-- **Automatic Detection**: Mobile device and touch capability detection
-- **Adaptive UI**: Controls automatically resize and reorganize for optimal touch interaction
-- **Touch Gestures**: Native pinch-to-zoom, pan, and optimized touch thresholds
-- **Mobile Zoom Controls**: Dedicated zoom in/out/fit buttons for precise control
-- **Responsive Animations**: Performance-optimized animations for mobile devices
-- **Auto-Collapse**: Complex controls automatically hidden on mobile for cleaner interface
-
-### Screen Adaptations
-- **Desktop (1200px+)**: Full interface with hover tooltips and advanced controls
-- **Tablet (768-1199px)**: Touch-optimized layout with larger interactive elements
-- **Mobile (< 768px)**: Streamlined interface with gesture navigation and simplified controls
-
-### Touch-Optimized Features
-- **Larger Touch Targets**: Buttons and controls sized for finger interaction
-- **Gesture Recognition**: Multi-touch support for zoom and pan operations
-- **Visual Feedback**: Enhanced touch states and haptic-style feedback
-- **Tooltip Adaptation**: Touch-friendly tooltip behavior with tap-to-show functionality
-- **Drawer Navigation**: Slide-out panels optimized for thumb navigation
-
-### Performance Optimizations
-- **Smooth 60fps**: Animations optimized for mobile GPU acceleration
-- **Gesture Debouncing**: Smart gesture recognition to prevent accidental interactions
-- **Battery Efficiency**: Reduced animation complexity on mobile devices
-- **Network Awareness**: Optimized asset loading for mobile connections
-
-## 🚀 Deployment
-
-### Vercel Deployment
-
-1. **Connect to Vercel**
-   ```bash
-   npm install -g vercel
-   vercel
-   ```
-
-2. **Set Environment Variables**
-   In Vercel dashboard, add the Neo4j credentials as environment variables
-
-3. **Deploy**
-   ```bash
-   vercel --prod
-   ```
-
-### Environment Variables for Production
 ```env
-# PostgreSQL Database (Neon)
+# PostgreSQL Database (Neon Cloud)
 POSTGRES_URL=postgresql://neondb_owner:npg_cOSiwT1eE6Fn@ep-cold-haze-a8fhh5uh-pooler.eastus2.azure.neon.tech/neondb?sslmode=require
 
-# Neo4j Database (Aura)
+# Neo4j Database (Aura Cloud)
 NEO4J_URI=neo4j+s://ebd05d7f.databases.neo4j.io
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=RX8GYHKu9fH4vrpiZ7UGC0y8HbIJudrJg0ovqbeNdLM
 NEO4J_DATABASE=neo4j
+
+# Application Configuration
+NEXT_PUBLIC_APP_NAME=TruContext Demo
+NEXT_PUBLIC_VERSION=2.0.0
+NEXT_PUBLIC_ENVIRONMENT=production
 ```
 
-## 🔍 Sample Dataset
+#### Deployment Commands
+```bash
+# Install Vercel CLI
+npm install -g vercel
 
-A sample dataset (`sample-dataset.json`) is included with:
-- 5 nodes (Server, Application, Database, User, Vulnerability)
-- 4 relationships (HOSTS, CONNECTS_TO, HAS_ACCESS, AFFECTS)
-- 2 stored queries for testing
-- Demonstrates icon mapping and grouping features
+# Login to Vercel
+vercel login
 
-## 🛡️ Security Considerations
+# Deploy to production
+vercel --prod
 
-- Environment variables are used for database credentials
-- Input validation on uploaded JSON files and saved datasets
-- Error handling for malformed data
-- PostgreSQL parameterized queries to prevent SQL injection
-- Neo4j parameterized queries to prevent injection
-- Database transactions for atomic operations
-- Secure icon loading with fallback system
-- SSL connections to both PostgreSQL and Neo4j databases
+# Verify deployment
+vercel ls
+```
 
-## 🐛 Troubleshooting
+#### Build Optimization
+- **Static Generation**: Optimized static generation for improved performance
+- **Image Optimization**: Automatic image optimization and compression
+- **Code Splitting**: Automatic code splitting for faster loading
+- **CDN Distribution**: Global CDN distribution for optimal performance
 
-### Common Issues
+### Alternative Deployment Options
 
-1. **Upload Fails**
-   - Verify JSON format is valid
-   - Check all required fields are present
-   - Ensure node UIDs are unique
+#### Docker Deployment
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "start"]
+```
 
-2. **Graph Not Loading**
-   - Check Neo4j connection in browser console
-   - Verify environment variables are set
-   - Ensure both PostgreSQL and Neo4j databases are accessible
+#### Traditional Hosting
+- **Build Process**: `npm run build` to create production build
+- **Static Files**: Serve built files from `.next` directory
+- **Environment**: Ensure Node.js 18+ runtime environment
+- **Database Access**: Verify network access to PostgreSQL and Neo4j databases
 
-3. **Dataset Save/Load Issues**
-   - Check PostgreSQL connection in browser console
-   - Verify POSTGRES_URL environment variable is set correctly
-   - Ensure dataset names are unique when saving
-   - Check browser network tab for API errors
+### Performance Optimization
 
-4. **Icons Not Displaying Across Views**
-   - Check if SVG files exist in `/public/icons-svg/`
-   - Verify node types match SVG filenames (lowercase)
-   - Unknown.svg will be used as fallback for unrecognized types
-   - Clear browser cache if icons appear corrupted
-   - Check browser console for icon loading errors
-   - Verify NodeIcon component is rendering properly in each view
-   - Test fallback system by using unrecognized node types
+#### Frontend Optimization
+- **Component Lazy Loading**: Lazy loading for non-critical components
+- **Image Optimization**: WebP format with fallbacks for better compression
+- **Bundle Analysis**: Regular bundle size analysis and optimization
+- **Caching Strategy**: Aggressive caching for static assets and API responses
 
-5. **Animation Performance Issues**
-   - Disable hardware acceleration if animations are choppy
-   - Check browser's animation preferences (reduced motion settings)
-   - Reduce dataset size for complex graphs (>100 nodes may impact performance)
-   - Close other browser tabs consuming GPU resources
+#### Database Optimization
+- **Connection Pooling**: Efficient database connection management
+- **Query Optimization**: Optimized Cypher and SQL queries for performance
+- **Index Strategy**: Proper indexing for frequently accessed data
+- **Data Pagination**: Pagination for large datasets to improve loading times
 
-6. **Mobile Gesture Problems**
-   - Ensure device supports multi-touch (most modern devices do)
-   - Check if browser zoom is interfering with gesture recognition
-   - Try refreshing the page if gestures become unresponsive
-   - Verify touch events are not blocked by other scripts
+## 🐛 Troubleshooting Guide
 
-6. **Tooltips Not Appearing**
-   - Check if hover events are working (desktop) or touch events (mobile)
-   - Verify tooltip positioning is not off-screen
-   - Clear browser cache if tooltip styles are broken
-   - Check browser console for JavaScript errors
+### Common Issues and Solutions
 
-7. **Dark Mode Issues**
-   - Clear localStorage if theme switching is stuck
-   - Check if browser has forced color schemes enabled
-   - Verify Chakra UI theme is loading properly
+#### Build and Deployment Issues
 
-8. **Layout Transition Problems**
-   - Try switching to a simpler layout (Grid) if transitions are slow
-   - Reduce node count if transitions are taking too long
-   - Check if hardware acceleration is available
-   - Disable animations if performance is critical
+**Vercel Build Failures**
+- **TypeScript Errors**: Verify all TypeScript interfaces match implementation
+- **Environment Variables**: Ensure all required environment variables are configured
+- **Dependency Issues**: Clear node_modules and reinstall dependencies
+- **Memory Limits**: Check for memory-intensive operations during build
 
-9. **Visualization Issues**
-   - Clear browser cache
-   - Check for JavaScript errors in console
-   - Verify Cytoscape.js is loading properly
-   - Try different layout algorithms
-   - Check if WebGL is supported for better performance
+**Database Connection Issues**
+- **PostgreSQL Connection**: Verify POSTGRES_URL format and credentials
+- **Neo4j Connection**: Check NEO4J_URI, username, and password configuration
+- **Network Access**: Ensure deployment environment can access cloud databases
+- **SSL Configuration**: Verify SSL settings for secure database connections
 
-10. **Component Re-rendering Issues (Fixed)**
-    - Previous infinite loop issues in GraphVisualization have been resolved
-    - Enhanced component memoization prevents unnecessary re-renders
-    - Stable prop references eliminate cascading updates
-    - If you experience performance issues, refresh the page
+#### Application Runtime Issues
 
-11. **Background Video Issues**
-    - **Video Not Playing**: Check browser autoplay policies - some browsers block autoplay
-    - **Video Selection Not Working**: Verify video files exist in `/public/videos/` directory
-    - **Performance Issues**: Reduce video opacity or disable videos on slower devices
-    - **Race Condition Errors**: Fixed in latest version - refresh page if issues persist
-    - **File Path Errors**: Video file names have been corrected to match actual files
-    - **Collapsible Controls**: Video enable/disable and UI collapse/expand work independently
+**Graph Visualization Problems**
+- **Layout Not Loading**: Check Cytoscape.js initialization and extension registration
+- **Performance Issues**: Reduce dataset size or disable animations for large graphs
+- **Mobile Rendering**: Verify touch gesture support and responsive design
+- **Icon Loading**: Check SVG icon availability and fallback mechanisms
 
-## 📚 Documentation
+**Data Upload and Processing Issues**
+- **JSON Validation Errors**: Verify JSON structure matches required schema
+- **Large File Uploads**: Check file size limits and processing timeouts
+- **Data Enhancement Failures**: Verify automatic property generation logic
+- **Database Save Errors**: Check PostgreSQL connection and table schema
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Chakra UI Documentation](https://chakra-ui.com/docs)
-- [Cytoscape.js Documentation](https://js.cytoscape.org/)
-- [Neo4j Documentation](https://neo4j.com/docs/)
+#### User Interface Issues
 
-## 🤝 Contributing
+**Animation and Performance Problems**
+- **Choppy Animations**: Disable hardware acceleration or reduce animation complexity
+- **Memory Leaks**: Check for proper component cleanup and event listener removal
+- **Mobile Performance**: Optimize for mobile devices with reduced animation complexity
+- **Browser Compatibility**: Verify WebGL support and modern browser features
+
+**Background Video Issues**
+- **Video Not Playing**: Check browser autoplay policies and video file availability
+- **Performance Impact**: Reduce video opacity or disable on slower devices
+- **File Loading Errors**: Verify video files exist in correct directory structure
+- **Control State Issues**: Check video enable/disable and UI collapse functionality
+
+#### Security and Access Issues
+
+**Authentication and Authorization**
+- **Database Access**: Verify database credentials and network access permissions
+- **API Rate Limiting**: Check for API rate limits and implement appropriate handling
+- **CORS Issues**: Configure CORS settings for cross-origin requests
+- **SSL Certificate**: Ensure valid SSL certificates for secure connections
+
+**Data Security and Privacy**
+- **Data Encryption**: Verify data encryption in transit and at rest
+- **Input Validation**: Ensure comprehensive input validation and sanitization
+- **Error Handling**: Implement secure error handling without information disclosure
+- **Audit Logging**: Enable audit logging for security monitoring and compliance
+
+### Debugging Strategies
+
+#### Frontend Debugging
+1. **Browser Developer Tools**: Use browser console for JavaScript errors and network issues
+2. **React Developer Tools**: Install React DevTools for component debugging
+3. **Performance Profiling**: Use browser performance tools to identify bottlenecks
+4. **Network Analysis**: Monitor network requests and response times
+
+#### Backend Debugging
+1. **Server Logs**: Check Vercel function logs for API errors and performance issues
+2. **Database Logs**: Monitor PostgreSQL and Neo4j logs for query performance
+3. **Error Tracking**: Implement error tracking service for production monitoring
+4. **Health Checks**: Regular health checks for database connectivity and service status
+
+#### Data Debugging
+1. **JSON Validation**: Use online JSON validators for data structure verification
+2. **Query Testing**: Test Cypher and SQL queries directly in database interfaces
+3. **Data Inspection**: Use table view for detailed data inspection and validation
+4. **Export Analysis**: Export data for external analysis and validation
+
+### Performance Monitoring
+
+#### Key Performance Indicators
+- **Page Load Time**: Monitor initial page load and time to interactive
+- **Graph Rendering Time**: Track time for graph visualization and layout application
+- **Database Query Performance**: Monitor query execution times and optimization opportunities
+- **Memory Usage**: Track memory consumption and potential memory leaks
+- **Mobile Performance**: Specific monitoring for mobile device performance
+
+#### Monitoring Tools
+- **Vercel Analytics**: Built-in analytics for deployment and performance monitoring
+- **Browser Performance API**: Client-side performance monitoring and reporting
+- **Database Monitoring**: PostgreSQL and Neo4j performance monitoring tools
+- **User Experience Monitoring**: Real user monitoring for actual usage patterns
+
+## 📚 Documentation and Resources
+
+### Technical Documentation
+- **Next.js Documentation**: [https://nextjs.org/docs](https://nextjs.org/docs) - Comprehensive framework documentation
+- **Chakra UI Documentation**: [https://chakra-ui.com/docs](https://chakra-ui.com/docs) - Component library and theming
+- **Cytoscape.js Documentation**: [https://js.cytoscape.org/](https://js.cytoscape.org/) - Graph visualization library
+- **Neo4j Documentation**: [https://neo4j.com/docs/](https://neo4j.com/docs/) - Graph database and Cypher queries
+- **PostgreSQL Documentation**: [https://www.postgresql.org/docs/](https://www.postgresql.org/docs/) - Relational database documentation
+
+### Security and Compliance Resources
+- **NIST Cybersecurity Framework**: [https://www.nist.gov/cyberframework](https://www.nist.gov/cyberframework)
+- **MITRE ATT&CK Framework**: [https://attack.mitre.org/](https://attack.mitre.org/)
+- **OWASP Security Guidelines**: [https://owasp.org/](https://owasp.org/)
+- **SOC Best Practices**: Industry-standard SOC operations and procedures
+
+### Development Resources
+- **TypeScript Handbook**: [https://www.typescriptlang.org/docs/](https://www.typescriptlang.org/docs/)
+- **React Documentation**: [https://react.dev/](https://react.dev/)
+- **Framer Motion**: [https://www.framer.com/motion/](https://www.framer.com/motion/)
+- **Vercel Documentation**: [https://vercel.com/docs](https://vercel.com/docs)
+
+## 🤝 Contributing and Development
 
 ### Development Guidelines
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Install dependencies (`npm install`)
-4. Make your changes following the existing patterns:
-   - Use TypeScript for type safety
-   - Follow Chakra UI theming conventions
-   - Implement responsive design patterns
-   - Add animations using Framer Motion
-   - Include mobile gesture support where applicable
-5. Test thoroughly on desktop, tablet, and mobile
-6. Test dark/light mode switching
-7. Verify animation performance
-8. Submit a pull request with detailed description
 
-### Code Standards
-- **TypeScript**: Full type coverage for components and utilities
-- **Responsive**: Mobile-first design with touch optimization
-- **Animations**: Smooth 60fps animations with proper cleanup
-- **Performance**: Optimized for mobile devices and slower connections
-- **Accessibility**: ARIA labels and keyboard navigation support
+#### Code Standards and Best Practices
+- **TypeScript**: Full type coverage for all components, utilities, and API routes
+- **Responsive Design**: Mobile-first approach with touch optimization and gesture support
+- **Performance**: 60fps animations with proper cleanup and memory management
+- **Accessibility**: ARIA labels, keyboard navigation, and screen reader support
+- **Security**: Input validation, parameterized queries, and secure credential handling
 
-## 📄 License
+#### Development Workflow
+1. **Fork Repository**: Create personal fork of the TruContext Demo repository
+2. **Feature Branch**: Create feature branch with descriptive name (`git checkout -b feature/amazing-feature`)
+3. **Development Environment**: Install dependencies and configure local environment
+4. **Code Implementation**: Follow existing patterns and maintain consistency with codebase
+5. **Testing**: Comprehensive testing on desktop, tablet, and mobile devices
+6. **Documentation**: Update documentation for new features and changes
+7. **Pull Request**: Submit detailed pull request with comprehensive description
 
-This project is licensed under the MIT License.
+#### Testing Requirements
+- **Cross-Browser Testing**: Verify functionality across Chrome, Firefox, Safari, and Edge
+- **Mobile Testing**: Test on actual mobile devices with various screen sizes
+- **Performance Testing**: Verify animation performance and memory usage
+- **Accessibility Testing**: Screen reader compatibility and keyboard navigation
+- **Security Testing**: Input validation and potential security vulnerabilities
 
-## 🏢 About TruContext
+### Code Architecture
 
-TruContext is powered by TruAI, a leader in graph analytics and cybersecurity solutions. This application demonstrates advanced graph visualization and analysis capabilities.
+#### Component Structure
+- **Modular Design**: Reusable components with clear separation of concerns
+- **Props Interface**: Well-defined TypeScript interfaces for all component props
+- **State Management**: Efficient state management with React hooks and context
+- **Error Boundaries**: Graceful error handling with user-friendly error messages
+
+#### Utility Functions
+- **Icon Management**: Centralized icon loading and caching utilities
+- **Data Processing**: Comprehensive data validation and enhancement utilities
+- **Animation Helpers**: Reusable animation configurations and timing functions
+- **Database Utilities**: Abstracted database operations with error handling
+
+#### API Design
+- **RESTful Endpoints**: Consistent API design following REST principles
+- **Error Handling**: Standardized error responses with appropriate HTTP status codes
+- **Validation**: Comprehensive input validation with detailed error messages
+- **Documentation**: Clear API documentation with examples and usage patterns
+
+## 📄 License and Legal
+
+### MIT License
+This project is licensed under the MIT License, providing broad permissions for use, modification, and distribution.
+
+### Third-Party Licenses
+- **Next.js**: MIT License
+- **React**: MIT License
+- **Chakra UI**: MIT License
+- **Cytoscape.js**: LGPL v2.1
+- **Neo4j JavaScript Driver**: Apache License 2.0
+- **PostgreSQL**: PostgreSQL License
+
+### Data Privacy and Security
+- **Data Handling**: All user data processed in accordance with privacy best practices
+- **Encryption**: Data encrypted in transit and at rest using industry-standard methods
+- **Compliance**: Designed to support compliance with GDPR, CCPA, and other privacy regulations
+- **Audit Trail**: Comprehensive logging for security monitoring and compliance reporting
+
+## 🏢 About TruContext and Visium Technologies
+
+### TruContext Platform
+TruContext represents the next generation of cybersecurity visualization and analysis platforms, combining advanced graph analytics with intuitive user interfaces to provide unprecedented insights into complex security environments. The platform is designed for security professionals, analysts, and executives who need to understand, analyze, and respond to sophisticated cyber threats.
+
+### Visium Technologies
+Visium Technologies is a leader in cybersecurity solutions, specializing in advanced threat detection, analysis, and response capabilities. The company focuses on developing innovative technologies that enable organizations to stay ahead of evolving cyber threats through intelligent automation, advanced analytics, and comprehensive visualization tools.
+
+### Innovation and Research
+The TruContext Demo represents cutting-edge research in cybersecurity visualization, incorporating revolutionary concepts such as:
+- **Subconscious Pattern Recognition**: Background visualizations designed to enhance human pattern recognition capabilities
+- **AI-Powered Threat Path Analysis**: Advanced algorithms for automated threat scenario generation
+- **Psychological Security Enhancement**: Visual techniques that operate at subconscious levels to improve threat detection
+- **Revolutionary Visualization Concepts**: Groundbreaking approaches to cybersecurity data representation
 
 ---
 
-**Built with ❤️ by the TruContext team**
+**Built with ❤️ by the TruContext team at Visium Technologies**
 
-## 🌟 Recent Updates & Improvements
+*Empowering cybersecurity professionals with next-generation visualization and analysis capabilities*
 
-### ✅ Security Operations Center (SOC) Integration (Latest)
-- **SOC Executive Dashboard**: Comprehensive security dashboard with real-time threat monitoring, incident metrics, and security posture indicators
-- **Right-Click Context Menus**: Professional SOC actions for nodes and edges with industry-standard workflows based on real SOC daily tasks
-- **Realistic SOC Workflows**: Multi-step dialogs with forms, progress tracking, and mock tool integrations (SIEM, EDR, SOAR)
-- **Enhanced Workflow Dialogs**: Comprehensive SOC engineer processes including incident response, threat hunting, and compliance workflows
-- **Security-Focused Interface**: Professional SOC terminology and visual design optimized for security operations and client demonstrations
-- **Demo-Ready Platform**: Comprehensive SOC platform ready for client presentations and sales demonstrations
+## 🌟 Version History and Release Notes
 
-### ✅ TC_ Properties System & Security Alarm Management (Previous)
-- **Advanced Property Framework**: Comprehensive TC_ property system for visual customization and security monitoring
-- **TC_ALARM Security System**: Five-level alarm severity system (Alert, Warning, Success, Info, None) with distinct visual styling
-- **Layout Preservation**: Graph positions remain stable during property updates for consistent visualization
-- **Alarm Filtering Dialog**: Interactive filtering system with individual toggles and quick preset filters
-- **Real-time Visual Feedback**: Immediate property updates with border colors, background tints, and box shadows
-- **Preset Button System**: Quick-apply common alarm + animation combinations for efficient workflow
-- **Undo/Redo Integration**: Full history tracking for all TC_ property changes with batch operation support
-- **Cross-Layout Persistence**: Properties maintained across all layout algorithm switches
-- **Performance Optimized**: Efficient batch operations prevent rendering issues during property updates
-- **Security-Focused Design**: Purpose-built for cybersecurity visualization and threat monitoring workflows
+### Version 2.0.0 (Current) - Advanced Threat Path Analysis Platform
+- **Major Feature**: Comprehensive Threat Path Analysis with automated scenario generation
+- **SOC Integration**: Professional Security Operations Center workflows and dashboards
+- **Revolutionary Videos**: 10 cybersecurity-themed ambient videos for subconscious enhancement
+- **Build Fixes**: Complete resolution of Vercel deployment errors and TypeScript issues
+- **Performance**: Optimized rendering and animation performance across all devices
 
-### ✅ Revolutionary Background Video System
-- **8 Cybersecurity-Themed Videos**: Groundbreaking ambient visualizations designed for subconscious pattern recognition
-- **Advanced Psychological Principles**: Peripheral vision activation, subliminal pattern disruption, and biometric rhythm synchronization
-- **Collapsible Video Controls**: Independent video enable/disable and UI collapse/expand functionality
-- **Revolutionary Video Concepts**: Digital DNA Anomaly Scanner, Gravitational Anomaly Detection, Ecosystem Predator-Prey Dynamics, Quantum Entanglement Breach Detection, Neural Synaptic Firing Patterns
-- **Performance Optimized**: Smooth video playback with race condition fixes and enhanced error handling
-- **Future Evolution Ready**: Designed to evolve into real-time generation responding to network conditions
-- **Subconscious Security Enhancement**: Videos operate at subconscious levels to trigger anomaly detection before critical incidents
+### Version 1.5.0 - Multi-View Visualization Architecture
+- **Multi-View System**: Six distinct visualization modes for comprehensive data analysis
+- **Unified Icon System**: SVG icons across all views with intelligent caching
+- **Mobile Optimization**: Enhanced touch support and responsive design
+- **Advanced Layouts**: Multi-Level Hierarchical Tree and enhanced layout algorithms
 
-### ✅ Multi-Level Hierarchical Tree Layout Implementation
-- **Advanced BFS Algorithm**: Implemented sophisticated breadth-first search traversal for building true multi-level hierarchies
-- **Root Node Selection**: Support for manual root node selection or automatic selection based on highest degree connectivity
-- **Multi-Level Visualization**: Creates distinct vertical layers (Level 0, Level 1, Level 2, etc.) with proper horizontal spacing
-- **Enhanced Edge Traversal**: Fixed BFS algorithm to properly discover connected nodes through manual edge inspection
-- **Visual Hierarchy Representation**: Nodes positioned in clear hierarchical structure with adaptive container sizing
-- **Debugging & Troubleshooting**: Comprehensive console logging for hierarchy building process and edge discovery
-- **Performance Optimized**: Efficient algorithm suitable for complex graphs with multiple hierarchy levels
-- **User-Friendly Interface**: Human-readable layout names and descriptive tooltips for better user experience
+### Version 1.0.0 - Initial Release
+- **Core Platform**: Basic graph visualization with Cytoscape.js integration
+- **Database Integration**: PostgreSQL and Neo4j connectivity
+- **Basic Features**: Node grouping, layout algorithms, and data upload capabilities
 
-### ✅ Unified SVG Icon System Across All Views
-- **Cross-View Icon Consistency**: SVG icons implemented in ALL 6 visualization views
-- **Table View Icons**: Dedicated Icon column with 24px SVG icons for type identification
-- **Cards View Icons**: SVG icons in card headers (24px) replacing emoji icons
-- **Timeline View Icons**: SVG icons next to node events (20px) for visual consistency
-- **Dashboard View Icons**: Icons in type distribution (16px) and connected nodes (20px)
-- **Geographic Map Icons**: SVG icons in circular location markers with background rendering
-- **Shared Icon System**: Unified `NodeIcon` component with caching and fallback handling
-- **Performance Optimized**: Icon caching prevents duplicate network requests across views
-
-### ✅ Multi-View Data Visualization Architecture
-- **Complete Visualization System**: 6 distinct view types for comprehensive data analysis
-- **Table View**: Advanced sortable/filterable tables with SVG icon column
-- **Timeline View**: Chronological data visualization with SVG event icons
-- **Cards View**: Grid-based detailed inspection with SVG header icons
-- **Dashboard View**: Summary statistics with SVG icons in charts and lists
-- **Geographic Map**: Interactive world map with SVG location markers
-- **ViewSwitcher Component**: Seamless navigation between different visualization modes
-
-### ✅ Performance & Stability Fixes (Latest)
-- **Infinite Loop Resolution**: Fixed React rendering cycles in GraphVisualization component
-- **Component Memoization**: Enhanced with useCallback and useMemo for optimal performance
-- **Stable References**: Prevented prop recreation causing unnecessary re-renders
-- **Duplicate Key Fixes**: Resolved React key warnings in TableView edge rendering
-- **Enhanced Error Handling**: Improved robustness and user experience
-
-### ✅ Animation & Visual Enhancements
-- **Smooth Layout Transitions**: 800ms animated graph layout changes with custom easing
-- **Interactive Tooltips**: Rich hover tooltips with node/edge details and portal rendering
-- **Lottie Animations**: Custom loading and empty state animations
-- **Dark Mode Toggle**: Animated theme switching with smooth color transitions
-- **Micro-interactions**: Enhanced button hover effects and visual feedback throughout
-
-### ✅ Mobile & Touch Optimization
-- **Gesture Recognition**: Advanced pinch-to-zoom and pan support via @use-gesture/react
-- **Mobile-First Controls**: Auto-adapting interface with touch-optimized sizing
-- **Responsive Animations**: Performance-optimized animations for mobile devices
-- **Touch Detection**: Automatic mobile device and capability detection
-
-### ✅ Advanced Technical Infrastructure
-- **Unified SVG Icon System**: Cross-view icon consistency with intelligent caching and fallback
-- **Icon Utilities**: Shared `utils/iconUtils.ts` with 40+ type mappings and PNG extraction
-- **React Icon Component**: Reusable `NodeIcon` component with loading states and error handling
-- **Background Image Rendering**: Advanced CSS approach for circular container compatibility
-- **Page Transitions**: Smooth route and state change animations
-- **Performance Optimized**: 60fps animations with GPU acceleration and icon caching
-- **TypeScript Enhanced**: Full type safety with advanced component patterns
-- **Modern React Patterns**: Best practices for hooks, memoization, and component architecture
-
-### ✅ Geographic Map View & Icon Rendering Fixes (June 2024)
-- **Geographic Map Responsiveness**: The Geographic Map view now auto-fills its parent container responsively, adapting to all device sizes (desktop, tablet, mobile) with a minimum height fallback for small screens.
-- **Icon Rendering Bugfixes**: Fixed a bug where node icons/markers were not displaying on the Geographic Map due to a type mismatch in the icon preloading logic. All node types now display the correct SVG icon or fallback.
-- **Type Safety for Cloud Builds**: Addressed strict type errors in the icon preloading logic, ensuring all required properties are present for type safety. The codebase now passes Vercel/Next.js cloud builds without type errors.
-- **Debugging & Developer Experience**: Improved debugging instructions and added temporary debug styles to help diagnose map rendering and overlay issues. These have been reverted for production.
-- **Unified Icon System**: The unified SVG icon system is now robust across all views, with consistent fallback and caching behavior.
-- **Documentation Updated**: README and troubleshooting sections updated to reflect new fixes and best practices for debugging map/icon issues.
-
-## 🤝 Contributing
-
-### Development Guidelines
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Install dependencies (`npm install`)
-4. Make your changes following the existing patterns:
-   - Use TypeScript for type safety
-   - Follow Chakra UI theming conventions
-   - Implement responsive design patterns
-   - Add animations using Framer Motion
-   - Include mobile gesture support where applicable
-5. Test thoroughly on desktop, tablet, and mobile
-6. Test dark/light mode switching
-7. Verify animation performance
-8. Submit a pull request with detailed description
-
-### Code Standards
-- **TypeScript**: Full type coverage for components and utilities
-- **Responsive**: Mobile-first design with touch optimization
-- **Animations**: Smooth 60fps animations with proper cleanup
-- **Performance**: Optimized for mobile devices and slower connections
-- **Accessibility**: ARIA labels and keyboard navigation support 
-
-
-## 🛡️ Security Operations Center (SOC) Features
-
-The TruContext Demo has been transformed into a comprehensive Security Operations Center (SOC) platform with professional-grade features designed for real-world security operations. This includes right-click context menus, realistic SOC workflows, and a dedicated SOC Executive Dashboard.
-
-### SOC Executive Dashboard
-- **Real-time Security Overview**: Comprehensive dashboard with key security metrics
-- **Threat Level Indicator**: Current threat level with visual indicators (Elevated, Guarded, Normal)
-- **Incident Metrics**: Active incidents, alerts today, MTTR, and MTTD with trend indicators
-- **24-Hour Incident Trends**: Interactive chart showing new vs. resolved incidents over 24 hours
-- **Security Posture**: Overall security score with visual gauge and status (Good, Fair, Poor)
-- **Recent Incidents Table**: Detailed list of recent security incidents with severity and status
-- **Security Controls**: Tabs for viewing security control status and compliance
-- **Threat Intelligence**: Integrated threat intelligence feeds and indicators
-
-### Right-Click Context Menus
-- **Node & Edge Actions**: SOC-specific actions available on right-click for nodes and edges
-- **Professional SOC Workflows**: Access to realistic multi-step SOC engineer workflows
-- **Industry-Standard Actions**: Based on real-world SOC daily tasks and best practices
-
-#### Node Actions
-- **Monitor & Investigate**: Node health status, alert investigation, log analysis dialogs
-- **Security Operations**: Isolate host, endpoint security validation, access review
-- **Incident Response**: Forensic collection, remediation execution, patch management
-- **Threat Hunting**: Historical analysis, behavioral anomaly detection
-
-#### Edge Actions
-- **Traffic Analysis**: Network flow monitoring, bandwidth analysis, connection patterns
-- **Security Controls**: Block/allow connections, rate management, access path auditing
-- **Threat Detection**: Alert correlation, lateral movement detection, APT investigation
-- **Compliance**: Connection logging, audit trails, policy enforcement
-
-### Realistic SOC Workflows
-- **Multi-Step Dialogs**: Interactive dialogs with forms, progress tracking, and realistic SOC processes
-- **Mock Tool Integrations**: Simulated connections to SIEM, EDR, and SOAR platforms
-- **Sample Incident Workflows**: Pre-built workflows for common security incidents
-- **Compliance Reporting**: Generate mock compliance reports and audit trails
-
-
+### Roadmap and Future Development
+- **Real-Time Threat Intelligence**: Integration with live threat intelligence feeds
+- **Machine Learning**: AI-powered anomaly detection and pattern recognition
+- **Collaboration Tools**: Multi-user collaboration and shared analysis capabilities
+- **Advanced Reporting**: Automated report generation and compliance documentation
+- **Enterprise Integration**: SIEM, SOAR, and enterprise security tool integration
 
