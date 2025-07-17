@@ -1,5 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { ThreatPathScenario, SOCAction, WorkflowExecution, RootCauseAnalysis } from '../../../types/threatPath'
+import { ThreatPathScenario, SOCAction, RootCauseAnalysis } from '../../../types/threatPath'
+
+// Define WorkflowExecution locally since it's not exported from types
+interface WorkflowExecution {
+  id: string
+  name: string
+  status: 'Pending' | 'Running' | 'Completed' | 'Failed'
+  steps: any[]
+  startedAt?: string
+  completedAt?: string
+}
 
 interface ThreatPathReport {
   id: string
@@ -26,6 +36,7 @@ interface ReportSection {
   charts?: ChartData[]
   tables?: TableData[]
   recommendations?: string[]
+  details?: string[]
 }
 
 interface ChartData {
@@ -55,7 +66,7 @@ interface ThreatPathMetrics {
   affectedSystems: number
   compromisedAccounts: number
   dataExfiltrated: number // GB
-  businessImpact: 'low' | 'medium' | 'high' | 'critical'
+  businessImpact: 'Low' | 'Medium' | 'High' | 'Critical'
 }
 
 // Mock data for demo
@@ -73,7 +84,7 @@ const mockMetrics: ThreatPathMetrics = {
   affectedSystems: 23,
   compromisedAccounts: 5,
   dataExfiltrated: 2.3,
-  businessImpact: 'high'
+  businessImpact: 'High'
 }
 
 const mockReports: ThreatPathReport[] = []
@@ -331,7 +342,7 @@ function generateTechnicalAnalysis(metadata: ThreatPathReport['metadata']): Repo
       id: 'tech-mitigations',
       title: 'Technical Mitigations',
       content: 'Technical controls and mitigations implemented during the response.',
-      recommendations: [
+      details: [
         'Implemented network segmentation rules to isolate affected subnets',
         'Deployed additional endpoint detection rules for similar attack patterns',
         'Updated firewall rules to block identified malicious IP addresses',
@@ -386,7 +397,7 @@ function generateLessonsLearned(metadata: ThreatPathReport['metadata']): ReportS
       id: 'lessons-what-worked',
       title: 'What Worked Well',
       content: 'Analysis of successful aspects of the incident response.',
-      recommendations: [
+      details: [
         'Automated containment actions executed within target timeframes',
         'Cross-team collaboration was effective and well-coordinated',
         'Threat intelligence integration provided valuable context',
@@ -397,7 +408,7 @@ function generateLessonsLearned(metadata: ThreatPathReport['metadata']): ReportS
       id: 'lessons-improvements',
       title: 'Areas for Improvement',
       content: 'Identified opportunities to enhance future incident response.',
-      recommendations: [
+      details: [
         'Reduce manual steps in the investigation workflow',
         'Improve integration between security tools for better visibility',
         'Enhance training for junior analysts on advanced threat techniques',
@@ -468,11 +479,66 @@ function getMockThreatPath(threatPathId: string): ThreatPathScenario {
     id: threatPathId,
     name: 'Advanced Persistent Threat Campaign',
     description: 'Multi-stage APT campaign targeting financial data',
-    severity: 'critical',
-    likelihood: 'medium',
-    impact: 'high',
-    riskScore: 8.5,
+    scenario: 'External threat actor conducts spear-phishing campaign to gain initial access, then moves laterally through the network to access sensitive financial data.',
+    attackerProfile: {
+      type: 'APT',
+      sophistication: 'Advanced',
+      motivation: ['Financial Gain', 'Data Theft', 'Espionage'],
+      capabilities: ['Social Engineering', 'Custom Malware', 'Living off the Land', 'Persistence Mechanisms']
+    },
     path: ['external-attacker', 'phishing-email', 'user-workstation', 'domain-controller', 'file-server'],
+    pathDetails: [
+      {
+        nodeId: 'external-attacker',
+        nodeName: 'External Threat Actor',
+        action: 'Initial reconnaissance and target selection',
+        technique: 'T1589 - Gather Victim Identity Information',
+        timeEstimate: '1-2 weeks',
+        detectionProbability: 0.1
+      },
+      {
+        nodeId: 'phishing-email',
+        nodeName: 'Spear Phishing Email',
+        action: 'Deliver malicious payload via email',
+        technique: 'T1566.001 - Spearphishing Attachment',
+        timeEstimate: '1 day',
+        detectionProbability: 0.3
+      },
+      {
+        nodeId: 'user-workstation',
+        nodeName: 'User Workstation',
+        action: 'Execute malware and establish persistence',
+        technique: 'T1053.005 - Scheduled Task/Job',
+        timeEstimate: '30 minutes',
+        detectionProbability: 0.5
+      },
+      {
+        nodeId: 'domain-controller',
+        nodeName: 'Domain Controller',
+        action: 'Privilege escalation and credential harvesting',
+        technique: 'T1003.001 - LSASS Memory',
+        timeEstimate: '2 hours',
+        detectionProbability: 0.7
+      },
+      {
+        nodeId: 'file-server',
+        nodeName: 'File Server',
+        action: 'Access and exfiltrate sensitive data',
+        technique: 'T1041 - Exfiltration Over C2 Channel',
+        timeEstimate: '4 hours',
+        detectionProbability: 0.8
+      }
+    ],
+    riskScore: 8.5,
+    severity: 'Critical',
+    likelihood: 0.6,
+    impact: 0.8,
+    mitreTactics: ['Initial Access', 'Execution', 'Persistence', 'Privilege Escalation', 'Credential Access', 'Lateral Movement', 'Collection', 'Exfiltration'],
+    mitreTechniques: ['T1566.001', 'T1053.005', 'T1003.001', 'T1041', 'T1589'],
+    entryPoint: 'Email Gateway',
+    targetAsset: 'Financial Database Server',
+    estimatedDwellTime: '2-4 weeks',
+    detectionDifficulty: 'Hard',
     timeline: [
       {
         stage: 'Initial Access',
@@ -493,8 +559,17 @@ function getMockThreatPath(threatPathId: string): ThreatPathScenario {
         indicators: ['privilege-escalation', 'credential-dumping']
       }
     ],
-    mitigations: [],
-    createdAt: new Date().toISOString()
+    prerequisites: ['Valid email addresses', 'Unpatched systems', 'Insufficient email security'],
+    businessImpact: {
+      confidentiality: 'High',
+      integrity: 'Medium',
+      availability: 'Low',
+      financialImpact: 'Potential loss of $2.5M in customer data breach penalties',
+      reputationalImpact: 'Severe damage to brand reputation and customer trust'
+    },
+    createdAt: new Date().toISOString(),
+    lastUpdated: new Date().toISOString(),
+    status: 'Active'
   }
 }
 
@@ -503,22 +578,29 @@ function getMockActions(threatPathId: string): SOCAction[] {
     {
       id: 'action-1',
       threatPathId,
-      type: 'containment',
-      title: 'Isolate Affected Systems',
+      type: 'Containment',
+      category: 'Network Security',
+      name: 'Isolate Affected Systems',
       description: 'Quarantine compromised workstations',
-      status: 'completed',
-      priority: 'critical',
+      status: 'Completed',
+      priority: 'Critical',
       assignedTo: 'Sarah Chen',
-      createdAt: new Date(Date.now() - 3600000).toISOString(),
-      completedAt: new Date(Date.now() - 3000000).toISOString(),
-      estimatedDuration: '30 minutes',
-      targetNodes: ['workstation-001', 'workstation-002'],
-      targetIPs: [],
-      targetDomains: [],
-      targetAccounts: [],
+      assignedTeam: 'SOC Team Alpha',
+      estimatedTime: '30 minutes',
+      actualTime: '25 minutes',
+      dependencies: [],
+      prerequisites: ['Network access', 'Admin privileges'],
+      automationAvailable: true,
+      playbook: 'Containment-Playbook-001',
+      tools: ['Network Segmentation Tool', 'Endpoint Management'],
+      evidence: ['network-logs', 'endpoint-telemetry'],
       notes: 'Successfully isolated affected systems',
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      updatedAt: new Date(Date.now() - 3000000).toISOString(),
+      completedAt: new Date(Date.now() - 3000000).toISOString(),
       approvalRequired: false,
-      automatedExecution: true
+      approvedBy: 'John Smith',
+      approvedAt: new Date(Date.now() - 3500000).toISOString()
     }
   ]
 }
@@ -532,20 +614,88 @@ function getMockRootCauseAnalysis(threatPathId: string): RootCauseAnalysis {
     id: 'rca-1',
     threatPathId,
     primaryCause: 'Insufficient email security controls',
+    contributingFactors: [
+      {
+        category: 'Technical',
+        factor: 'Outdated email security filters',
+        impact: 'High',
+        description: 'Email security system failed to detect sophisticated phishing attempt'
+      },
+      {
+        category: 'Process',
+        factor: 'Lack of security awareness training',
+        impact: 'Medium',
+        description: 'Users not adequately trained to identify phishing attempts'
+      }
+    ],
     whyAnalysis: [
       {
         level: 0,
         question: 'Why did the attack succeed?',
         answer: 'Phishing email bypassed security controls',
-        evidence: ['email-logs', 'security-tool-alerts'],
-        relatedFactors: []
+        evidence: ['email-logs', 'security-tool-alerts']
+      },
+      {
+        level: 1,
+        question: 'Why did the phishing email bypass security controls?',
+        answer: 'Email security filters were not updated with latest threat signatures',
+        evidence: ['filter-configuration', 'threat-intelligence-feeds']
       }
     ],
-    contributingFactors: [],
-    timeline: [],
-    recommendations: [],
+    fishboneDiagram: {
+      categories: [
+        {
+          name: 'Technology',
+          causes: ['Outdated email filters', 'Insufficient endpoint protection', 'Lack of email sandboxing']
+        },
+        {
+          name: 'Process',
+          causes: ['No regular security training', 'Inadequate incident response procedures', 'Poor patch management']
+        },
+        {
+          name: 'People',
+          causes: ['Lack of security awareness', 'Insufficient training', 'Human error']
+        }
+      ]
+    },
+    timeline: [
+      {
+        timestamp: new Date(Date.now() - 86400000).toISOString(),
+        event: 'Phishing email sent to target user',
+        impact: 'Initial compromise vector established',
+        preventable: true
+      },
+      {
+        timestamp: new Date(Date.now() - 82800000).toISOString(),
+        event: 'User clicked malicious link',
+        impact: 'Malware downloaded to workstation',
+        preventable: true
+      }
+    ],
+    recommendations: [
+      {
+        type: 'Immediate',
+        action: 'Update email security filters with latest threat signatures',
+        owner: 'IT Security Team',
+        timeline: '24 hours',
+        priority: 'Critical'
+      },
+      {
+        type: 'Short-term',
+        action: 'Implement mandatory security awareness training',
+        owner: 'HR and Security Teams',
+        timeline: '2 weeks',
+        priority: 'High'
+      }
+    ],
+    lessonsLearned: [
+      'Email security controls require regular updates',
+      'User training is critical for preventing social engineering attacks',
+      'Multi-layered security approach is essential'
+    ],
     createdAt: new Date().toISOString(),
-    status: 'completed'
+    createdBy: 'Security Analyst',
+    status: 'Approved'
   }
 }
 

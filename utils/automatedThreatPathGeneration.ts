@@ -282,14 +282,15 @@ function findShortestPath(
   
   const pathNodes: string[] = []
   const pathEdges: Array<{ from: string; to: string }> = []
-  let current = target
+  let current: string | null = target
   
   while (current !== null) {
     pathNodes.unshift(current)
-    if (previous[current] !== null) {
-      pathEdges.unshift({ from: previous[current]!, to: current })
+    const previousNode: string | null = previous[current]
+    if (previousNode !== null) {
+      pathEdges.unshift({ from: previousNode, to: current })
     }
-    current = previous[current]
+    current = previousNode
   }
   
   return { nodes: pathNodes, edges: pathEdges }

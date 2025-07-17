@@ -738,7 +738,7 @@ function createEnhancedNode(nodeData: any, category: string): EnhancedCybersecur
   
   // Add compliance requirements for regulated systems
   if (['Database', 'File Server', 'Domain Controller'].includes(nodeData.type)) {
-    baseNode.properties.complianceRequirements = determineComplianceRequirements(nodeData.type)
+    (baseNode.properties as any).complianceRequirements = determineComplianceRequirements(nodeData.type)
   }
   
   return baseNode
@@ -1174,7 +1174,7 @@ function categorizeNodeType(type: string): 'Infrastructure' | 'Identity' | 'Data
     'Compliance Framework': 'Compliance'
   }
   
-  return categories[type as keyof typeof categories] || 'Infrastructure'
+  return (categories[type as keyof typeof categories] || 'Infrastructure') as 'Infrastructure' | 'Identity' | 'Data' | 'Application' | 'Network' | 'Security' | 'Threat' | 'Compliance'
 }
 
 function categorizeEdgeType(type: string): 'Network' | 'Access' | 'Data Flow' | 'Trust' | 'Exploit' | 'Lateral Movement' | 'Compliance' {
@@ -1190,7 +1190,7 @@ function categorizeEdgeType(type: string): 'Network' | 'Access' | 'Data Flow' | 
     'Privilege Escalation': 'Exploit'
   }
   
-  return categories[type as keyof typeof categories] || 'Network'
+  return (categories[type as keyof typeof categories] || 'Network') as 'Network' | 'Access' | 'Data Flow' | 'Trust' | 'Exploit' | 'Lateral Movement' | 'Compliance'
 }
 
 // Additional helper functions for enhanced properties
@@ -1240,7 +1240,7 @@ function determineDataClassification(type: string): 'Public' | 'Internal' | 'Con
     'Web Server': 'Public'
   }
   
-  return classifications[type as keyof typeof classifications] || 'Internal'
+  return (classifications[type as keyof typeof classifications] || 'Internal') as 'Public' | 'Internal' | 'Confidential' | 'Restricted'
 }
 
 function determineBackupStatus(type: string): 'Current' | 'Outdated' | 'None' {
@@ -1371,7 +1371,7 @@ function calculateAssetValue(type: string): 'Critical' | 'High' | 'Medium' | 'Lo
     'EDR': 'High'
   }
   
-  return values[type as keyof typeof values] || 'Medium'
+  return (values[type as keyof typeof values] || 'Medium') as 'Critical' | 'High' | 'Medium' | 'Low'
 }
 
 function generateSecurityControls(type: string): string[] {
@@ -1399,7 +1399,7 @@ function determineMonitoringLevel(type: string): 'High' | 'Medium' | 'Low' | 'No
     'EDR': 'High'
   }
   
-  return levels[type as keyof typeof levels] || 'Low'
+  return (levels[type as keyof typeof levels] || 'Low') as 'High' | 'Medium' | 'Low' | 'None'
 }
 
 function calculateNodeRiskScore(node: any): number {
@@ -1437,7 +1437,7 @@ function calculateEdgeRiskLevel(edge: any): 'Critical' | 'High' | 'Medium' | 'Lo
     'Monitoring Relationship': 'Low'
   }
   
-  return riskTypes[edge.type as keyof typeof riskTypes] || 'Medium'
+  return (riskTypes[edge.type as keyof typeof riskTypes] || 'Medium') as 'Critical' | 'High' | 'Medium' | 'Low'
 }
 
 function generateExploitMethods(type: string): string[] {
@@ -1480,7 +1480,7 @@ function assignDifficulty(type: string): 'Low' | 'Medium' | 'High' {
     'Monitoring Relationship': 'High'
   }
   
-  return difficulties[type as keyof typeof difficulties] || 'Medium'
+  return (difficulties[type as keyof typeof difficulties] || 'Medium') as 'Low' | 'Medium' | 'High'
 }
 
 function assignMitreTechnique(type: string): string {
@@ -1563,7 +1563,7 @@ function determineDataFlow(type: string): 'Bidirectional' | 'Unidirectional' | '
     'Threat Relationship': 'Unidirectional'
   }
   
-  return flows[type as keyof typeof flows] || 'Bidirectional'
+  return (flows[type as keyof typeof flows] || 'Bidirectional') as 'Bidirectional' | 'Unidirectional' | 'None'
 }
 
 function determineBandwidth(type: string): string {

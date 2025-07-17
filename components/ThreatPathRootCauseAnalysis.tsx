@@ -707,12 +707,10 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
                       key={index}
                       cursor="pointer"
                       onClick={() => setNewFactor({
-                        title: template.title,
+                        factor: template.title,
                         description: template.description,
                         category: selectedCategory as any,
-                        impact: 'medium',
-                        likelihood: 'medium',
-                        evidence: []
+                        impact: 'Medium'
                       })}
                       _hover={{ shadow: 'md' }}
                       size="sm"
@@ -738,16 +736,12 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
             <Button
               colorScheme="blue"
               onClick={() => {
-                if (newFactor.title && newFactor.description) {
+                if (newFactor.factor && newFactor.description) {
                   const factor: ContributingFactor = {
-                    id: `factor-${Date.now()}`,
-                    title: newFactor.title,
+                    factor: newFactor.factor,
                     description: newFactor.description,
                     category: selectedCategory as any,
-                    impact: newFactor.impact || 'medium',
-                    likelihood: newFactor.likelihood || 'medium',
-                    evidence: newFactor.evidence || [],
-                    mitigations: []
+                    impact: newFactor.impact || 'Medium'
                   }
                   
                   handleFactorAdd(factor)
@@ -762,7 +756,7 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
                   })
                 }
               }}
-              isDisabled={!newFactor.title || !newFactor.description}
+              isDisabled={!newFactor.factor || !newFactor.description}
             >
               Add Factor
             </Button>
@@ -860,7 +854,7 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
           </VStack>
           
           <HStack>
-            <Badge colorScheme={analysis.status === 'completed' ? 'green' : 'yellow'}>
+            <Badge colorScheme={analysis.status === 'Implemented' ? 'green' : 'yellow'}>
               {analysis.status.replace('_', ' ')}
             </Badge>
             <ButtonGroup>
@@ -874,7 +868,7 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
                 leftIcon={<RepeatIcon />}
                 colorScheme="blue"
                 onClick={() => {
-                  const updatedAnalysis = { ...analysis, status: 'completed' as const }
+                  const updatedAnalysis = { ...analysis, status: 'Implemented' as const }
                   setAnalysis(updatedAnalysis)
                   onAnalysisUpdate(updatedAnalysis)
                 }}

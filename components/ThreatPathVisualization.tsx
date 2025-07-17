@@ -25,12 +25,14 @@ import {
   AlertIcon
 } from '@chakra-ui/react'
 import { 
-  PlayIcon, 
-  PauseIcon, 
+  TriangleUpIcon, 
+  MinusIcon, 
   RepeatIcon, 
   ViewIcon,
-  TimeIcon,
-  WarningIcon
+  InfoIcon,
+  WarningIcon,
+  CheckIcon,
+  TimeIcon
 } from '@chakra-ui/icons'
 import { ThreatPathScenario } from '../types/threatPath'
 
@@ -279,7 +281,7 @@ const ThreatPathVisualization: React.FC<ThreatPathVisualizationProps> = ({
             
             <HStack spacing={4} width="100%">
               <IconButton
-                icon={animation.isPlaying ? <PauseIcon /> : <PlayIcon />}
+                icon={animation.isPlaying ? <MinusIcon /> : <TriangleUpIcon />}
                 onClick={handlePlayPause}
                 colorScheme="blue"
                 aria-label={animation.isPlaying ? 'Pause' : 'Play'}

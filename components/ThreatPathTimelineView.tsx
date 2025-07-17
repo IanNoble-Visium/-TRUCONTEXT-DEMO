@@ -30,13 +30,12 @@ import {
   GridItem
 } from '@chakra-ui/react'
 import {
-  PlayIcon,
-  PauseIcon,
+  TriangleUpIcon,
+  MinusIcon,
   RepeatIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   TimeIcon,
-  WarningIcon,
   InfoIcon,
   ViewIcon
 } from '@chakra-ui/icons'
@@ -269,7 +268,7 @@ const ThreatPathTimelineView: React.FC<ThreatPathTimelineViewProps> = ({
           {/* Playback Controls */}
           <HStack spacing={4} width="100%">
             <IconButton
-              icon={timeline.isPlaying ? <PauseIcon /> : <PlayIcon />}
+              icon={timeline.isPlaying ? <MinusIcon /> : <TriangleUpIcon />}
               onClick={handlePlayPause}
               colorScheme="blue"
               aria-label={timeline.isPlaying ? 'Pause' : 'Play'}

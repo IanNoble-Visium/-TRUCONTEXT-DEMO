@@ -584,7 +584,7 @@ function dijkstraShortestPath(
   if (distances[target] === Infinity) return null
   
   const path: string[] = []
-  let current = target
+  let current: string | null = target
   
   while (current !== null) {
     path.unshift(current)

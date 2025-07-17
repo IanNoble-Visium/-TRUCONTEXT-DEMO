@@ -1,5 +1,16 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { SOCAction, ActionStatus, WorkflowExecution } from '../../../types/threatPath'
+import { SOCAction } from '../../../types/threatPath'
+
+// Define ActionStatus locally
+type ActionStatus = 'Pending' | 'In Progress' | 'Completed' | 'Verified' | 'Failed' | 'Running'
+type WorkflowExecution = {
+  id: string
+  name: string
+  status: 'Pending' | 'Running' | 'Completed' | 'Failed'
+  steps: any[]
+  startedAt?: string
+  completedAt?: string
+}
 
 // Mock database for demo purposes
 let mockActions: SOCAction[] = []
@@ -69,10 +80,10 @@ async function handleGetActions(req: NextApiRequest, res: NextApiResponse) {
       actions: filteredActions,
       summary: {
         total: filteredActions.length,
-        pending: filteredActions.filter(a => a.status === 'pending').length,
-        inProgress: filteredActions.filter(a => a.status === 'in_progress').length,
-        completed: filteredActions.filter(a => a.status === 'completed').length,
-        failed: filteredActions.filter(a => a.status === 'failed').length
+        pending: filteredActions.filter(a => a.status === 'Pending').length,
+        inProgress: filteredActions.filter(a => a.status === 'In Progress').length,
+        completed: filteredActions.filter(a => a.status === 'Completed').length,
+        failed: filteredActions.filter(a => a.status === 'Failed').length
       },
       teamMembers: mockTeamMembers
     }
@@ -83,44 +94,39 @@ async function handleCreateAction(req: NextApiRequest, res: NextApiResponse) {
   const actionData = req.body as Partial<SOCAction>
 
   // Validate required fields
-  if (!actionData.threatPathId || !actionData.type || !actionData.title || !actionData.description) {
+  if (!actionData.type || !actionData.name || !actionData.description) {
     return res.status(400).json({
       error: 'Missing required fields',
-      required: ['threatPathId', 'type', 'title', 'description']
+      required: ['type', 'name', 'description']
     })
   }
 
   const newAction: SOCAction = {
     id: `action-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    threatPathId: actionData.threatPathId,
-    type: actionData.type,
-    title: actionData.title,
-    description: actionData.description,
-    status: 'pending',
-    priority: actionData.priority || 'medium',
-    assignedTo: actionData.assignedTo || '',
+    threatPathId: 'default-threat-path',
+    type: actionData.type!,
+    category: 'Security Response',
+    name: actionData.name!,
+    description: actionData.description!,
+    priority: 'Medium',
+    status: 'Pending',
+    estimatedTime: '30 minutes',
+    automationAvailable: false,
+    approvalRequired: false,
     createdAt: new Date().toISOString(),
-    estimatedDuration: actionData.estimatedDuration || '30 minutes',
-    targetNodes: actionData.targetNodes || [],
-    targetIPs: actionData.targetIPs || [],
-    targetDomains: actionData.targetDomains || [],
-    targetAccounts: actionData.targetAccounts || [],
-    notes: actionData.notes || '',
-    approvalRequired: actionData.approvalRequired || false,
-    automatedExecution: actionData.automatedExecution || false,
-    scheduledTime: actionData.scheduledTime
+    updatedAt: new Date().toISOString()
   }
 
   mockActions.push(newAction)
 
   // Send notification if assigned
-  if (newAction.assignedTo) {
+  if (actionData.assignedTo) {
     const notification = {
       id: `notif-${Date.now()}`,
       type: 'action_assigned',
       actionId: newAction.id,
       threatPathId: newAction.threatPathId,
-      message: `New ${newAction.type} action assigned: ${newAction.title}`,
+      message: `New ${newAction.type} action assigned: ${newAction.name}`,
       recipient: newAction.assignedTo,
       timestamp: new Date().toISOString(),
       read: false
@@ -129,7 +135,7 @@ async function handleCreateAction(req: NextApiRequest, res: NextApiResponse) {
   }
 
   // Auto-execute if automated and no approval required
-  if (newAction.automatedExecution && !newAction.approvalRequired) {
+  if (newAction.automationAvailable && !newAction.approvalRequired) {
     setTimeout(() => {
       executeAutomatedAction(newAction.id)
     }, 2000) // Simulate 2-second execution delay
@@ -160,13 +166,13 @@ async function handleUpdateAction(req: NextApiRequest, res: NextApiResponse) {
   // Update timestamps based on status changes
   if (updates.status && updates.status !== originalAction.status) {
     switch (updates.status) {
-      case 'in_progress':
+      case 'In Progress':
         updatedAction.startedAt = new Date().toISOString()
         break
-      case 'completed':
+      case 'Completed':
         updatedAction.completedAt = new Date().toISOString()
         break
-      case 'failed':
+      case 'Failed':
         updatedAction.failedAt = new Date().toISOString()
         break
     }
@@ -221,11 +227,13 @@ async function executeAutomatedAction(actionId: string) {
   const action = mockActions[actionIndex]
 
   // Simulate automated execution
-  mockActions[actionIndex] = {
+  const updatedAction = {
     ...action,
-    status: 'in_progress',
-    startedAt: new Date().toISOString()
+    status: 'In Progress' as const,
+    updatedAt: new Date().toISOString()
   }
+  
+  mockActions[actionIndex] = updatedAction
 
   // Simulate execution time
   setTimeout(() => {
@@ -233,15 +241,9 @@ async function executeAutomatedAction(actionId: string) {
 
     mockActions[actionIndex] = {
       ...mockActions[actionIndex],
-      status: success ? 'completed' : 'failed',
+      status: success ? 'Completed' : 'Failed',
       completedAt: success ? new Date().toISOString() : undefined,
-      failedAt: success ? undefined : new Date().toISOString(),
-      executionResults: {
-        success,
-        message: success ? 'Automated execution completed successfully' : 'Automated execution failed',
-        affectedSystems: action.targetNodes?.length || 0,
-        executionTime: '2.3 seconds'
-      }
+      updatedAt: new Date().toISOString()
     }
 
     // Send completion notification
@@ -250,7 +252,7 @@ async function executeAutomatedAction(actionId: string) {
       type: 'action_completed',
       actionId: action.id,
       threatPathId: action.threatPathId,
-      message: `Automated action "${action.title}" ${success ? 'completed successfully' : 'failed'}`,
+      message: `Automated action "${action.name}" ${success ? 'completed successfully' : 'Failed'}`,
       recipient: action.assignedTo,
       timestamp: new Date().toISOString(),
       read: false

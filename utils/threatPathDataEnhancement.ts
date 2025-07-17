@@ -889,7 +889,7 @@ function categorizeNodeType(type: string): 'Infrastructure' | 'Identity' | 'Data
     'Vulnerability': 'Security'
   }
   
-  return categories[type as keyof typeof categories] || 'Infrastructure'
+  return (categories[type as keyof typeof categories] || 'Infrastructure') as 'Infrastructure' | 'Identity' | 'Data' | 'Application' | 'Network' | 'Security' | 'Threat'
 }
 
 function categorizeEdgeType(type: string): 'Network' | 'Access' | 'Data Flow' | 'Trust' | 'Exploit' | 'Lateral Movement' {
@@ -903,7 +903,7 @@ function categorizeEdgeType(type: string): 'Network' | 'Access' | 'Data Flow' | 
     'Has Access To': 'Access'
   }
   
-  return categories[type as keyof typeof categories] || 'Network'
+  return (categories[type as keyof typeof categories] || 'Network') as 'Network' | 'Access' | 'Data Flow' | 'Trust' | 'Exploit' | 'Lateral Movement'
 }
 
 function calculateNodeCriticality(node: any): 'Critical' | 'High' | 'Medium' | 'Low' {
@@ -978,7 +978,7 @@ function determineMonitoringLevel(type: string): 'High' | 'Medium' | 'Low' | 'No
     'Network Device': 'Medium'
   }
   
-  return levels[type as keyof typeof levels] || 'Low'
+  return (levels[type as keyof typeof levels] || 'Low') as 'High' | 'Medium' | 'Low' | 'None'
 }
 
 function calculateNodeRiskScore(node: any): number {
@@ -1010,7 +1010,7 @@ function calculateEdgeRiskLevel(edge: any): 'Critical' | 'High' | 'Medium' | 'Lo
     'Connection': 'Low'
   }
   
-  return riskTypes[edge.type as keyof typeof riskTypes] || 'Medium'
+  return (riskTypes[edge.type as keyof typeof riskTypes] || 'Medium') as 'Critical' | 'High' | 'Medium' | 'Low'
 }
 
 function generateExploitMethods(type: string): string[] {
@@ -1044,6 +1044,6 @@ function assignDifficulty(type: string): 'Low' | 'Medium' | 'High' {
     'Connection': 'Medium'
   }
   
-  return difficulties[type as keyof typeof difficulties] || 'Medium'
+  return (difficulties[type as keyof typeof difficulties] || 'Medium') as 'Low' | 'Medium' | 'High'
 }
 

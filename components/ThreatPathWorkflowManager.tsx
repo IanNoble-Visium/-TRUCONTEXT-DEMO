@@ -50,13 +50,6 @@ import {
   Spacer,
   Avatar,
   AvatarGroup,
-  Timeline,
-  TimelineItem,
-  TimelineConnector,
-  TimelineContent,
-  TimelineOppositeContent,
-  TimelineSeparator,
-  TimelineDot,
   Grid,
   GridItem,
   Stat,
@@ -83,7 +76,26 @@ import {
   BellIcon,
   ChatIcon
 } from '@chakra-ui/icons'
-import { ThreatPathScenario, SOCAction, WorkflowTemplate, WorkflowExecution, ActionStatus } from '../types/threatPath'
+import { ThreatPathScenario, SOCAction } from '../types/threatPath'
+
+// Define missing types locally
+type WorkflowExecution = {
+  id: string
+  name: string
+  status: 'Pending' | 'Running' | 'Completed' | 'Failed'
+  steps: any[]
+  startedAt?: string
+  completedAt?: string
+}
+
+type WorkflowTemplate = {
+  id: string
+  name: string
+  description: string
+  steps: WorkflowStep[]
+}
+
+type ActionStatus = 'Pending' | 'In Progress' | 'Completed' | 'Verified' | 'Failed' | 'Running'
 
 interface ThreatPathWorkflowManagerProps {
   threatPath: ThreatPathScenario
@@ -98,7 +110,6 @@ interface WorkflowStep {
   title: string
   description: string
   actionType: 'containment' | 'investigation' | 'remediation' | 'preventive'
-  estimatedDuration: string
   dependencies: string[]
   assignedRole: string
   automatable: boolean
@@ -150,15 +161,12 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
       id: 'critical-incident',
       name: 'Critical Incident Response',
       description: 'Comprehensive response for critical security incidents',
-      severity: 'Critical',
-      estimatedDuration: '4-8 hours',
       steps: [
         {
           id: 'immediate-containment',
           title: 'Immediate Containment',
           description: 'Isolate affected systems and block malicious traffic',
           actionType: 'containment',
-          estimatedDuration: '30 minutes',
           dependencies: [],
           assignedRole: 'SOC Analyst L2',
           automatable: true,
@@ -170,7 +178,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Stakeholder Notification',
           description: 'Notify CISO and relevant stakeholders',
           actionType: 'investigation',
-          estimatedDuration: '15 minutes',
           dependencies: ['immediate-containment'],
           assignedRole: 'SOC Analyst L3',
           automatable: false,
@@ -182,7 +189,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Forensic Evidence Collection',
           description: 'Collect and preserve forensic evidence',
           actionType: 'investigation',
-          estimatedDuration: '2 hours',
           dependencies: ['immediate-containment'],
           assignedRole: 'Incident Response',
           automatable: false,
@@ -194,7 +200,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Threat Intelligence Analysis',
           description: 'Analyze threat indicators and attribution',
           actionType: 'investigation',
-          estimatedDuration: '1 hour',
           dependencies: ['forensic-collection'],
           assignedRole: 'Threat Hunter',
           automatable: false,
@@ -206,7 +211,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'System Remediation',
           description: 'Clean and restore affected systems',
           actionType: 'remediation',
-          estimatedDuration: '3 hours',
           dependencies: ['forensic-collection'],
           assignedRole: 'SOC Analyst L2',
           automatable: true,
@@ -218,7 +222,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Security Hardening',
           description: 'Implement additional security controls',
           actionType: 'preventive',
-          estimatedDuration: '2 hours',
           dependencies: ['system-remediation'],
           assignedRole: 'SOC Analyst L3',
           automatable: false,
@@ -231,15 +234,12 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
       id: 'apt-response',
       name: 'APT Investigation Workflow',
       description: 'Specialized workflow for Advanced Persistent Threat incidents',
-      severity: 'High',
-      estimatedDuration: '1-3 days',
       steps: [
         {
           id: 'initial-triage',
           title: 'Initial Triage',
           description: 'Assess scope and impact of APT activity',
           actionType: 'investigation',
-          estimatedDuration: '2 hours',
           dependencies: [],
           assignedRole: 'SOC Analyst L3',
           automatable: false,
@@ -251,7 +251,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Covert Monitoring Setup',
           description: 'Deploy enhanced monitoring without alerting attackers',
           actionType: 'investigation',
-          estimatedDuration: '4 hours',
           dependencies: ['initial-triage'],
           assignedRole: 'Threat Hunter',
           automatable: false,
@@ -263,7 +262,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Attribution Analysis',
           description: 'Identify threat actor and campaign',
           actionType: 'investigation',
-          estimatedDuration: '8 hours',
           dependencies: ['covert-monitoring'],
           assignedRole: 'Threat Hunter',
           automatable: false,
@@ -275,7 +273,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Coordinated Response',
           description: 'Execute coordinated containment and eradication',
           actionType: 'containment',
-          estimatedDuration: '6 hours',
           dependencies: ['attribution-analysis'],
           assignedRole: 'Incident Response',
           automatable: false,
@@ -288,15 +285,12 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
       id: 'ransomware-response',
       name: 'Ransomware Response',
       description: 'Rapid response workflow for ransomware incidents',
-      severity: 'Critical',
-      estimatedDuration: '2-6 hours',
       steps: [
         {
           id: 'network-isolation',
           title: 'Network Isolation',
           description: 'Immediately isolate affected networks',
           actionType: 'containment',
-          estimatedDuration: '15 minutes',
           dependencies: [],
           assignedRole: 'SOC Analyst L2',
           automatable: true,
@@ -308,7 +302,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Backup Verification',
           description: 'Verify integrity of backup systems',
           actionType: 'investigation',
-          estimatedDuration: '30 minutes',
           dependencies: ['network-isolation'],
           assignedRole: 'SOC Analyst L3',
           automatable: false,
@@ -320,7 +313,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Ransomware Analysis',
           description: 'Identify ransomware variant and capabilities',
           actionType: 'investigation',
-          estimatedDuration: '2 hours',
           dependencies: ['network-isolation'],
           assignedRole: 'Threat Hunter',
           automatable: false,
@@ -332,7 +324,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           title: 'Recovery Planning',
           description: 'Plan system recovery and restoration',
           actionType: 'remediation',
-          estimatedDuration: '1 hour',
           dependencies: ['backup-verification', 'ransom-analysis'],
           assignedRole: 'Incident Response',
           automatable: false,
@@ -347,8 +338,8 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
   useEffect(() => {
     if (workflowExecution) {
       const totalSteps = workflowExecution.steps.length
-      const completedSteps = workflowExecution.steps.filter(step => step.status === 'completed').length
-      const inProgressSteps = workflowExecution.steps.filter(step => step.status === 'in_progress').length
+      const completedSteps = workflowExecution.steps.filter(step => step.status === 'Completed').length
+      const inProgressSteps = workflowExecution.steps.filter(step => step.status === 'Running').length
       const pendingSteps = workflowExecution.steps.filter(step => step.status === 'pending').length
       const failedSteps = workflowExecution.steps.filter(step => step.status === 'failed').length
       
@@ -368,7 +359,7 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
   
   const calculateEstimatedCompletion = (execution: WorkflowExecution): string => {
     // Simple estimation based on remaining steps and average duration
-    const remainingSteps = execution.steps.filter(step => step.status !== 'completed').length
+    const remainingSteps = execution.steps.filter(step => step.status !== 'Completed').length
     const avgDuration = 60 // minutes per step
     const estimatedMinutes = remainingSteps * avgDuration
     
@@ -395,21 +386,12 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
   
   const getStatusColor = (status: ActionStatus) => {
     switch (status) {
-      case 'pending': return 'yellow'
-      case 'in_progress': return 'blue'
-      case 'completed': return 'green'
-      case 'failed': return 'red'
-      case 'cancelled': return 'gray'
-      default: return 'gray'
-    }
-  }
-  
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'Critical': return 'red'
-      case 'High': return 'orange'
-      case 'Medium': return 'yellow'
-      case 'Low': return 'green'
+      case 'Pending': return 'yellow'
+      case 'In Progress': return 'blue'
+      case 'Running': return 'blue'
+      case 'Completed': return 'green'
+      case 'Failed': return 'red'
+      case 'Verified': return 'purple'
       default: return 'gray'
     }
   }
@@ -418,10 +400,8 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
     try {
       const execution: WorkflowExecution = {
         id: `workflow-${Date.now()}`,
-        threatPathId: threatPath.id,
-        templateId: template.id,
         name: template.name,
-        status: 'in_progress',
+        status: 'Running',
         startedAt: new Date().toISOString(),
         steps: template.steps.map(step => ({
           ...step,
@@ -467,8 +447,8 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
     // Check for newly available steps
     updatedSteps.forEach(step => {
       if (step.status === 'waiting') {
-        const dependenciesMet = step.dependencies.every(depId =>
-          updatedSteps.find(s => s.id === depId)?.status === 'completed'
+        const dependenciesMet = step.dependencies.every((depId: string) =>
+          updatedSteps.find(s => s.id === depId)?.status === 'Completed'
         )
         
         if (dependenciesMet) {
@@ -487,23 +467,22 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
     
     // Check if workflow is complete
     const allCompleted = updatedSteps.every(step => 
-      step.status === 'completed' || step.status === 'cancelled'
+      step.status === 'Completed' || step.status === 'cancelled'
     )
     
     if (allCompleted) {
-      updatedExecution.status = 'completed'
+      updatedExecution.status = 'Completed'
       updatedExecution.completedAt = new Date().toISOString()
-      await sendWorkflowNotifications(updatedExecution, 'completed')
+      await sendWorkflowNotifications(updatedExecution, 'Completed')
     }
   }
   
   const sendWorkflowNotifications = async (execution: WorkflowExecution, event: string) => {
     const notification = {
-      id: `notif-${Date.now()}`,
-      type: 'workflow',
+      id: `notification-${Date.now()}`,
+      type: 'workflow_update',
       event,
       workflowId: execution.id,
-      threatPathId: execution.threatPathId,
       message: `Workflow "${execution.name}" ${event}`,
       timestamp: new Date().toISOString(),
       recipients: teamMembers.map(member => member.id)
@@ -525,16 +504,13 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
           _hover={{ shadow: 'lg', transform: 'translateY(-2px)' }}
           transition="all 0.2s"
           borderLeft="4px solid"
-          borderLeftColor={getSeverityColor(template.severity) + '.500'}
+          borderLeftColor="blue.500"
         >
           <CardBody>
             <HStack justify="space-between" align="start">
               <VStack align="start" spacing={2} flex={1}>
                 <HStack>
                   <Text fontWeight="bold" fontSize="lg">{template.name}</Text>
-                  <Badge colorScheme={getSeverityColor(template.severity)}>
-                    {template.severity}
-                  </Badge>
                 </HStack>
                 
                 <Text fontSize="sm" color="gray.600">
@@ -544,7 +520,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
                 <HStack spacing={4} fontSize="sm" color="gray.500">
                   <HStack>
                     <TimeIcon />
-                    <Text>{template.estimatedDuration}</Text>
                   </HStack>
                   <HStack>
                     <InfoIcon />
@@ -558,7 +533,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
               </VStack>
               
               <Button
-                colorScheme={getSeverityColor(template.severity)}
                 onClick={(e) => {
                   e.stopPropagation()
                   handleWorkflowStart(template)
@@ -631,7 +605,7 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
             </Grid>
             
             {/* Estimated Completion */}
-            {workflowExecution.status === 'in_progress' && (
+            {workflowExecution.status === 'Running' && (
               <Alert status="info" size="sm">
                 <AlertIcon />
                 <AlertTitle fontSize="sm">Estimated Completion:</AlertTitle>
@@ -700,7 +674,6 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
                       
                       <HStack spacing={4} fontSize="sm" color="gray.500">
                         <Text><strong>Assigned:</strong> {step.assignedRole}</Text>
-                        <Text><strong>Duration:</strong> {step.estimatedDuration}</Text>
                         {step.dependencies.length > 0 && (
                           <Text><strong>Depends on:</strong> {step.dependencies.length} steps</Text>
                         )}
@@ -719,7 +692,7 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
                           size="sm"
                           colorScheme="blue"
                           onClick={() => handleStepUpdate(step.id, { 
-                            status: 'in_progress',
+                            status: 'Running',
                             startedAt: new Date().toISOString()
                           })}
                         >
@@ -727,12 +700,12 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
                         </Button>
                       )}
                       
-                      {step.status === 'in_progress' && (
+                      {step.status === 'Running' && (
                         <ButtonGroup size="sm">
                           <Button
                             colorScheme="green"
                             onClick={() => handleStepUpdate(step.id, { 
-                              status: 'completed',
+                              status: 'Completed',
                               completedAt: new Date().toISOString()
                             })}
                           >
@@ -751,7 +724,7 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
                         </ButtonGroup>
                       )}
                       
-                      {step.status === 'completed' && (
+                      {step.status === 'Completed' && (
                         <CheckCircleIcon color="green.500" />
                       )}
                       
@@ -858,7 +831,7 @@ const ThreatPathWorkflowManager: React.FC<ThreatPathWorkflowManagerProps> = ({
               leftIcon={<AddIcon />}
               colorScheme="blue"
               onClick={onWorkflowModalOpen}
-              isDisabled={!!workflowExecution && workflowExecution.status === 'in_progress'}
+              isDisabled={!!workflowExecution && workflowExecution.status === 'Running'}
             >
               Start Workflow
             </Button>
