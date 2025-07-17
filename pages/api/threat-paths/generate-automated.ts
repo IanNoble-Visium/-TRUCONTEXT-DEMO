@@ -117,8 +117,13 @@ export default async function handler(
     const totalRiskScore = allPaths.reduce((sum, path) => sum + (path.riskScore || 0), 0)
     const averageRiskScore = allPaths.length > 0 ? totalRiskScore / allPaths.length : 0
 
+    // Calculate average path length
+    const totalPathLength = allPaths.reduce((sum, path) => sum + (path.nodes?.length || 0), 0)
+    const averageLength = allPaths.length > 0 ? totalPathLength / allPaths.length : 0
+
     const analytics = {
       totalPaths: threatScenarios.length,
+      averageLength: averageLength,
       activePaths: threatScenarios.filter(s => s.paths.some(p => p.severity === 'Critical' || p.severity === 'High')).length,
       mitigatedPaths: 0, // Mock value for demo
       averageRiskScore: averageRiskScore,
