@@ -97,7 +97,7 @@ import {
   FiFileText,
   FiTool,
   FiTrendingDown,
-  FiBarChart3,
+  FiBarChart,
   FiPieChart,
   FiMap,
   FiLayers

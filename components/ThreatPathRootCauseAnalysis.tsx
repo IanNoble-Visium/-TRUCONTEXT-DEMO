@@ -77,7 +77,22 @@ import {
   ViewIcon,
   RepeatIcon
 } from '@chakra-ui/icons'
-import { ThreatPathScenario, RootCauseAnalysis, WhyAnalysisLevel, ContributingFactor } from '../types/threatPath'
+import { ThreatPathScenario, RootCauseAnalysis } from '../types/threatPath'
+
+// Define missing types locally
+interface WhyAnalysisLevel {
+  level: number
+  question: string
+  answer: string
+  evidence: string[]
+}
+
+interface ContributingFactor {
+  category: 'Technical' | 'Process' | 'Human' | 'Environmental'
+  factor: string
+  impact: 'High' | 'Medium' | 'Low'
+  description: string
+}
 
 interface ThreatPathRootCauseAnalysisProps {
   threatPath: ThreatPathScenario
@@ -113,10 +128,15 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
     primaryCause: '',
     whyAnalysis: [],
     contributingFactors: [],
+    fishboneDiagram: {
+      categories: []
+    },
     timeline: [],
     recommendations: [],
+    lessonsLearned: [],
     createdAt: new Date().toISOString(),
-    status: 'in_progress'
+    createdBy: 'SOC Analyst',
+    status: 'Draft'
   })
   
   const [currentWhyLevel, setCurrentWhyLevel] = useState(0)
@@ -139,37 +159,25 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
       id: 'technical',
       name: 'Technical',
       color: 'blue',
-      factors: analysis.contributingFactors.filter(f => f.category === 'technical')
+      factors: analysis.contributingFactors.filter(f => f.category === 'Technical')
     },
     {
       id: 'process',
       name: 'Process',
       color: 'green',
-      factors: analysis.contributingFactors.filter(f => f.category === 'process')
+      factors: analysis.contributingFactors.filter(f => f.category === 'Process')
     },
     {
       id: 'human',
       name: 'Human',
       color: 'orange',
-      factors: analysis.contributingFactors.filter(f => f.category === 'human')
+      factors: analysis.contributingFactors.filter(f => f.category === 'Human')
     },
     {
       id: 'environmental',
       name: 'Environmental',
       color: 'purple',
-      factors: analysis.contributingFactors.filter(f => f.category === 'environmental')
-    },
-    {
-      id: 'management',
-      name: 'Management',
-      color: 'red',
-      factors: analysis.contributingFactors.filter(f => f.category === 'management')
-    },
-    {
-      id: 'external',
-      name: 'External',
-      color: 'cyan',
-      factors: analysis.contributingFactors.filter(f => f.category === 'external')
+      factors: analysis.contributingFactors.filter(f => f.category === 'Environmental')
     }
   ]
   
@@ -245,8 +253,7 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
       level,
       question,
       answer,
-      evidence: [],
-      relatedFactors: []
+      evidence: []
     }
     
     const updatedAnalysis = {
@@ -271,7 +278,7 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
   const handleFactorRemove = (factorId: string) => {
     const updatedAnalysis = {
       ...analysis,
-      contributingFactors: analysis.contributingFactors.filter(f => f.id !== factorId)
+      contributingFactors: analysis.contributingFactors.filter(f => f.factor !== factorId)
     }
     
     setAnalysis(updatedAnalysis)
@@ -282,13 +289,11 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
     const updatedAnalysis = {
       ...analysis,
       recommendations: [...analysis.recommendations, {
-        id: `rec-${Date.now()}`,
-        title: recommendation,
-        priority: 'medium',
-        category: 'technical',
-        description: '',
-        estimatedEffort: 'medium',
-        timeline: '1-3 months'
+        type: 'Short-term' as const,
+        action: recommendation,
+        owner: 'SOC Team',
+        timeline: '1-3 months',
+        priority: 'Medium' as const
       }]
     }
     
@@ -339,7 +344,7 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
               <AlertIcon />
               <AlertTitle>Start Why Analysis</AlertTitle>
               <AlertDescription>
-                Begin by asking "Why did this incident occur?" and continue drilling down.
+                Begin by asking &quot;Why did this incident occur?&quot; and continue drilling down.
               </AlertDescription>
             </Alert>
           ) : (
@@ -355,32 +360,13 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
                     {level.evidence.length > 0 && (
                       <Box>
                         <Text fontSize="sm" fontWeight="bold" mb={1}>Evidence:</Text>
-                        <Wrap>
-                          {level.evidence.map((evidence, idx) => (
-                            <WrapItem key={idx}>
-                              <Tag size="sm" colorScheme="green">
-                                <TagLabel>{evidence}</TagLabel>
-                              </Tag>
-                            </WrapItem>
+                        <VStack align="start" spacing={1}>
+                          {level.evidence.map((evidence, evidenceIndex) => (
+                            <Text key={evidenceIndex} fontSize="sm" color="gray.600">
+                              • {evidence}
+                            </Text>
                           ))}
-                        </Wrap>
-                      </Box>
-                    )}
-                    {level.relatedFactors.length > 0 && (
-                      <Box>
-                        <Text fontSize="sm" fontWeight="bold" mb={1}>Related Factors:</Text>
-                        <Wrap>
-                          {level.relatedFactors.map((factorId, idx) => {
-                            const factor = analysis.contributingFactors.find(f => f.id === factorId)
-                            return factor ? (
-                              <WrapItem key={idx}>
-                                <Tag size="sm" colorScheme={getCategoryColor(factor.category)}>
-                                  <TagLabel>{factor.title}</TagLabel>
-                                </Tag>
-                              </WrapItem>
-                            ) : null
-                          })}
-                        </Wrap>
+                        </VStack>
                       </Box>
                     )}
                   </VStack>
@@ -449,9 +435,9 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
                     </Text>
                   ) : (
                     category.factors.map(factor => (
-                      <HStack key={factor.id} justify="space-between">
+                      <HStack key={factor.factor} justify="space-between">
                         <VStack align="start" spacing={0} flex={1}>
-                          <Text fontSize="sm" fontWeight="bold">{factor.title}</Text>
+                          <Text fontSize="sm" fontWeight="bold">{factor.factor}</Text>
                           <Text fontSize="xs" color="gray.600" noOfLines={2}>
                             {factor.description}
                           </Text>
@@ -466,7 +452,7 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
                             aria-label="Remove factor"
                             variant="ghost"
                             colorScheme="red"
-                            onClick={() => handleFactorRemove(factor.id)}
+                            onClick={() => handleFactorRemove(factor.factor)}
                           />
                         </VStack>
                       </HStack>
@@ -611,20 +597,19 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
             </Alert>
           ) : (
             analysis.recommendations.map((rec, index) => (
-              <Card key={rec.id} size="sm">
+              <Card key={index} size="sm">
                 <CardBody>
                   <HStack justify="space-between" align="start">
                     <VStack align="start" spacing={1} flex={1}>
                       <HStack>
                         <Badge colorScheme={getImpactColor(rec.priority)}>{rec.priority}</Badge>
-                        <Badge colorScheme={getCategoryColor(rec.category)} variant="outline">
-                          {rec.category}
+                        <Badge colorScheme="blue" variant="outline">
+                          {rec.type}
                         </Badge>
                       </HStack>
-                      <Text fontWeight="bold">{rec.title}</Text>
-                      <Text fontSize="sm" color="gray.600">{rec.description}</Text>
+                      <Text fontWeight="bold">{rec.action}</Text>
                       <HStack spacing={4} fontSize="sm" color="gray.500">
-                        <Text><strong>Effort:</strong> {rec.estimatedEffort}</Text>
+                        <Text><strong>Owner:</strong> {rec.owner}</Text>
                         <Text><strong>Timeline:</strong> {rec.timeline}</Text>
                       </HStack>
                     </VStack>
@@ -680,11 +665,11 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
                   </FormControl>
                   
                   <FormControl isRequired>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>Factor</FormLabel>
                     <Input
-                      value={newFactor.title || ''}
-                      onChange={(e) => setNewFactor(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Brief title for the contributing factor"
+                      value={newFactor.factor || ''}
+                      onChange={(e) => setNewFactor(prev => ({ ...prev, factor: e.target.value }))}
+                      placeholder="Brief description of the contributing factor"
                     />
                   </FormControl>
                   
@@ -710,32 +695,7 @@ const ThreatPathRootCauseAnalysis: React.FC<ThreatPathRootCauseAnalysisProps> = 
                         <option value="low">Low</option>
                       </Select>
                     </FormControl>
-                    
-                    <FormControl>
-                      <FormLabel>Likelihood</FormLabel>
-                      <Select
-                        value={newFactor.likelihood || 'medium'}
-                        onChange={(e) => setNewFactor(prev => ({ ...prev, likelihood: e.target.value as any }))}
-                      >
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                      </Select>
-                    </FormControl>
                   </HStack>
-                  
-                  <FormControl>
-                    <FormLabel>Evidence</FormLabel>
-                    <Textarea
-                      value={newFactor.evidence?.join('\n') || ''}
-                      onChange={(e) => setNewFactor(prev => ({ 
-                        ...prev, 
-                        evidence: e.target.value.split('\n').filter(item => item.trim()) 
-                      }))}
-                      placeholder="Evidence supporting this factor (one per line)"
-                      rows={3}
-                    />
-                  </FormControl>
                 </VStack>
               </TabPanel>
               

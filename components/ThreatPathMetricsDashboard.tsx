@@ -76,7 +76,7 @@ import {
   FiAlertTriangle,
   FiCheckCircle,
   FiActivity,
-  FiBarChart3,
+  FiBarChart,
   FiPieChart,
   FiMap,
   FiLayers,
@@ -382,7 +382,7 @@ const ThreatPathMetricsDashboard: React.FC<ThreatPathMetricsDashboardProps> = ({
                   cy="50%"
                   outerRadius={80}
                   dataKey="count"
-                  label={({ severity, percentage }) => `${severity}: ${((count / severityDistribution.reduce((sum, item) => sum + item.count, 0)) * 100).toFixed(1)}%`}
+                  label={({ severity, count, percentage }) => `${severity}: ${((count / severityDistribution.reduce((sum, item) => sum + item.count, 0)) * 100).toFixed(1)}%`}
                 >
                   {severityDistribution.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
@@ -533,7 +533,7 @@ const ThreatPathMetricsDashboard: React.FC<ThreatPathMetricsDashboardProps> = ({
       <Card bg="orange.50" borderLeft="4px solid" borderLeftColor="orange.500">
         <CardBody textAlign="center">
           <VStack spacing={2}>
-            <Icon as={FiBarChart3} size="24px" color="orange.500" />
+            <Icon as={FiBarChart} size="24px" color="orange.500" />
             <Stat>
               <StatNumber fontSize="xl" color="orange.600">
                 {metrics.riskReduction.toFixed(1)}%

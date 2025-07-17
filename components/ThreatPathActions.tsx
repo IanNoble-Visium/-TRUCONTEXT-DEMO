@@ -57,9 +57,9 @@ import {
   Spacer
 } from '@chakra-ui/react'
 import {
-  ShieldIcon,
+  LockIcon,
   SearchIcon,
-  RepairIcon,
+  SettingsIcon,
   WarningIcon,
   CheckCircleIcon,
   TimeIcon,
@@ -71,10 +71,13 @@ import {
   DownloadIcon,
   EmailIcon,
   PhoneIcon,
-  LockIcon,
   UnlockIcon
 } from '@chakra-ui/icons'
-import { ThreatPathScenario, SOCAction, ActionStatus, ActionType } from '../types/threatPath'
+import { ThreatPathScenario, SOCAction } from '../types/threatPath'
+
+// Define the missing types locally
+type ActionStatus = 'Pending' | 'In Progress' | 'Completed' | 'Verified' | 'Failed'
+type ActionType = 'Containment' | 'Investigation' | 'Remediation' | 'Preventive'
 
 interface ThreatPathActionsProps {
   threatPath: ThreatPathScenario
@@ -108,7 +111,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
 }) => {
   const [selectedActionType, setSelectedActionType] = useState<ActionType | null>(null)
   const [actionFormData, setActionFormData] = useState<ActionFormData>({
-    type: 'containment',
+    type: 'Containment',
     title: '',
     description: '',
     priority: 'High',
@@ -134,7 +137,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
   
   // Predefined action templates
   const actionTemplates = {
-    containment: [
+    Containment: [
       {
         title: 'Isolate Affected Systems',
         description: 'Quarantine compromised systems to prevent lateral movement',
@@ -171,7 +174,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
         priority: 'High'
       }
     ],
-    investigation: [
+    Investigation: [
       {
         title: 'Mark for Forensic Analysis',
         description: 'Tag systems for detailed forensic investigation',
@@ -208,7 +211,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
         priority: 'Low'
       }
     ],
-    remediation: [
+    Remediation: [
       {
         title: 'Flag Vulnerabilities for Patching',
         description: 'Create tickets for vulnerability remediation',
@@ -245,7 +248,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
         priority: 'Critical'
       }
     ],
-    preventive: [
+    Preventive: [
       {
         title: 'Add to Threat Hunting Watchlist',
         description: 'Monitor for similar attack patterns',
@@ -286,31 +289,31 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
   
   const getActionTypeIcon = (type: ActionType) => {
     switch (type) {
-      case 'containment': return <ShieldIcon />
-      case 'investigation': return <SearchIcon />
-      case 'remediation': return <RepairIcon />
-      case 'preventive': return <WarningIcon />
+      case 'Containment': return <LockIcon />
+      case 'Investigation': return <SearchIcon />
+      case 'Remediation': return <SettingsIcon />
+      case 'Preventive': return <WarningIcon />
       default: return <InfoIcon />
     }
   }
   
   const getActionTypeColor = (type: ActionType) => {
     switch (type) {
-      case 'containment': return 'red'
-      case 'investigation': return 'blue'
-      case 'remediation': return 'green'
-      case 'preventive': return 'purple'
+      case 'Containment': return 'red'
+      case 'Investigation': return 'blue'
+      case 'Remediation': return 'orange'
+      case 'Preventive': return 'green'
       default: return 'gray'
     }
   }
   
   const getStatusColor = (status: ActionStatus) => {
     switch (status) {
-      case 'pending': return 'yellow'
-      case 'in_progress': return 'blue'
-      case 'completed': return 'green'
-      case 'failed': return 'red'
-      case 'cancelled': return 'gray'
+      case 'Pending': return 'yellow'
+      case 'In Progress': return 'blue'
+      case 'Completed': return 'green'
+      case 'Failed': return 'red'
+      case 'Verified': return 'green'
       default: return 'gray'
     }
   }
@@ -347,21 +350,17 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
         id: `action-${Date.now()}`,
         threatPathId: threatPath.id,
         type: actionFormData.type,
-        title: actionFormData.title,
+        category: actionFormData.type,
+        name: actionFormData.title,
         description: actionFormData.description,
-        status: 'pending',
+        status: 'Pending',
         priority: actionFormData.priority,
         assignedTo: actionFormData.assignedTo,
+        estimatedTime: actionFormData.estimatedDuration,
+        automationAvailable: false,
+        approvalRequired: false,
         createdAt: new Date().toISOString(),
-        estimatedDuration: actionFormData.estimatedDuration,
-        targetNodes: actionFormData.targetNodes,
-        targetIPs: actionFormData.targetIPs,
-        targetDomains: actionFormData.targetDomains,
-        targetAccounts: actionFormData.targetAccounts,
-        notes: actionFormData.notes,
-        approvalRequired: actionFormData.approvalRequired,
-        automatedExecution: actionFormData.automatedExecution,
-        scheduledTime: actionFormData.scheduledTime
+        updatedAt: new Date().toISOString()
       }
       
       await onActionExecute(newAction)
@@ -393,34 +392,24 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
       await new Promise(resolve => setTimeout(resolve, 2000))
       
       await onActionUpdate(action.id, {
-        status: 'completed',
-        completedAt: new Date().toISOString(),
-        executionResults: {
-          success: true,
-          message: 'Action executed successfully',
-          affectedSystems: action.targetNodes?.length || 0
-        }
+        status: 'Completed',
+        completedAt: new Date().toISOString()
       })
       
       toast({
         title: 'Action Executed',
-        description: `${action.title} completed successfully`,
+        description: `${action.name} completed successfully`,
         status: 'success',
         duration: 3000
       })
     } catch (error) {
       await onActionUpdate(action.id, {
-        status: 'failed',
-        executionResults: {
-          success: false,
-          message: 'Action execution failed',
-          error: error instanceof Error ? error.message : 'Unknown error'
-        }
+        status: 'Failed'
       })
       
       toast({
         title: 'Action Failed',
-        description: `${action.title} execution failed`,
+        description: `${action.name} execution failed`,
         status: 'error',
         duration: 5000
       })
@@ -435,7 +424,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
   
   const resetForm = () => {
     setActionFormData({
-      type: 'containment',
+      type: 'Containment',
       title: '',
       description: '',
       priority: 'High',
@@ -456,7 +445,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
       <Text fontSize="lg" fontWeight="bold">SOC Response Actions</Text>
       
       <HStack spacing={4} wrap="wrap">
-        {(['containment', 'investigation', 'remediation', 'preventive'] as ActionType[]).map(type => (
+        {(['Containment', 'Investigation', 'Remediation', 'Preventive'] as ActionType[]).map(type => (
           <Card
             key={type}
             cursor="pointer"
@@ -476,10 +465,10 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
                   {type}
                 </Text>
                 <Text fontSize="sm" color="gray.600">
-                  {type === 'containment' && 'Isolate and contain threats'}
-                  {type === 'investigation' && 'Analyze and investigate'}
-                  {type === 'remediation' && 'Fix and restore systems'}
-                  {type === 'preventive' && 'Prevent future attacks'}
+                  {type === 'Containment' && 'Isolate and contain threats'}
+                  {type === 'Investigation' && 'Analyze and investigate'}
+                  {type === 'Remediation' && 'Fix and restore systems'}
+                  {type === 'Preventive' && 'Prevent future attacks'}
                 </Text>
               </VStack>
             </CardBody>
@@ -571,7 +560,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
                   </Td>
                   <Td>
                     <VStack align="start" spacing={1}>
-                      <Text fontWeight="bold" fontSize="sm">{action.title}</Text>
+                      <Text fontWeight="bold" fontSize="sm">{action.name}</Text>
                       <Text fontSize="xs" color="gray.600" noOfLines={1}>
                         {action.description}
                       </Text>
@@ -602,7 +591,7 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
                   </Td>
                   <Td>
                     <ButtonGroup size="xs">
-                      {action.status === 'pending' && (
+                      {action.status === 'Pending' && (
                         <Tooltip label="Execute Action">
                           <IconButton
                             icon={executingActions.has(action.id) ? <TimeIcon /> : <CheckCircleIcon />}
@@ -893,17 +882,17 @@ const ThreatPathActions: React.FC<ThreatPathActionsProps> = ({
           </VStack>
           
           <HStack>
-            <Badge colorScheme={getActionTypeColor('containment')} variant="outline">
-              {existingActions.filter(a => a.threatPathId === threatPath.id && a.type === 'containment').length} Containment
+            <Badge colorScheme={getActionTypeColor('Containment')} variant="outline">
+              {existingActions.filter(a => a.threatPathId === threatPath.id && a.type === 'Containment').length} Containment
             </Badge>
-            <Badge colorScheme={getActionTypeColor('investigation')} variant="outline">
-              {existingActions.filter(a => a.threatPathId === threatPath.id && a.type === 'investigation').length} Investigation
+            <Badge colorScheme={getActionTypeColor('Investigation')} variant="outline">
+              {existingActions.filter(a => a.threatPathId === threatPath.id && a.type === 'Investigation').length} Investigation
             </Badge>
-            <Badge colorScheme={getActionTypeColor('remediation')} variant="outline">
-              {existingActions.filter(a => a.threatPathId === threatPath.id && a.type === 'remediation').length} Remediation
+            <Badge colorScheme={getActionTypeColor('Remediation')} variant="outline">
+              {existingActions.filter(a => a.threatPathId === threatPath.id && a.type === 'Remediation').length} Remediation
             </Badge>
-            <Badge colorScheme={getActionTypeColor('preventive')} variant="outline">
-              {existingActions.filter(a => a.threatPathId === threatPath.id && a.type === 'preventive').length} Preventive
+            <Badge colorScheme={getActionTypeColor('Preventive')} variant="outline">
+              {existingActions.filter(a => a.threatPathId === threatPath.id && a.type === 'Preventive').length} Preventive
             </Badge>
           </HStack>
         </HStack>
