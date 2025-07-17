@@ -157,6 +157,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
             console.log(`ThreatPathAnalysisView: Scenario ${scenarioIndex} has ${scenario.paths.length} paths`)
             scenario.paths.forEach((path: any, index: number) => {
               console.log(`ThreatPathAnalysisView: Processing path ${index} in scenario ${scenarioIndex}:`, path)
+              console.log(`ThreatPathAnalysisView: Path ${index} riskScore from API:`, path.riskScore, typeof path.riskScore)
               const threatPathScenario: ThreatPathScenario = {
                 id: `${scenario.id}-path-${index}`,
                 name: path.name || `${scenario.name} - Path ${index + 1}`,
@@ -186,15 +187,11 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                   confidentiality: 'Medium',
                   integrity: 'Medium',
                   availability: 'Medium',
-                  financialLoss: 'Medium',
-                  reputationalDamage: 'Medium',
-                  operationalDisruption: 'Medium'
+                  financialImpact: 'Medium',
+                  reputationalImpact: 'Medium'
                 },
-                mitigationStrategies: [],
-                detectionMethods: [],
-                responseActions: [],
                 createdAt: new Date().toISOString(),
-                createdBy: 'System',
+                lastUpdated: new Date().toISOString(),
                 status: 'Active'
               }
               flattenedPaths.push(threatPathScenario)
@@ -245,13 +242,13 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
         return false
       }
       
-      // Risk score filter - temporarily disabled for debugging
-      const riskScore = path.riskScore || 0
+      // Risk score filter
+      const riskScore = path.riskScore || 5 // Default to middle value if not set
       console.log(`ThreatPathAnalysisView: Risk score check for path "${path.name}": score=${riskScore}, range=[${filters.riskScore[0]}, ${filters.riskScore[1]}]`)
-      // TEMPORARILY DISABLED: if (riskScore < filters.riskScore[0] || riskScore > filters.riskScore[1]) {
-      //   console.log(`ThreatPathAnalysisView: Path "${path.name}" filtered out by risk score. Score: ${riskScore}, Range: [${filters.riskScore[0]}, ${filters.riskScore[1]}]`)
-      //   return false
-      // }
+      if (riskScore < filters.riskScore[0] || riskScore > filters.riskScore[1]) {
+        console.log(`ThreatPathAnalysisView: Path "${path.name}" filtered out by risk score. Score: ${riskScore}, Range: [${filters.riskScore[0]}, ${filters.riskScore[1]}]`)
+        return false
+      }
       
       // Search term filter
       if (filters.searchTerm && !(path.name || '').toLowerCase().includes(filters.searchTerm.toLowerCase()) &&
