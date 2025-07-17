@@ -103,7 +103,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
     severity: [],
     attackerType: [],
     targetAsset: [],
-    riskScore: [0, 10],
+    riskScore: [0, 20], // Increased range to accommodate API risk scores up to 12+
     searchTerm: ''
   })
   const [sortBy, setSortBy] = useState<'riskScore' | 'likelihood' | 'impact' | 'createdAt'>('riskScore')
@@ -143,9 +143,66 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
       })
       
       const data = await response.json()
-      
+      console.log('ThreatPathAnalysisView: API Response:', data)
+
       if (data.success) {
-        setThreatPaths(data.threatPaths)
+        // Transform ThreatScenario[] to ThreatPathScenario[]
+        // Each ThreatScenario contains multiple ThreatPath objects that need to be flattened
+        const flattenedPaths: ThreatPathScenario[] = []
+        console.log('ThreatPathAnalysisView: Raw threat paths from API:', data.threatPaths)
+
+        data.threatPaths.forEach((scenario: any, scenarioIndex: number) => {
+          console.log(`ThreatPathAnalysisView: Processing scenario ${scenarioIndex}:`, scenario)
+          if (scenario.paths && Array.isArray(scenario.paths)) {
+            console.log(`ThreatPathAnalysisView: Scenario ${scenarioIndex} has ${scenario.paths.length} paths`)
+            scenario.paths.forEach((path: any, index: number) => {
+              console.log(`ThreatPathAnalysisView: Processing path ${index} in scenario ${scenarioIndex}:`, path)
+              const threatPathScenario: ThreatPathScenario = {
+                id: `${scenario.id}-path-${index}`,
+                name: path.name || `${scenario.name} - Path ${index + 1}`,
+                description: path.description || scenario.description,
+                scenario: scenario.description || 'Automated threat scenario',
+                attackerProfile: {
+                  type: 'External',
+                  sophistication: 'Medium',
+                  motivation: ['Data Theft'],
+                  capabilities: ['Network Reconnaissance']
+                },
+                path: path.nodes || [], // This is the key fix - use path.nodes
+                pathDetails: [],
+                riskScore: path.riskScore || 5,
+                severity: path.severity || 'Medium',
+                likelihood: 0.5,
+                impact: 0.5,
+                mitreTactics: path.mitreTactics || [],
+                mitreTechniques: [],
+                entryPoint: path.nodes?.[0] || '',
+                targetAsset: path.nodes?.[path.nodes?.length - 1] || '',
+                estimatedDwellTime: path.estimatedTime || '1-2 hours',
+                detectionDifficulty: 'Medium',
+                timeline: [],
+                prerequisites: [],
+                businessImpact: {
+                  confidentiality: 'Medium',
+                  integrity: 'Medium',
+                  availability: 'Medium',
+                  financialImpact: 'Medium',
+                  reputationalImpact: 'Medium'
+                },
+                createdAt: new Date().toISOString(),
+                lastUpdated: new Date().toISOString(),
+                status: 'Active'
+              }
+              flattenedPaths.push(threatPathScenario)
+              console.log(`ThreatPathAnalysisView: Added threat path scenario:`, threatPathScenario)
+            })
+          } else {
+            console.log(`ThreatPathAnalysisView: Scenario ${scenarioIndex} has no valid paths array:`, scenario)
+          }
+        })
+
+        console.log(`ThreatPathAnalysisView: Final flattened paths (${flattenedPaths.length} total):`, flattenedPaths)
+        setThreatPaths(flattenedPaths)
         setAnalytics(data.analytics)
         toast({
           title: 'Threat Paths Generated',
@@ -171,6 +228,8 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
   
   // Filter and sort threat paths
   const filteredAndSortedPaths = useMemo(() => {
+    console.log('ThreatPathAnalysisView: Filtering threat paths. Input:', threatPaths)
+    console.log('ThreatPathAnalysisView: Current filters:', filters)
     let filtered = threatPaths.filter(path => {
       // Severity filter
       if (filters.severity.length > 0 && !filters.severity.includes(path.severity)) {
@@ -178,18 +237,19 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
       }
       
       // Attacker type filter
-      if (filters.attackerType.length > 0 && !filters.attackerType.includes(path.attackerProfile.type)) {
+      if (filters.attackerType.length > 0 && !filters.attackerType.includes(path.attackerProfile?.type)) {
         return false
       }
       
       // Risk score filter
-      if (path.riskScore < filters.riskScore[0] || path.riskScore > filters.riskScore[1]) {
+      const riskScore = path.riskScore || 5 // Default to middle value if not set
+      if (riskScore < filters.riskScore[0] || riskScore > filters.riskScore[1]) {
         return false
       }
       
       // Search term filter
-      if (filters.searchTerm && !path.name.toLowerCase().includes(filters.searchTerm.toLowerCase()) &&
-          !path.description.toLowerCase().includes(filters.searchTerm.toLowerCase())) {
+      if (filters.searchTerm && !(path.name || '').toLowerCase().includes(filters.searchTerm.toLowerCase()) &&
+          !(path.description || '').toLowerCase().includes(filters.searchTerm.toLowerCase())) {
         return false
       }
       
@@ -198,9 +258,9 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
     
     // Sort paths
     filtered.sort((a, b) => {
-      const aValue = a[sortBy]
-      const bValue = b[sortBy]
-      
+      const aValue = a[sortBy] || 0
+      const bValue = b[sortBy] || 0
+
       if (sortOrder === 'asc') {
         return aValue > bValue ? 1 : -1
       } else {
@@ -208,17 +268,19 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
       }
     })
     
+    console.log('ThreatPathAnalysisView: Filtered and sorted paths:', filtered)
     return filtered
   }, [threatPaths, filters, sortBy, sortOrder])
   
   const handlePathSelect = (path: ThreatPathScenario) => {
     setSelectedPath(path)
-    onPathHighlight(path.path)
+    onPathHighlight(path.path || [])
     onPathDetailOpen()
   }
   
   const handlePathHover = (path: ThreatPathScenario) => {
-    onPathHighlight(path.path)
+    // Use same fallback pattern as handlePathSelect for consistency
+    onPathHighlight(path.path || [])
   }
   
   const getSeverityColor = (severity: string) => {
@@ -245,9 +307,11 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
     return estimate || 'Unknown'
   }
   
-  const renderPathListView = () => (
-    <VStack spacing={4} align="stretch">
-      {filteredAndSortedPaths.map((path, index) => (
+  const renderPathListView = () => {
+    console.log('ThreatPathAnalysisView: Rendering path list view with paths:', filteredAndSortedPaths)
+    return (
+      <VStack spacing={4} align="stretch">
+        {filteredAndSortedPaths.map((path, index) => (
         <Card
           key={path.id}
           cursor="pointer"
@@ -269,8 +333,8 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                   <Badge colorScheme={getSeverityColor(path.severity)} size="sm">
                     {path.severity}
                   </Badge>
-                  <Badge colorScheme={getAttackerTypeColor(path.attackerProfile.type)} variant="outline" size="sm">
-                    {path.attackerProfile.type}
+                  <Badge colorScheme={getAttackerTypeColor(path.attackerProfile?.type)} variant="outline" size="sm">
+                    {path.attackerProfile?.type || 'Unknown'}
                   </Badge>
                   <Badge colorScheme="blue" variant="subtle" size="sm">
                     Risk: {path.riskScore}/10
@@ -288,42 +352,43 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                 <HStack spacing={4} fontSize="sm" color="gray.500">
                   <HStack>
                     <TimeIcon />
-                    <Text>{path.estimatedDwellTime}</Text>
+                    <Text>{path.estimatedDwellTime || 'Unknown'}</Text>
                   </HStack>
                   <HStack>
                     <InfoIcon />
-                    <Text>{path.path.length} hops</Text>
+                    <Text>{(path.path?.length || 0)} hops</Text>
                   </HStack>
                   <HStack>
                     <WarningIcon />
-                    <Text>{path.detectionDifficulty} to detect</Text>
+                    <Text>{path.detectionDifficulty || 'Unknown'} to detect</Text>
                   </HStack>
                 </HStack>
               </VStack>
               
               <VStack align="end" spacing={2}>
                 <Text fontSize="2xl" fontWeight="bold" color={getSeverityColor(path.severity) + '.500'}>
-                  {path.riskScore}
+                  {path.riskScore || 0}
                 </Text>
                 <Text fontSize="xs" color="gray.500">
                   Risk Score
                 </Text>
-                <Progress 
-                  value={path.likelihood * 100} 
-                  size="sm" 
+                <Progress
+                  value={(path.likelihood || 0) * 100}
+                  size="sm"
                   colorScheme={getSeverityColor(path.severity)}
                   width="80px"
                 />
                 <Text fontSize="xs" color="gray.500">
-                  {Math.round(path.likelihood * 100)}% likely
+                  {Math.round((path.likelihood || 0) * 100)}% likely
                 </Text>
               </VStack>
             </HStack>
           </CardBody>
         </Card>
-      ))}
-    </VStack>
-  )
+        ))}
+      </VStack>
+    )
+  }
   
   const renderTimelineView = () => (
     <Box>
@@ -349,7 +414,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
             </CardHeader>
             <CardBody>
               <HStack spacing={4} align="start">
-                {path.timeline.map((stage, stageIndex) => (
+                {(path.timeline || []).map((stage, stageIndex) => (
                   <React.Fragment key={stageIndex}>
                     <VStack spacing={2} align="center" minW="120px">
                       <Box
@@ -376,7 +441,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                         {stage.description}
                       </Text>
                     </VStack>
-                    {stageIndex < path.timeline.length - 1 && (
+                    {stageIndex < (path.timeline || []).length - 1 && (
                       <ChevronRightIcon color="gray.400" mt={4} />
                     )}
                   </React.Fragment>
@@ -410,8 +475,8 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
         {/* Plot points */}
         <Box position="absolute" top={8} left={12} right={8} bottom={8}>
           {filteredAndSortedPaths.map((path, index) => {
-            const x = (path.likelihood * 100) + '%'
-            const y = (100 - path.impact * 10) + '%'
+            const x = ((path.likelihood || 0) * 100) + '%'
+            const y = (100 - (path.impact || 0) * 10) + '%'
             
             return (
               <Tooltip key={path.id} label={path.name} placement="top">
@@ -438,21 +503,21 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
   
   const renderAnalyticsSummary = () => {
     if (!analytics) return null
-    
+
     return (
       <Grid templateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap={4} mb={6}>
         <Stat bg={bgColor} p={4} borderRadius="md" border="1px" borderColor={borderColor}>
           <StatLabel>Total Threat Paths</StatLabel>
-          <StatNumber>{analytics.totalPaths}</StatNumber>
+          <StatNumber>{analytics.totalPaths || 0}</StatNumber>
           <StatHelpText>
             <StatArrow type="increase" />
-            {analytics.activePaths} active
+            {analytics.activePaths || 0} active
           </StatHelpText>
         </Stat>
-        
+
         <Stat bg={bgColor} p={4} borderRadius="md" border="1px" borderColor={borderColor}>
           <StatLabel>Average Risk Score</StatLabel>
-          <StatNumber>{analytics.averageRiskScore.toFixed(1)}</StatNumber>
+          <StatNumber>{(analytics.averageRiskScore || 0).toFixed(1)}</StatNumber>
           <StatHelpText>
             Out of 10.0
           </StatHelpText>
@@ -460,15 +525,15 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
         
         <Stat bg={bgColor} p={4} borderRadius="md" border="1px" borderColor={borderColor}>
           <StatLabel>Critical Paths</StatLabel>
-          <StatNumber color="red.500">{analytics.riskDistribution.critical}</StatNumber>
+          <StatNumber color="red.500">{analytics.riskDistribution?.critical || 0}</StatNumber>
           <StatHelpText>
             Require immediate attention
           </StatHelpText>
         </Stat>
-        
+
         <Stat bg={bgColor} p={4} borderRadius="md" border="1px" borderColor={borderColor}>
           <StatLabel>Network Coverage</StatLabel>
-          <StatNumber>{analytics.coverageMetrics.nodesInvolved}</StatNumber>
+          <StatNumber>{analytics.coverageMetrics?.nodesInvolved || 0}</StatNumber>
           <StatHelpText>
             Nodes involved in paths
           </StatHelpText>
@@ -548,8 +613,8 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
               <Badge colorScheme={getSeverityColor(selectedPath.severity)}>
                 {selectedPath.severity}
               </Badge>
-              <Badge colorScheme={getAttackerTypeColor(selectedPath.attackerProfile.type)} variant="outline">
-                {selectedPath.attackerProfile.type}
+              <Badge colorScheme={getAttackerTypeColor(selectedPath.attackerProfile?.type)} variant="outline">
+                {selectedPath.attackerProfile?.type || 'Unknown'}
               </Badge>
             </HStack>
           </ModalHeader>
@@ -591,19 +656,19 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                     <Box>
                       <Text fontWeight="bold" mb={2}>Attacker Profile</Text>
                       <VStack align="start" spacing={1}>
-                        <Text><strong>Type:</strong> {selectedPath.attackerProfile.type}</Text>
-                        <Text><strong>Sophistication:</strong> {selectedPath.attackerProfile.sophistication}</Text>
-                        <Text><strong>Motivation:</strong> {selectedPath.attackerProfile.motivation.join(', ')}</Text>
-                        <Text><strong>Capabilities:</strong> {selectedPath.attackerProfile.capabilities.join(', ')}</Text>
+                        <Text><strong>Type:</strong> {selectedPath.attackerProfile?.type || 'Unknown'}</Text>
+                        <Text><strong>Sophistication:</strong> {selectedPath.attackerProfile?.sophistication || 'Unknown'}</Text>
+                        <Text><strong>Motivation:</strong> {(selectedPath.attackerProfile?.motivation || []).join(', ') || 'Unknown'}</Text>
+                        <Text><strong>Capabilities:</strong> {(selectedPath.attackerProfile?.capabilities || []).join(', ') || 'Unknown'}</Text>
                       </VStack>
                     </Box>
                     
                     <Box>
                       <Text fontWeight="bold" mb={2}>Detection & Response</Text>
                       <VStack align="start" spacing={1}>
-                        <Text><strong>Detection Difficulty:</strong> {selectedPath.detectionDifficulty}</Text>
-                        <Text><strong>Estimated Dwell Time:</strong> {selectedPath.estimatedDwellTime}</Text>
-                        <Text><strong>Prerequisites:</strong> {selectedPath.prerequisites.join(', ')}</Text>
+                        <Text><strong>Detection Difficulty:</strong> {selectedPath.detectionDifficulty || 'Unknown'}</Text>
+                        <Text><strong>Estimated Dwell Time:</strong> {selectedPath.estimatedDwellTime || 'Unknown'}</Text>
+                        <Text><strong>Prerequisites:</strong> {(selectedPath.prerequisites || []).join(', ') || 'None'}</Text>
                       </VStack>
                     </Box>
                   </VStack>
@@ -625,7 +690,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                           </Tr>
                         </Thead>
                         <Tbody>
-                          {selectedPath.pathDetails.map((detail, index) => (
+                          {(selectedPath.pathDetails || []).map((detail, index) => (
                             <Tr key={index}>
                               <Td>{index + 1}</Td>
                               <Td>
@@ -658,7 +723,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                 <TabPanel>
                   <VStack align="stretch" spacing={4}>
                     <Text fontWeight="bold">Attack Timeline</Text>
-                    {selectedPath.timeline.map((stage, index) => (
+                    {(selectedPath.timeline || []).map((stage, index) => (
                       <Card key={index}>
                         <CardBody>
                           <HStack align="start">
@@ -706,20 +771,20 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                     <Grid templateColumns="repeat(3, 1fr)" gap={4}>
                       <Stat>
                         <StatLabel>Confidentiality</StatLabel>
-                        <StatNumber color={selectedPath.businessImpact.confidentiality === 'High' ? 'red.500' : 'green.500'}>
-                          {selectedPath.businessImpact.confidentiality}
+                        <StatNumber color={selectedPath.businessImpact?.confidentiality === 'High' ? 'red.500' : 'green.500'}>
+                          {selectedPath.businessImpact?.confidentiality || 'Unknown'}
                         </StatNumber>
                       </Stat>
                       <Stat>
                         <StatLabel>Integrity</StatLabel>
-                        <StatNumber color={selectedPath.businessImpact.integrity === 'High' ? 'red.500' : 'green.500'}>
-                          {selectedPath.businessImpact.integrity}
+                        <StatNumber color={selectedPath.businessImpact?.integrity === 'High' ? 'red.500' : 'green.500'}>
+                          {selectedPath.businessImpact?.integrity || 'Unknown'}
                         </StatNumber>
                       </Stat>
                       <Stat>
                         <StatLabel>Availability</StatLabel>
-                        <StatNumber color={selectedPath.businessImpact.availability === 'High' ? 'red.500' : 'green.500'}>
-                          {selectedPath.businessImpact.availability}
+                        <StatNumber color={selectedPath.businessImpact?.availability === 'High' ? 'red.500' : 'green.500'}>
+                          {selectedPath.businessImpact?.availability || 'Unknown'}
                         </StatNumber>
                       </Stat>
                     </Grid>
@@ -727,8 +792,8 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                     <Divider />
                     
                     <VStack align="start" spacing={2}>
-                      <Text><strong>Financial Impact:</strong> {selectedPath.businessImpact.financialImpact}</Text>
-                      <Text><strong>Reputational Impact:</strong> {selectedPath.businessImpact.reputationalImpact}</Text>
+                      <Text><strong>Financial Impact:</strong> {selectedPath.businessImpact?.financialImpact || 'Unknown'}</Text>
+                      <Text><strong>Reputational Impact:</strong> {selectedPath.businessImpact?.reputationalImpact || 'Unknown'}</Text>
                     </VStack>
                   </VStack>
                 </TabPanel>
@@ -740,7 +805,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                     <Box>
                       <Text fontWeight="bold" mb={2}>Tactics</Text>
                       <HStack wrap="wrap" spacing={2}>
-                        {selectedPath.mitreTactics.map((tactic, index) => (
+                        {(selectedPath.mitreTactics || []).map((tactic, index) => (
                           <Badge key={index} colorScheme="purple" variant="outline">
                             {tactic}
                           </Badge>
@@ -751,7 +816,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
                     <Box>
                       <Text fontWeight="bold" mb={2}>Techniques</Text>
                       <VStack align="start" spacing={1}>
-                        {selectedPath.mitreTechniques.map((technique, index) => (
+                        {(selectedPath.mitreTechniques || []).map((technique, index) => (
                           <HStack key={index}>
                             <Badge colorScheme="blue" variant="subtle" size="sm">
                               {technique}
@@ -856,7 +921,7 @@ const ThreatPathAnalysisView: React.FC<ThreatPathAnalysisViewProps> = ({
         </HStack>
         
         {/* Main Content */}
-        {threatPaths.length === 0 ? (
+        {(threatPaths || []).length === 0 ? (
           <Alert status="info">
             <AlertIcon />
             <AlertTitle>No threat paths found!</AlertTitle>
