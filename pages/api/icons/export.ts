@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Get all icons from Cloudinary
     const result = await cloudinary.search
       .expression('folder:trucontext-icons AND resource_type:image')
-      .sort_by([['created_at', 'desc']])
+      .sort_by('created_at', 'desc')
       .max_results(100)
       .execute()
 

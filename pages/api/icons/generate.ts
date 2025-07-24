@@ -117,20 +117,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let errorMessage = 'Failed to generate icon'
     let statusCode = 500
     
+    // Handle Google AI specific errors
     if (error.message?.includes('API key')) {
       errorMessage = 'AI generation requires Google API key. Please configure GOOGLE_API_KEY in environment variables.'
       statusCode = 400
-    } else if (error.message?.includes('quota') || error.message?.includes('limit')) {
+    } else if (error.message?.includes('overloaded') || error.status === 503) {
+      errorMessage = 'The AI service is currently overloaded. Please try again in a few minutes.'
+      statusCode = 503
+    } else if (error.message?.includes('quota') || error.message?.includes('limit') || error.status === 429) {
       errorMessage = 'AI service quota exceeded. Please try again later.'
       statusCode = 429
     } else if (error.message?.includes('network') || error.message?.includes('timeout')) {
       errorMessage = 'Network error connecting to AI service. Please try again.'
       statusCode = 503
+    } else if (error.status && error.statusText) {
+      // Handle other HTTP errors from Google AI
+      errorMessage = `AI service error: ${error.statusText}. Please try again later.`
+      statusCode = error.status
     }
     
     res.status(statusCode).json({
       error: errorMessage,
-      details: error.message
+      details: error.message,
+      status: error.status || statusCode
     })
   }
 }
