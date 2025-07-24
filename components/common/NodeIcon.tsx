@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Box } from '@chakra-ui/react'
 import { getCloudinaryIconUrl, getUnknownIconUrl, checkIconExists } from '../../utils/cloudinary-icons'
 
@@ -121,20 +122,22 @@ const NodeIcon: React.FC<NodeIconProps> = ({
       className={className}
       style={style}
     >
-      <img
+      <Image
         src={iconUrl}
         alt={`${nodeType} icon`}
         width={size}
         height={size}
         style={{
           display: 'block',
+          maxWidth: '100%',
+          maxHeight: '100%',
           objectFit: 'contain'
         }}
-        onError={(e) => {
+        onError={() => {
           console.warn(`Failed to load Cloudinary icon for ${nodeType}, using fallback`)
-          const target = e.target as HTMLImageElement
-          target.src = getUnknownIconUrl()
+          setIconUrl(getUnknownIconUrl())
         }}
+        unoptimized={true}
       />
     </Box>
   )

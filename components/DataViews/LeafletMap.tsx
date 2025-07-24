@@ -604,7 +604,7 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
           }, iconSize))
         }
       } catch (error) {
-        console.error(`Failed to load icon for ${type} from ${iconPath}:`, error)
+        console.error(`Failed to load icon for ${type} from ${iconUrl}:`, error)
         // Fallback to default icon if loading fails
         iconMap.set(type, await createCustomIcon({
           id: type,
