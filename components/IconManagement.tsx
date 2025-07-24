@@ -1133,6 +1133,8 @@ const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenera
       if (error instanceof Error) {
         if (error.message.includes('Google API key')) {
           errorMessage = 'AI generation requires Google API key. Using placeholder icon instead.'
+        } else if (error.message.includes('overloaded')) {
+          errorMessage = '🤖 The AI service is currently overloaded. Please try again in a few minutes.'
         } else if (error.message.includes('quota')) {
           errorMessage = 'AI service quota exceeded. Please try again later.'
         } else if (error.message.includes('Server error')) {
