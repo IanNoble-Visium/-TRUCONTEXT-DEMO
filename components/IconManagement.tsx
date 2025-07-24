@@ -1110,7 +1110,8 @@ const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenera
       })
       
       if (!response.ok) {
-        throw new Error('Failed to generate icon')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || `Server error: ${response.status}`)
       }
       
       const result = await response.json()
@@ -1127,9 +1128,23 @@ const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenera
       onGenerateSuccess()
     } catch (error) {
       console.error('Generation error:', error)
+      
+      let errorMessage = 'Failed to generate icon using AI'
+      if (error instanceof Error) {
+        if (error.message.includes('Google API key')) {
+          errorMessage = 'AI generation requires Google API key. Using placeholder icon instead.'
+        } else if (error.message.includes('quota')) {
+          errorMessage = 'AI service quota exceeded. Please try again later.'
+        } else if (error.message.includes('Server error')) {
+          errorMessage = `Server error: ${error.message}`
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       toast({
         title: 'Generation failed',
-        description: 'Failed to generate icon using AI',
+        description: errorMessage,
         status: 'error',
         duration: 5000,
         isClosable: true,

@@ -39,7 +39,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     })
   } catch (error) {
     console.error('Generation error:', error)
-    res.status(500).json({ error: 'Failed to generate icon' })
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to generate icon'
+    if (error instanceof Error) {
+      if (error.message.includes('API key')) {
+        errorMessage = 'Google API key not configured. Please set GOOGLE_API_KEY in your environment variables.'
+      } else if (error.message.includes('Gemini API')) {
+        errorMessage = 'Google Gemini API error. Please check your API key and quota.'
+      } else {
+        errorMessage = error.message
+      }
+    }
+    
+    res.status(500).json({ 
+      error: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error : undefined
+    })
   }
 }
 
