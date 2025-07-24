@@ -40,7 +40,17 @@ const ThreatPathAnalysisView = dynamic(() => import('../ThreatPathAnalysisView')
   )
 })
 
-export type ViewType = 'executive' | 'soc-executive' | 'threat-analysis' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap'
+// Dynamic import for Icon Management
+const IconManagement = dynamic(() => import('../IconManagement'), {
+  ssr: false,
+  loading: () => (
+    <Box p={6} minH="100vh" display="flex" alignItems="center" justifyContent="center">
+      <Text>Loading Icon Management...</Text>
+    </Box>
+  )
+})
+
+export type ViewType = 'executive' | 'soc-executive' | 'threat-analysis' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap' | 'icon-management'
 
 interface ViewSwitcherProps {
   currentView: ViewType
@@ -76,7 +86,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
     { value: 'timeline', label: 'Timeline View', icon: '⏰' },
     { value: 'cards', label: 'Cards View', icon: '🗂️' },
     { value: 'dashboard', label: 'Analytics Dashboard', icon: '📈' },
-    { value: 'geomap', label: 'Geographic Map', icon: '🗺️' }
+    { value: 'geomap', label: 'Geographic Map', icon: '🗺️' },
+    { value: 'icon-management', label: 'Icon Management', icon: '🎨' }
   ]
 
   // Memoize the rendered view to prevent unnecessary re-renders
@@ -138,6 +149,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
         return <DashboardView {...commonProps} />
       case 'geomap':
         return <GeoMapView {...commonProps} />
+      case 'icon-management':
+        return <IconManagement nodes={nodes} edges={edges} />
       default:
         return (
           <ExecutiveDashboard 
