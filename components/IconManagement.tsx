@@ -517,7 +517,7 @@ const IconManagement: React.FC<IconManagementProps> = ({ nodes = [], edges = [] 
         </Box>
       )}
       {/* Header */}
-      <VStack spacing={6} align="stretch" flex={1} overflow="auto" pb={4}>
+      <VStack spacing={6} align="stretch" flex={1} overflowY="auto" pb={4}>
         <Box>
           <Heading size="lg" mb={2}>Icon Management</Heading>
           <Text color={textColor}>
