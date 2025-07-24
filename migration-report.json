@@ -1,0 +1,261 @@
+{
+  "timestamp": "2025-07-24T06:27:21.992Z",
+  "totalFiles": 36,
+  "successful": 36,
+  "failed": 0,
+  "uploadResults": [
+    {
+      "filename": "actor.svg",
+      "iconName": "actor",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338383/trucontext-icons/trucontext-icons/actor.svg",
+      "publicId": "trucontext-icons/trucontext-icons/actor",
+      "success": true
+    },
+    {
+      "filename": "agent.svg",
+      "iconName": "agent",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338384/trucontext-icons/trucontext-icons/agent.svg",
+      "publicId": "trucontext-icons/trucontext-icons/agent",
+      "success": true
+    },
+    {
+      "filename": "application.svg",
+      "iconName": "application",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338386/trucontext-icons/trucontext-icons/application.svg",
+      "publicId": "trucontext-icons/trucontext-icons/application",
+      "success": true
+    },
+    {
+      "filename": "attack.svg",
+      "iconName": "attack",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338388/trucontext-icons/trucontext-icons/attack.svg",
+      "publicId": "trucontext-icons/trucontext-icons/attack",
+      "success": true
+    },
+    {
+      "filename": "attacker.svg",
+      "iconName": "attacker",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338389/trucontext-icons/trucontext-icons/attacker.svg",
+      "publicId": "trucontext-icons/trucontext-icons/attacker",
+      "success": true
+    },
+    {
+      "filename": "client.svg",
+      "iconName": "client",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338391/trucontext-icons/trucontext-icons/client.svg",
+      "publicId": "trucontext-icons/trucontext-icons/client",
+      "success": true
+    },
+    {
+      "filename": "cpe.svg",
+      "iconName": "cpe",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338392/trucontext-icons/trucontext-icons/cpe.svg",
+      "publicId": "trucontext-icons/trucontext-icons/cpe",
+      "success": true
+    },
+    {
+      "filename": "cvss.svg",
+      "iconName": "cvss",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338394/trucontext-icons/trucontext-icons/cvss.svg",
+      "publicId": "trucontext-icons/trucontext-icons/cvss",
+      "success": true
+    },
+    {
+      "filename": "cvssseverity.svg",
+      "iconName": "cvssseverity",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338396/trucontext-icons/trucontext-icons/cvssseverity.svg",
+      "publicId": "trucontext-icons/trucontext-icons/cvssseverity",
+      "success": true
+    },
+    {
+      "filename": "cvsssmetrics.svg",
+      "iconName": "cvsssmetrics",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338397/trucontext-icons/trucontext-icons/cvsssmetrics.svg",
+      "publicId": "trucontext-icons/trucontext-icons/cvsssmetrics",
+      "success": true
+    },
+    {
+      "filename": "cwe.svg",
+      "iconName": "cwe",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338399/trucontext-icons/trucontext-icons/cwe.svg",
+      "publicId": "trucontext-icons/trucontext-icons/cwe",
+      "success": true
+    },
+    {
+      "filename": "database.svg",
+      "iconName": "database",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338401/trucontext-icons/trucontext-icons/database.svg",
+      "publicId": "trucontext-icons/trucontext-icons/database",
+      "success": true
+    },
+    {
+      "filename": "device.svg",
+      "iconName": "device",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338403/trucontext-icons/trucontext-icons/device.svg",
+      "publicId": "trucontext-icons/trucontext-icons/device",
+      "success": true
+    },
+    {
+      "filename": "dmz.svg",
+      "iconName": "dmz",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338404/trucontext-icons/trucontext-icons/dmz.svg",
+      "publicId": "trucontext-icons/trucontext-icons/dmz",
+      "success": true
+    },
+    {
+      "filename": "domain.svg",
+      "iconName": "domain",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338406/trucontext-icons/trucontext-icons/domain.svg",
+      "publicId": "trucontext-icons/trucontext-icons/domain",
+      "success": true
+    },
+    {
+      "filename": "entity.svg",
+      "iconName": "entity",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338407/trucontext-icons/trucontext-icons/entity.svg",
+      "publicId": "trucontext-icons/trucontext-icons/entity",
+      "success": true
+    },
+    {
+      "filename": "event.svg",
+      "iconName": "event",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338409/trucontext-icons/trucontext-icons/event.svg",
+      "publicId": "trucontext-icons/trucontext-icons/event",
+      "success": true
+    },
+    {
+      "filename": "exploit.svg",
+      "iconName": "exploit",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338411/trucontext-icons/trucontext-icons/exploit.svg",
+      "publicId": "trucontext-icons/trucontext-icons/exploit",
+      "success": true
+    },
+    {
+      "filename": "externalentry.svg",
+      "iconName": "externalentry",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338412/trucontext-icons/trucontext-icons/externalentry.svg",
+      "publicId": "trucontext-icons/trucontext-icons/externalentry",
+      "success": true
+    },
+    {
+      "filename": "firewall.svg",
+      "iconName": "firewall",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338414/trucontext-icons/trucontext-icons/firewall.svg",
+      "publicId": "trucontext-icons/trucontext-icons/firewall",
+      "success": true
+    },
+    {
+      "filename": "load_balancer.svg",
+      "iconName": "load_balancer",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338416/trucontext-icons/trucontext-icons/load_balancer.svg",
+      "publicId": "trucontext-icons/trucontext-icons/load_balancer",
+      "success": true
+    },
+    {
+      "filename": "machine.svg",
+      "iconName": "machine",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338417/trucontext-icons/trucontext-icons/machine.svg",
+      "publicId": "trucontext-icons/trucontext-icons/machine",
+      "success": true
+    },
+    {
+      "filename": "network.svg",
+      "iconName": "network",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338419/trucontext-icons/trucontext-icons/network.svg",
+      "publicId": "trucontext-icons/trucontext-icons/network",
+      "success": true
+    },
+    {
+      "filename": "proxy_server.svg",
+      "iconName": "proxy_server",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338421/trucontext-icons/trucontext-icons/proxy_server.svg",
+      "publicId": "trucontext-icons/trucontext-icons/proxy_server",
+      "success": true
+    },
+    {
+      "filename": "references.svg",
+      "iconName": "references",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338422/trucontext-icons/trucontext-icons/references.svg",
+      "publicId": "trucontext-icons/trucontext-icons/references",
+      "success": true
+    },
+    {
+      "filename": "router.svg",
+      "iconName": "router",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338424/trucontext-icons/trucontext-icons/router.svg",
+      "publicId": "trucontext-icons/trucontext-icons/router",
+      "success": true
+    },
+    {
+      "filename": "server.svg",
+      "iconName": "server",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338426/trucontext-icons/trucontext-icons/server.svg",
+      "publicId": "trucontext-icons/trucontext-icons/server",
+      "success": true
+    },
+    {
+      "filename": "software.svg",
+      "iconName": "software",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338428/trucontext-icons/trucontext-icons/software.svg",
+      "publicId": "trucontext-icons/trucontext-icons/software",
+      "success": true
+    },
+    {
+      "filename": "storage.svg",
+      "iconName": "storage",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338429/trucontext-icons/trucontext-icons/storage.svg",
+      "publicId": "trucontext-icons/trucontext-icons/storage",
+      "success": true
+    },
+    {
+      "filename": "switch.svg",
+      "iconName": "switch",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338430/trucontext-icons/trucontext-icons/switch.svg",
+      "publicId": "trucontext-icons/trucontext-icons/switch",
+      "success": true
+    },
+    {
+      "filename": "threatactor.svg",
+      "iconName": "threatactor",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338432/trucontext-icons/trucontext-icons/threatactor.svg",
+      "publicId": "trucontext-icons/trucontext-icons/threatactor",
+      "success": true
+    },
+    {
+      "filename": "traffic.svg",
+      "iconName": "traffic",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338434/trucontext-icons/trucontext-icons/traffic.svg",
+      "publicId": "trucontext-icons/trucontext-icons/traffic",
+      "success": true
+    },
+    {
+      "filename": "unknown.svg",
+      "iconName": "unknown",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338435/trucontext-icons/trucontext-icons/unknown.svg",
+      "publicId": "trucontext-icons/trucontext-icons/unknown",
+      "success": true
+    },
+    {
+      "filename": "user.svg",
+      "iconName": "user",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338437/trucontext-icons/trucontext-icons/user.svg",
+      "publicId": "trucontext-icons/trucontext-icons/user",
+      "success": true
+    },
+    {
+      "filename": "vulnerability.svg",
+      "iconName": "vulnerability",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338438/trucontext-icons/trucontext-icons/vulnerability.svg",
+      "publicId": "trucontext-icons/trucontext-icons/vulnerability",
+      "success": true
+    },
+    {
+      "filename": "workstation.svg",
+      "iconName": "workstation",
+      "cloudinaryUrl": "https://res.cloudinary.com/dlogj3gc8/image/upload/v1753338440/trucontext-icons/trucontext-icons/workstation.svg",
+      "publicId": "trucontext-icons/trucontext-icons/workstation",
+      "success": true
+    }
+  ],
+  "errors": []
+}

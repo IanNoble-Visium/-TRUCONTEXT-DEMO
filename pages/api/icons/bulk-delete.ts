@@ -1,78 +1,82 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import fs from 'fs'
-import path from 'path'
+import { v2 as cloudinary } from 'cloudinary'
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST'])
-    return res.status(405).json({ error: `Method ${req.method} not allowed` })
+  if (req.method !== 'DELETE') {
+    return res.status(405).json({ error: 'Method not allowed' })
   }
-  
+
   try {
-    const { icons } = req.body
-    
-    if (!Array.isArray(icons) || icons.length === 0) {
-      return res.status(400).json({ error: 'Invalid icons array' })
+    const { iconNames } = req.body
+
+    if (!iconNames || !Array.isArray(iconNames) || iconNames.length === 0) {
+      return res.status(400).json({ error: 'Icon names array is required' })
     }
-    
-    const iconsDir = path.join(process.cwd(), 'public', 'icons-svg')
-    const unknownIconPath = path.join(iconsDir, 'unknown.svg')
-    
+
     const results = {
-      deleted: [] as string[],
-      failed: [] as string[],
-      skipped: [] as string[]
+      successful: [] as string[],
+      failed: [] as { name: string; error: string }[]
     }
-    
-    for (const iconName of icons) {
-      if (typeof iconName !== 'string') {
-        results.failed.push(`Invalid icon name: ${iconName}`)
-        continue
-      }
-      
-      // Don't allow deletion of unknown.svg
-      if (iconName === 'unknown') {
-        results.skipped.push(iconName)
-        continue
-      }
-      
-      const iconPath = path.join(iconsDir, `${iconName}.svg`)
-      
+
+    // Delete each icon from Cloudinary
+    for (const iconName of iconNames) {
       try {
-        if (fs.existsSync(iconPath)) {
-          fs.unlinkSync(iconPath)
-          results.deleted.push(iconName)
+        const publicId = `trucontext-icons/trucontext-icons/${iconName}`
+        
+        // Delete from Cloudinary
+        const deleteResult = await cloudinary.uploader.destroy(publicId, {
+          resource_type: 'image'
+        })
+
+        if (deleteResult.result === 'ok') {
+          results.successful.push(iconName)
+          console.log(`✅ Successfully deleted icon: ${iconName}`)
         } else {
-          results.failed.push(`Icon not found: ${iconName}`)
+          results.failed.push({
+            name: iconName,
+            error: `Cloudinary deletion failed: ${deleteResult.result}`
+          })
+          console.warn(`⚠️ Failed to delete icon: ${iconName} - ${deleteResult.result}`)
         }
-      } catch (error) {
-        console.error(`Error deleting icon ${iconName}:`, error)
-        results.failed.push(`Failed to delete: ${iconName}`)
+      } catch (error: any) {
+        results.failed.push({
+          name: iconName,
+          error: error.message
+        })
+        console.error(`❌ Error deleting icon ${iconName}:`, error)
       }
     }
-    
-    // Ensure unknown.svg exists as fallback
-    if (!fs.existsSync(unknownIconPath)) {
-      const unknownSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-  <circle cx="50" cy="50" r="45" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
-  <text x="50" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#64748b">?</text>
-</svg>`
-      fs.writeFileSync(unknownIconPath, unknownSvg)
-    }
-    
+
+    const totalRequested = iconNames.length
+    const successCount = results.successful.length
+    const failCount = results.failed.length
+
+    console.log(`Bulk delete summary: ${successCount}/${totalRequested} successful, ${failCount} failed`)
+
     res.status(200).json({
-      message: `Bulk delete completed`,
-      results,
+      success: true,
+      message: `Bulk delete completed: ${successCount}/${totalRequested} icons deleted successfully`,
+      results: results,
       summary: {
-        total: icons.length,
-        deleted: results.deleted.length,
-        failed: results.failed.length,
-        skipped: results.skipped.length
+        total: totalRequested,
+        successful: successCount,
+        failed: failCount
       }
     })
-  } catch (error) {
-    console.error('Error in bulk delete:', error)
-    res.status(500).json({ error: 'Failed to perform bulk delete' })
+
+  } catch (error: any) {
+    console.error('Bulk delete error:', error)
+    res.status(500).json({
+      error: 'Failed to perform bulk delete',
+      details: error.message
+    })
   }
 }
 

@@ -40,6 +40,9 @@ import klay from 'cytoscape-klay'
 // @ts-ignore
 import cise from 'cytoscape-cise'
 
+// Import Cloudinary icon utilities
+import { getCloudinaryIconUrl, getUnknownIconUrl, checkIconExists } from '../utils/cloudinary-icons'
+
 // Import TC_PROPERTIES for property mapping
 const TC_PROPERTIES = [
   { key: 'TC_SIZE', cytoscapeProperty: 'width' },
@@ -1185,41 +1188,39 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
   }
 
-  // Dynamic icon path resolution with fallback for GraphVisualization
+  // Dynamic icon path resolution with fallback for GraphVisualization using Cloudinary
   const getNodeIconPath = async (nodeType: string): Promise<string> => {
-    if (!nodeType) return '/icons-svg/unknown.svg'
+    if (!nodeType) return getUnknownIconUrl()
 
     // Convert type to lowercase for filename matching
     const filename = nodeType.toLowerCase()
 
-    // Fallback mappings for common variations - check these first to avoid 404s
+    // Fallback mappings for common variations
     const fallbackMappings: { [key: string]: string } = {
       'threatactor': 'actor',
       'workstation': 'client',
       'cvssmetrics': 'cvsssmetrics', // Fix for CvssMetrics -> cvsssmetrics.svg
     }
 
-    // If we have a known fallback mapping, use it directly
+    // If we have a known fallback mapping, try it first
     const fallbackType = fallbackMappings[filename]
     if (fallbackType) {
-      const fallbackPath = `/icons-svg/${fallbackType}.svg`
-      const fallbackExists = await checkGraphIconExists(fallbackPath)
-      if (fallbackExists) {
-        console.log(`✓ Graph: Using mapped icon for ${nodeType}: ${fallbackPath}`)
-        return fallbackPath
+      const iconExists = await checkIconExists(fallbackType)
+      if (iconExists) {
+        console.log(`✓ Graph: Using mapped icon for ${nodeType}: ${fallbackType}`)
+        return getCloudinaryIconUrl(fallbackType)
       }
     }
 
-    // Otherwise try the primary path
-    const primaryPath = `/icons-svg/${filename}.svg`
-    const exists = await checkGraphIconExists(primaryPath)
-    if (exists) {
-      console.log(`✓ Graph: Found icon for ${nodeType}: ${primaryPath}`)
-      return primaryPath
+    // Otherwise try the primary node type
+    const iconExists = await checkIconExists(filename)
+    if (iconExists) {
+      console.log(`✓ Graph: Found icon for ${nodeType}: ${filename}`)
+      return getCloudinaryIconUrl(filename)
     }
 
     console.warn(`⚠ Graph: No icon found for ${nodeType}, using unknown.svg`)
-    return '/icons-svg/unknown.svg'
+    return getUnknownIconUrl()
   }
 
   // Enhanced helper to create meta-edges for groups
@@ -1489,17 +1490,11 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
                 if (!type || typeof type !== 'string') {
                   console.warn(`No type found for node ${nodeData?.id}:`, nodeData)
-                  return '/icons-svg/unknown.svg'
+                  return getUnknownIconUrl()
                 }
 
                 // Convert to lowercase for case-insensitive matching
                 const filename = String(type).toLowerCase()
-                const primaryPath = `/icons-svg/${filename}.svg`
-
-                // Check cache first
-                if (graphIconExistsCache.has(primaryPath) && graphIconExistsCache.get(primaryPath)) {
-                  return primaryPath
-                }
 
                 // Check fallback mappings for common variations
                 const fallbackMappings: { [key: string]: string } = {
@@ -1509,14 +1504,11 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
                 const fallbackType = fallbackMappings[filename]
                 if (fallbackType) {
-                  const fallbackPath = `/icons-svg/${fallbackType}.svg`
-                  if (graphIconExistsCache.has(fallbackPath) && graphIconExistsCache.get(fallbackPath)) {
-                    return fallbackPath
-                  }
+                  return getCloudinaryIconUrl(fallbackType)
                 }
 
-                // Default to unknown.svg
-                return '/icons-svg/unknown.svg'
+                // Return Cloudinary URL for the icon
+                return getCloudinaryIconUrl(filename)
               },
               'background-fit': 'cover',
               'background-color': 'white',

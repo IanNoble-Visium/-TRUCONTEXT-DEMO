@@ -1,99 +1,83 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import fs from 'fs'
-import path from 'path'
+import { v2 as cloudinary } from 'cloudinary'
 import archiver from 'archiver'
+import { Readable } from 'stream'
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET' && req.method !== 'POST') {
-    res.setHeader('Allow', ['GET', 'POST'])
-    return res.status(405).json({ error: `Method ${req.method} not allowed` })
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' })
   }
 
   try {
-    const iconsDir = path.join(process.cwd(), 'public', 'icons-svg')
-    
-    if (!fs.existsSync(iconsDir)) {
-      return res.status(404).json({ error: 'Icons directory not found' })
-    }
+    // Get all icons from Cloudinary
+    const result = await cloudinary.search
+      .expression('folder:trucontext-icons AND resource_type:image')
+      .sort_by([['created_at', 'desc']])
+      .max_results(100)
+      .execute()
 
-    let iconNames: string[] = []
-    
-    if (req.method === 'POST') {
-      // Export selected icons
-      const { iconNames: selectedIcons } = req.body
-      if (!selectedIcons || !Array.isArray(selectedIcons)) {
-        return res.status(400).json({ error: 'iconNames array is required for POST request' })
-      }
-      iconNames = selectedIcons
-    } else {
-      // Export all icons
-      const files = fs.readdirSync(iconsDir)
-      iconNames = files
-        .filter(file => file.endsWith('.svg'))
-        .map(file => file.replace('.svg', ''))
-    }
-
-    if (iconNames.length === 0) {
+    if (result.resources.length === 0) {
       return res.status(404).json({ error: 'No icons found to export' })
     }
 
     // Set response headers for ZIP download
-    const zipName = req.method === 'POST' ? 'trucontext-selected-icons.zip' : 'trucontext-icons.zip'
     res.setHeader('Content-Type', 'application/zip')
-    res.setHeader('Content-Disposition', `attachment; filename="${zipName}"`)
+    res.setHeader('Content-Disposition', 'attachment; filename="trucontext-icons.zip"')
 
     // Create ZIP archive
     const archive = archiver('zip', {
       zlib: { level: 9 } // Maximum compression
     })
 
-    // Handle archive errors
-    archive.on('error', (err) => {
-      console.error('Archive error:', err)
-      if (!res.headersSent) {
-        res.status(500).json({ error: 'Failed to create archive' })
-      }
-    })
-
     // Pipe archive to response
     archive.pipe(res)
 
-    // Add icons to archive
-    let addedCount = 0
-    for (const iconName of iconNames) {
-      const iconPath = path.join(iconsDir, `${iconName}.svg`)
-      
-      if (fs.existsSync(iconPath)) {
-        const iconContent = fs.readFileSync(iconPath)
-        archive.append(iconContent, { name: `${iconName}.svg` })
-        addedCount++
+    // Download and add each icon to the ZIP
+    for (const resource of result.resources) {
+      try {
+        const nodeType = resource.public_id.replace('trucontext-icons/trucontext-icons/', '')
+        const iconUrl = resource.secure_url
+        
+        // Fetch the icon content from Cloudinary
+        const response = await fetch(iconUrl)
+        if (!response.ok) {
+          console.warn(`Failed to fetch icon: ${iconUrl}`)
+          continue
+        }
+
+        const iconContent = await response.text()
+        
+        // Add to ZIP with proper filename
+        archive.append(iconContent, { name: `${nodeType}.svg` })
+        
+        console.log(`Added to ZIP: ${nodeType}.svg`)
+      } catch (error) {
+        console.error(`Error processing icon ${resource.public_id}:`, error)
+        // Continue with other icons
       }
     }
-
-    if (addedCount === 0) {
-      archive.destroy()
-      return res.status(404).json({ error: 'No valid icon files found' })
-    }
-
-    // Create a metadata file
-    const metadata = {
-      exportDate: new Date().toISOString(),
-      totalIcons: addedCount,
-      exportType: req.method === 'POST' ? 'selected' : 'all',
-      iconNames: iconNames.slice(0, addedCount),
-      application: 'TruContext Icon Management',
-      version: '1.0.0'
-    }
-
-    archive.append(JSON.stringify(metadata, null, 2), { name: 'metadata.json' })
 
     // Finalize the archive
     await archive.finalize()
 
-  } catch (error) {
+    console.log(`✅ Successfully exported ${result.resources.length} icons as ZIP`)
+
+  } catch (error: any) {
     console.error('Export error:', error)
+    
+    // If response hasn't been sent yet, send error
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Failed to export icons' })
+      res.status(500).json({
+        error: 'Failed to export icons',
+        details: error.message
+      })
     }
   }
 }
