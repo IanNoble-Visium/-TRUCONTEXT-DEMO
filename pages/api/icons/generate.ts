@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { v2 as cloudinary } from 'cloudinary'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+import fs from 'fs'
+import path from 'path'
 
 // Configure Cloudinary
 cloudinary.config({
@@ -97,7 +100,56 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-// Recraft.ai icon generation function
+// Load icon style configuration
+let iconStyleConfig: any = null
+
+const loadIconStyleConfig = () => {
+  if (!iconStyleConfig) {
+    try {
+      const configPath = path.join(process.cwd(), 'config', 'icon-styles.json')
+      const configData = fs.readFileSync(configPath, 'utf8')
+      iconStyleConfig = JSON.parse(configData)
+    } catch (error) {
+      console.warn('⚠️ Could not load icon-styles.json, using fallback configuration')
+      // Fallback configuration
+      iconStyleConfig = {
+        colorPalettes: {
+          actor: { primary: ['#4F46E5', '#7C3AED', '#EC4899', '#F59E0B'] },
+          agent: { primary: ['#059669', '#0891B2', '#3B82F6', '#6366F1'] },
+          exploit: { primary: ['#DC2626', '#EA580C', '#F59E0B', '#EF4444'] },
+          default: { primary: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'] }
+        },
+        styleConfigurations: {
+          actor: { style: 'vector_illustration', substyle: 'colorful_outline', colorMode: 'vibrant' },
+          agent: { style: 'vector_illustration', substyle: 'isometric', colorMode: 'rich' },
+          exploit: { style: 'vector_illustration', substyle: 'pictogram', colorMode: 'bold' },
+          default: { style: 'vector_illustration', substyle: 'flat_design', colorMode: 'vibrant' }
+        },
+        promptTemplates: {
+          colorful: 'Vibrant colorful {nodeType} cybersecurity network icon, {description}. Professional design with rich colors using palette: {colors}. Modern {substyle} style with bold, saturated colors. High contrast, visually striking, suitable for technical diagrams. Emphasize color richness and visual appeal while maintaining clarity.'
+        }
+      }
+    }
+  }
+  return iconStyleConfig
+}
+
+// Enhanced color palettes for different node types
+const getColorPaletteForNodeType = (nodeType: string): string[] => {
+  const config = loadIconStyleConfig()
+  const nodeTypeKey = nodeType.toLowerCase()
+  const palette = config.colorPalettes[nodeTypeKey] || config.colorPalettes.default
+  return palette.primary || palette
+}
+
+// Get enhanced style configuration for vibrant icons
+const getStyleConfigForNodeType = (nodeType: string) => {
+  const config = loadIconStyleConfig()
+  const nodeTypeKey = nodeType.toLowerCase()
+  return config.styleConfigurations[nodeTypeKey] || config.styleConfigurations.default
+}
+
+// Enhanced Recraft.ai icon generation function with color support
 async function generateIconWithRecraft(nodeType: string, description: string): Promise<string> {
   const recraftApiKey = process.env.RECRAFT_API_KEY
   
@@ -105,8 +157,31 @@ async function generateIconWithRecraft(nodeType: string, description: string): P
     throw new Error('Recraft API key not configured')
   }
 
-  // Create optimized prompt for cybersecurity/network icons
-  const optimizedPrompt = `Flat minimalist ${nodeType} cybersecurity network icon, ${description}. Simple, clean, professional design with clear lines. Suitable for technical diagrams. Vector illustration style with appropriate colors for network security visualization.`
+  // Get color palette and style configuration for this node type
+  const colorPalette = getColorPaletteForNodeType(nodeType)
+  const styleConfig = getStyleConfigForNodeType(nodeType)
+  
+  // Create prompt using Recraft V3 recommended format
+  const config = loadIconStyleConfig()
+  const avoidColors = 'professional blue and teal colors only, no red'
+  
+  // Use Perplexity AI recommended format: "simple [type] cybersecurity icon, [description], vector, flat, modern, minimal, color"
+  const optimizedPrompt = `simple ${nodeType} cybersecurity icon, ${description}, vector, flat, modern, minimal, color, ${avoidColors}`
+
+  // Prepare the API request with enhanced parameters
+  const requestBody: any = {
+    prompt: optimizedPrompt,
+    style: styleConfig.style,
+    model: 'recraftv3',
+    size: '1024x1024',
+    response_format: 'url',
+    n: 1
+  }
+
+  // Note: Removed colors and style_modifiers parameters as they may not be supported
+  // and could be causing the API to ignore our color specifications in the prompt
+
+  console.log(`🎨 Generating Recraft V3 ${nodeType} icon with vector_illustration style: ${optimizedPrompt}`)
 
   const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
     method: 'POST',
@@ -114,14 +189,7 @@ async function generateIconWithRecraft(nodeType: string, description: string): P
       'Authorization': `Bearer ${recraftApiKey}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      prompt: optimizedPrompt,
-      style: 'vector_illustration',
-      model: 'recraftv3',
-      size: '1024x1024',
-      response_format: 'url',
-      n: 1
-    })
+    body: JSON.stringify(requestBody)
   })
 
   if (!response.ok) {

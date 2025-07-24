@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useMemo, useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { Box, Portal, Button, ButtonGroup, VStack, Text, useColorModeValue, HStack } from '@chakra-ui/react'
 import { NodeTooltip, EdgeTooltip } from '../GraphTooltip'
+import { getCloudinaryIconUrl, getUnknownIconUrl, checkIconExists } from '../../utils/cloudinary-icons'
 import type { Map as LeafletMapType, LatLngBounds } from 'leaflet'
 
 // Dynamically import react-leaflet components to avoid SSR issues
@@ -64,87 +65,83 @@ const svgCache = new Map<string, string>()
 // Cache for icon existence checks
 const iconExistsCache = new Map<string, boolean>()
 
-// Helper function to check if an icon file exists
-const checkIconExists = async (iconPath: string): Promise<boolean> => {
-  if (iconExistsCache.has(iconPath)) {
-    return iconExistsCache.get(iconPath)!
-  }
+// Helper function to check if a Cloudinary icon exists (using imported function)
+const checkCloudinaryIconExists = checkIconExists
 
+// Dynamic icon URL resolution with Cloudinary fallback
+const getNodeIconUrl = async (nodeType: string): Promise<string> => {
+  if (!nodeType) return getUnknownIconUrl()
+
+  // First try to get from Cloudinary
   try {
-    const response = await fetch(iconPath, { method: 'HEAD' })
-    const exists = response.ok
-    iconExistsCache.set(iconPath, exists)
-    return exists
-  } catch (error) {
-    console.warn(`Failed to check icon existence: ${iconPath}`, error)
-    iconExistsCache.set(iconPath, false)
-    return false
-  }
-}
-
-// Dynamic icon path resolution with fallback
-const getNodeIconPath = async (nodeType: string): Promise<string> => {
-  if (!nodeType) return '/icons-svg/unknown.svg'
-
-  // Convert type to lowercase for filename matching
-  const filename = nodeType.toLowerCase()
-  const primaryPath = `/icons-svg/${filename}.svg`
-
-  // Check if the primary icon exists
-  const exists = await checkIconExists(primaryPath)
-  if (exists) {
-    console.log(`✓ Found icon for ${nodeType}: ${primaryPath}`)
-    return primaryPath
-  }
-
-  // Fallback mappings for common variations
-  const fallbackMappings: { [key: string]: string } = {
-    'threatactor': 'actor',
-    'workstation': 'client',
-  }
-
-  const fallbackType = fallbackMappings[filename]
-  if (fallbackType) {
-    const fallbackPath = `/icons-svg/${fallbackType}.svg`
-    const fallbackExists = await checkIconExists(fallbackPath)
-    if (fallbackExists) {
-      console.log(`✓ Using fallback icon for ${nodeType}: ${fallbackPath}`)
-      return fallbackPath
+    const iconExists = await checkCloudinaryIconExists(nodeType)
+    if (iconExists) {
+      console.log(`✓ Found Cloudinary icon for ${nodeType}`)
+      return getCloudinaryIconUrl(nodeType, false)
     }
+
+    // Try fallback mappings in Cloudinary
+    const fallbackMappings: { [key: string]: string } = {
+      'threatactor': 'actor',
+      'workstation': 'client',
+    }
+
+    const filename = nodeType.toLowerCase()
+    const fallbackType = fallbackMappings[filename]
+    if (fallbackType) {
+      const fallbackExists = await checkCloudinaryIconExists(fallbackType)
+      if (fallbackExists) {
+        console.log(`✓ Using Cloudinary fallback icon for ${nodeType}: ${fallbackType}`)
+        return getCloudinaryIconUrl(fallbackType, false)
+      }
+    }
+  } catch (error) {
+    console.warn(`⚠ Error checking Cloudinary icons for ${nodeType}:`, error)
   }
 
-  console.warn(`⚠ No icon found for ${nodeType}, using unknown.svg`)
-  return '/icons-svg/unknown.svg'
+  console.warn(`⚠ No Cloudinary icon found for ${nodeType}, using unknown fallback`)
+  return getUnknownIconUrl()
 }
 
 // Function to load SVG content with better error handling
-const loadSVGContent = async (iconPath: string): Promise<string> => {
-  if (svgCache.has(iconPath)) {
-    return svgCache.get(iconPath)!
+// Updated to support Cloudinary URLs
+const loadSVGContent = async (iconUrl: string): Promise<string> => {
+  if (svgCache.has(iconUrl)) {
+    return svgCache.get(iconUrl)!
   }
 
   try {
-    const response = await fetch(iconPath)
+    const response = await fetch(iconUrl)
     if (!response.ok) {
       throw new Error(`Failed to load SVG: ${response.status}`)
     }
     const svgText = await response.text()
-    svgCache.set(iconPath, svgText)
-    console.log(`✓ Successfully loaded SVG: ${iconPath}`)
+    svgCache.set(iconUrl, svgText)
+    console.log(`✓ Successfully loaded SVG: ${iconUrl}`)
     return svgText
   } catch (error) {
-    console.warn(`⚠ Failed to load SVG from ${iconPath}:`, error)
-    // Try to load fallback
-    if (iconPath !== '/icons-svg/unknown.svg') {
+    console.warn(`⚠ Failed to load SVG from ${iconUrl}:`, error)
+    
+    // If it's a Cloudinary URL that failed, try the unknown icon
+    if (iconUrl.includes('cloudinary.com')) {
+      const unknownUrl = getUnknownIconUrl()
+      if (unknownUrl !== iconUrl) {
+        return loadSVGContent(unknownUrl)
+      }
+    }
+    
+    // Legacy fallback for local paths
+    if (iconUrl !== '/icons-svg/unknown.svg' && !iconUrl.includes('cloudinary.com')) {
       return loadSVGContent('/icons-svg/unknown.svg')
     }
-    // Return a simple fallback SVG if even unknown.svg fails
+    
+    // Return a simple fallback SVG if all else fails
     const fallbackSVG = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
       <circle cx="10" cy="10" r="8" fill="#666"/>
       <text x="10" y="14" text-anchor="middle" font-size="12" fill="white">?</text>
     </svg>`
-    svgCache.set(iconPath, fallbackSVG)
-    console.log(`✓ Using fallback SVG for ${iconPath}`)
+    svgCache.set(iconUrl, fallbackSVG)
+    console.log(`✓ Using fallback SVG for ${iconUrl}`)
     return fallbackSVG
   }
 }
@@ -229,13 +226,13 @@ const createCustomIcon = async (node: GeoNode, iconSizeOption: 'small' | 'medium
   ` : ''
 
   // Load SVG content for the node type
-  const iconPath = await getNodeIconPath(node.type)
+  const iconUrl = await getNodeIconUrl(node.type)
   let svgContent = ''
 
   try {
-    console.log(`🔍 Attempting to load SVG for ${node.type} from ${iconPath}`)
-    const rawSVG = await loadSVGContent(iconPath)
-    console.log(`✅ Loaded SVG for ${node.type} from ${iconPath}:`, rawSVG.substring(0, 200) + '...')
+    console.log(`🔍 Attempting to load SVG for ${node.type} from ${iconUrl}`)
+    const rawSVG = await loadSVGContent(iconUrl)
+    console.log(`✅ Loaded SVG for ${node.type} from ${iconUrl}:`, rawSVG.substring(0, 200) + '...')
 
     // For SVGs with embedded images, we need to handle them specially
     if (rawSVG.includes('<svg')) {
@@ -316,7 +313,7 @@ const createCustomIcon = async (node: GeoNode, iconSizeOption: 'small' | 'medium
       console.warn(`⚠ Invalid SVG content for ${node.type}`)
     }
   } catch (error) {
-    console.error(`❌ Failed to load SVG for node ${node.uid} (${node.type}) from ${iconPath}:`, error)
+    console.error(`❌ Failed to load SVG for node ${node.uid} (${node.type}) from ${iconUrl}:`, error)
     console.log(`❌ SVG content will be empty, falling back to colored circle`)
   }
 
@@ -565,17 +562,17 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
     const nodeTypes = Array.from(new Set(geoNodes.map(node => node.type)))
 
     for (const type of nodeTypes) {
-      let iconPath = await getNodeIconPath(type)
-      console.log(`Attempting to load icon for ${type}: ${iconPath}`)
+      let iconUrl = await getNodeIconUrl(type)
+      console.log(`Attempting to load icon for ${type}: ${iconUrl}`)
       
       try {
         // Try to load the SVG icon
-        const response = await fetch(iconPath)
+        const response = await fetch(iconUrl)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         const svgText = await response.text()
-        console.log(`✅ Loaded SVG for ${type} from ${iconPath}: ${svgText.substring(0, 50)}...`)
+        console.log(`✅ Loaded SVG for ${type} from ${iconUrl}: ${svgText.substring(0, 50)}...`)
         
         // Process SVG and create icon
         const processedIcon = await createCustomIcon({

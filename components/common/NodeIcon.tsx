@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Box } from '@chakra-ui/react'
-import { getNodeIconPath, loadSVGContent } from '../../utils/iconUtils'
+import { getCloudinaryIconUrl, getUnknownIconUrl, checkIconExists } from '../../utils/cloudinary-icons'
 
 interface NodeIconProps {
   nodeType: string
@@ -28,7 +28,7 @@ const NodeIcon: React.FC<NodeIconProps> = ({
   style = {},
   fallbackColor = '#666'
 }) => {
-  const [iconContent, setIconContent] = useState<string>('')
+  const [iconUrl, setIconUrl] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -40,59 +40,30 @@ const NodeIcon: React.FC<NodeIconProps> = ({
         setIsLoading(true)
         setError(null)
 
-        const iconPath = await getNodeIconPath(nodeType)
-        const rawSVG = await loadSVGContent(iconPath)
+        if (!nodeType) {
+          if (isMounted) {
+            setIconUrl(getUnknownIconUrl())
+            setIsLoading(false)
+          }
+          return
+        }
+
+        // Check if the specific icon exists in Cloudinary
+        const iconExists = await checkIconExists(nodeType)
         
         if (!isMounted) return
 
-        // Check if SVG contains embedded PNG data
-        const pngDataUrl = extractPNGFromSVG(rawSVG)
-        
-        if (pngDataUrl) {
-          // Use background image approach for embedded PNG data
-          setIconContent(`
-            <div style="
-              width: ${size}px;
-              height: ${size}px;
-              background-image: url('${pngDataUrl}');
-              background-size: contain;
-              background-repeat: no-repeat;
-              background-position: center;
-              display: inline-block;
-              vertical-align: middle;
-            "></div>
-          `)
+        if (iconExists) {
+          setIconUrl(getCloudinaryIconUrl(nodeType, false))
         } else {
-          // Process pure SVG content
-          const cleanSVG = rawSVG
-            .replace(/width="[^"]*"/g, `width="${size}"`)
-            .replace(/height="[^"]*"/g, `height="${size}"`)
-            .replace(/xmlns="[^"]*"/g, '')
-            .replace(/xmlns:xlink="[^"]*"/g, '')
-            .replace(/<\?xml[^>]*\?>/g, '')
-            .trim()
-          
-          setIconContent(cleanSVG)
+          console.warn(`Icon not found for node type: ${nodeType}, using fallback`)
+          setIconUrl(getUnknownIconUrl())
         }
       } catch (err) {
         console.error(`Failed to load icon for ${nodeType}:`, err)
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'Unknown error')
-          // Set fallback icon
-          setIconContent(`
-            <div style="
-              width: ${size}px;
-              height: ${size}px;
-              background-color: ${fallbackColor};
-              border-radius: 50%;
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              color: white;
-              font-size: ${Math.floor(size * 0.6)}px;
-              font-weight: bold;
-            ">?</div>
-          `)
+          setIconUrl(getUnknownIconUrl())
         }
       } finally {
         if (isMounted) {
@@ -122,7 +93,7 @@ const NodeIcon: React.FC<NodeIconProps> = ({
     )
   }
 
-  if (error || !iconContent) {
+  if (error || !iconUrl) {
     return (
       <Box
         width={`${size}px`}
@@ -149,8 +120,23 @@ const NodeIcon: React.FC<NodeIconProps> = ({
       verticalAlign="middle"
       className={className}
       style={style}
-      dangerouslySetInnerHTML={{ __html: iconContent }}
-    />
+    >
+      <img
+        src={iconUrl}
+        alt={`${nodeType} icon`}
+        width={size}
+        height={size}
+        style={{
+          display: 'block',
+          objectFit: 'contain'
+        }}
+        onError={(e) => {
+          console.warn(`Failed to load Cloudinary icon for ${nodeType}, using fallback`)
+          const target = e.target as HTMLImageElement
+          target.src = getUnknownIconUrl()
+        }}
+      />
+    </Box>
   )
 }
 

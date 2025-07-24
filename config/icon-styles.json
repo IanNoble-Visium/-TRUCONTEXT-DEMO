@@ -1,0 +1,76 @@
+{
+  "colorPalettes": {
+    "actor": {
+      "primary": ["#003087", "#3381ff", "#66a1ff", "#99c0ff"],
+      "secondary": ["#002670", "#0066cc", "#4d94ff", "#80b3ff"],
+      "description": "Blue tones matching Visium brand for human actors"
+    },
+    "agent": {
+      "primary": ["#059669", "#0891B2", "#003087", "#10B981"],
+      "secondary": ["#047857", "#0e7490", "#002670", "#065f46"],
+      "description": "Teal and blue tones for software agents"
+    },
+    "exploit": {
+      "primary": ["#DC2626", "#EA580C", "#003087", "#B91C1C"],
+      "secondary": ["#991B1B", "#C2410C", "#002670", "#7F1D1D"],
+      "description": "Red and blue tones for security exploits"
+    },
+    "default": {
+      "primary": ["#003087", "#3381ff", "#059669", "#6B7280"],
+      "secondary": ["#002670", "#0066cc", "#047857", "#4B5563"],
+      "description": "Professional blue-gray palette for general node types"
+    }
+  },
+  "styleConfigurations": {
+    "actor": {
+      "style": "vector_illustration",
+      "substyle": "flat_modern",
+      "colorMode": "professional",
+      "emphasis": "vector, flat, modern, minimal, professional colors",
+      "keywords": ["person", "user", "human", "profile", "avatar", "shield"]
+    },
+    "agent": {
+      "style": "vector_illustration",
+      "substyle": "flat_technical",
+      "colorMode": "corporate",
+      "emphasis": "vector, flat, modern, minimal, technical design",
+      "keywords": ["software", "system", "automation", "AI", "bot", "chip"]
+    },
+    "exploit": {
+      "style": "vector_illustration",
+      "substyle": "flat_security",
+      "colorMode": "alert",
+      "emphasis": "vector, flat, modern, minimal, security focused",
+      "keywords": ["security", "vulnerability", "attack", "threat", "danger", "warning"]
+    },
+    "default": {
+      "style": "vector_illustration",
+      "substyle": "flat_minimal",
+      "colorMode": "professional",
+      "emphasis": "vector, flat, modern, minimal, clean design",
+      "keywords": ["network", "system", "component", "element"]
+    }
+  },
+  "promptTemplates": {
+    "vector_illustration": "simple {nodeType} cybersecurity icon, {description}, vector, flat, modern, minimal, color, professional blue and teal colors only, no red",
+    "minimal": "minimal {nodeType} cybersecurity icon, {description}, vector, flat, simple, clean geometry, professional colors",
+    "professional": "corporate {nodeType} cybersecurity icon, {description}, vector, flat, modern, business appropriate, clean design"
+  },
+  "apiParameters": {
+    "recraft": {
+      "model": "recraftv3",
+      "size": "1024x1024",
+      "response_format": "url",
+      "style_modifiers": {
+        "color_saturation": "high",
+        "color_vibrancy": "enhanced",
+        "contrast": "high"
+      }
+    }
+  },
+  "fallbackSettings": {
+    "useRandomPalette": true,
+    "defaultStyle": "vector_illustration",
+    "colorIntensity": "vibrant"
+  }
+}
