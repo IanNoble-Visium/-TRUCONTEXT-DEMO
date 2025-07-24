@@ -21,6 +21,8 @@ import {
   ModalBody,
   ModalCloseButton,
   Input,
+  InputGroup,
+  InputLeftElement,
   Textarea,
   FormControl,
   FormLabel,
@@ -40,14 +42,15 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  AccordionIcon
+  AccordionIcon,
+  Icon
 } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   DeleteIcon,
   AddIcon,
   DownloadIcon,
-  UploadIcon,
+  AttachmentIcon,
   EditIcon,
   ViewIcon,
   SearchIcon,
@@ -106,6 +109,13 @@ const IconManagement: React.FC<IconManagementProps> = ({ nodes = [], edges = [] 
   // UI states
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const [loadingStates, setLoadingStates] = useState({
+    uploading: false,
+    generating: false,
+    deleting: false,
+    exporting: false
+  })
   
   const toast = useToast()
   
@@ -314,9 +324,6 @@ const IconManagement: React.FC<IconManagementProps> = ({ nodes = [], edges = [] 
     }
   }
 
-  // Drag and drop state
-  const [isDragOver, setIsDragOver] = useState(false)
-
   // Handle drag and drop events
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
@@ -352,20 +359,18 @@ const IconManagement: React.FC<IconManagementProps> = ({ nodes = [], edges = [] 
     }
   }
 
-  // Enhanced loading states
-  const [loadingStates, setLoadingStates] = useState({
-    uploading: false,
-    generating: false,
-    deleting: false,
-    exporting: false
-  })
   
-  const handleSelectAllIcons = () => {
+  const handleSelectAllIcons = useCallback(() => {
     if (selectedIcons.size === filteredIcons.length) {
       setSelectedIcons(new Set())
     } else {
       setSelectedIcons(new Set(filteredIcons.map(icon => icon.name)))
     }
+  }, [selectedIcons.size, filteredIcons])
+
+  const handlePreviewIcon = (icon: IconData) => {
+    setPreviewIcon(icon)
+    onPreviewOpen()
   }
 
   // Keyboard navigation
@@ -472,6 +477,11 @@ const IconManagement: React.FC<IconManagementProps> = ({ nodes = [], edges = [] 
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       position="relative"
+      height="calc(100vh - 2rem)"
+      maxHeight="calc(100vh - 2rem)"
+      overflow="hidden"
+      display="flex"
+      flexDirection="column"
       _before={isDragOver ? {
         content: '""',
         position: 'absolute',
@@ -497,7 +507,7 @@ const IconManagement: React.FC<IconManagementProps> = ({ nodes = [], edges = [] 
           textAlign="center"
           pointerEvents="none"
         >
-          <Icon as={UploadIcon} boxSize={12} color="blue.500" mb={2} />
+          <Icon as={AttachmentIcon} boxSize={12} color="blue.500" mb={2} />
           <Text fontSize="lg" fontWeight="bold" color="blue.600">
             Drop files here to upload
           </Text>
@@ -507,7 +517,7 @@ const IconManagement: React.FC<IconManagementProps> = ({ nodes = [], edges = [] 
         </Box>
       )}
       {/* Header */}
-      <VStack spacing={6} align="stretch">
+      <VStack spacing={6} align="stretch" flex={1} overflow="auto" pb={4}>
         <Box>
           <Heading size="lg" mb={2}>Icon Management</Heading>
           <Text color={textColor}>
@@ -571,14 +581,16 @@ const IconManagement: React.FC<IconManagementProps> = ({ nodes = [], edges = [] 
         {/* Search and Filter */}
         <HStack spacing={4} justify="space-between">
           <HStack spacing={4}>
-            <Input
-              placeholder="Search icons..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              leftElement={<SearchIcon color="gray.400" />}
-              size="sm"
-              maxW="300px"
-            />
+            <InputGroup size="sm" maxW="300px">
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="gray.400" />
+              </InputLeftElement>
+              <Input
+                placeholder="Search icons..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </InputGroup>
             
             <Select
               value={filterType}
@@ -808,6 +820,7 @@ const IconCard: React.FC<IconCardProps> = ({
           <HStack spacing={1}>
             <Tooltip label="Preview">
               <IconButton
+                aria-label="Preview icon"
                 icon={<ViewIcon />}
                 size="xs"
                 variant="ghost"
@@ -819,6 +832,7 @@ const IconCard: React.FC<IconCardProps> = ({
             </Tooltip>
             <Tooltip label="Delete">
               <IconButton
+                aria-label="Delete icon"
                 icon={<DeleteIcon />}
                 size="xs"
                 variant="ghost"
@@ -873,6 +887,7 @@ const IconCard: React.FC<IconCardProps> = ({
           <HStack spacing={1}>
             <Tooltip label="Preview">
               <IconButton
+                aria-label="Preview icon"
                 icon={<ViewIcon />}
                 size="xs"
                 variant="ghost"
@@ -884,6 +899,7 @@ const IconCard: React.FC<IconCardProps> = ({
             </Tooltip>
             <Tooltip label="Delete">
               <IconButton
+                aria-label="Delete icon"
                 icon={<DeleteIcon />}
                 size="xs"
                 variant="ghost"
@@ -1007,7 +1023,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose, onUploadSucc
             >
               <input {...getInputProps()} />
               <VStack spacing={2}>
-                <UploadIcon size="40px" color="gray.500" />
+                <AttachmentIcon boxSize="40px" color="gray.500" />
                 <Text>
                   {isDragActive
                     ? 'Drop the files here...'
