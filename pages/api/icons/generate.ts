@@ -17,13 +17,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { nodeType, prompt, description } = req.body
+    const { nodeType, prompt, description, advancedSettings } = req.body
 
     if (!nodeType || (!prompt && !description)) {
       return res.status(400).json({ error: 'Node type and prompt/description are required' })
     }
 
     const finalPrompt = prompt || description
+    
+    // Extract advanced settings with defaults
+    const settings = {
+      model: advancedSettings?.model || 'recraftv3',
+      style: advancedSettings?.style || 'vector_illustration',
+      substyle: advancedSettings?.substyle || undefined,
+      size: advancedSettings?.size || '1024x1024',
+      response_format: advancedSettings?.response_format || 'url'
+    }
 
     // Determine which API to use based on configuration
     const iconGenerationAPI = process.env.ICON_GENERATION_API || 'recraft'
@@ -33,8 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
       if (iconGenerationAPI === 'recraft') {
-        // Try Recraft.ai API first
-        svgContent = await generateIconWithRecraft(nodeType, finalPrompt)
+        // Try Recraft.ai API first with advanced settings
+        svgContent = await generateIconWithRecraft(nodeType, finalPrompt, settings)
       } else {
         // Use Gemini API
         svgContent = await generateIconWithGemini(nodeType, finalPrompt)
@@ -149,15 +158,24 @@ const getStyleConfigForNodeType = (nodeType: string) => {
   return config.styleConfigurations[nodeTypeKey] || config.styleConfigurations.default
 }
 
-// Enhanced Recraft.ai icon generation function with color support
-async function generateIconWithRecraft(nodeType: string, description: string): Promise<string> {
+// Enhanced Recraft.ai icon generation function with color support and advanced settings
+async function generateIconWithRecraft(nodeType: string, description: string, settings?: any): Promise<string> {
   const recraftApiKey = process.env.RECRAFT_API_KEY
   
   if (!recraftApiKey) {
     throw new Error('Recraft API key not configured')
   }
 
-  // Get color palette and style configuration for this node type
+  // Use advanced settings if provided, otherwise fall back to defaults
+  const finalSettings = {
+    model: settings?.model || 'recraftv3',
+    style: settings?.style || 'vector_illustration',
+    substyle: settings?.substyle,
+    size: settings?.size || '1024x1024',
+    response_format: settings?.response_format || 'url'
+  }
+  
+  // Get color palette and style configuration for this node type (for backward compatibility)
   const colorPalette = getColorPaletteForNodeType(nodeType)
   const styleConfig = getStyleConfigForNodeType(nodeType)
   
@@ -168,20 +186,25 @@ async function generateIconWithRecraft(nodeType: string, description: string): P
   // Use Perplexity AI recommended format: "simple [type] cybersecurity icon, [description], vector, flat, modern, minimal, color"
   const optimizedPrompt = `simple ${nodeType} cybersecurity icon, ${description}, vector, flat, modern, minimal, color, ${avoidColors}`
 
-  // Prepare the API request with enhanced parameters
+  // Prepare the API request with advanced parameters
   const requestBody: any = {
     prompt: optimizedPrompt,
-    style: styleConfig.style,
-    model: 'recraftv3',
-    size: '1024x1024',
-    response_format: 'url',
+    style: finalSettings.style,
+    model: finalSettings.model,
+    size: finalSettings.size,
+    response_format: finalSettings.response_format,
     n: 1
+  }
+  
+  // Add substyle if specified
+  if (finalSettings.substyle) {
+    requestBody.substyle = finalSettings.substyle
   }
 
   // Note: Removed colors and style_modifiers parameters as they may not be supported
   // and could be causing the API to ignore our color specifications in the prompt
 
-  console.log(`🎨 Generating Recraft V3 ${nodeType} icon with vector_illustration style: ${optimizedPrompt}`)
+  console.log(`🎨 Generating ${finalSettings.model} ${nodeType} icon with ${finalSettings.style} style (${finalSettings.size}): ${optimizedPrompt}`)
 
   const response = await fetch('https://external.api.recraft.ai/v1/images/generations', {
     method: 'POST',

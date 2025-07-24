@@ -1086,27 +1086,87 @@ interface GenerateModalProps {
 }
 
 const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenerateSuccess }) => {
+  // Basic form states
   const [prompt, setPrompt] = useState('')
   const [nodeType, setNodeType] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedIcon, setGeneratedIcon] = useState<string | null>(null)
+  
+  // Advanced controls state
+  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [advancedSettings, setAdvancedSettings] = useState({
+    model: 'recraftv3',
+    style: 'vector_illustration',
+    substyle: '',
+    size: '1024x1024',
+    responseFormat: 'url',
+    customPromptPrefix: '',
+    qualityLevel: 'standard'
+  })
+  
   const toast = useToast()
+  
+  // Recraft API options based on documentation
+  const recraftOptions = {
+    models: [
+      { value: 'recraftv3', label: 'Recraft V3 (Recommended)', description: 'Latest model with best quality' },
+      { value: 'recraftv2', label: 'Recraft V2', description: 'Previous generation model' }
+    ],
+    styles: [
+      { value: 'vector_illustration', label: 'Vector Illustration', description: 'Clean vector graphics with flat colors' },
+      { value: 'digital_illustration', label: 'Digital Illustration', description: 'Hand-drawn or computer-generated art' },
+      { value: 'icon', label: 'Icon', description: 'Small symbols for UI use' },
+      { value: 'realistic_image', label: 'Realistic Image', description: 'Photo-like realistic images' }
+    ],
+    substyles: [
+      { value: '', label: 'Default', description: 'Use default substyle for selected style' },
+      { value: 'hand_drawn', label: 'Hand Drawn', description: 'Artistic hand-drawn appearance' },
+      { value: 'flat_design', label: 'Flat Design', description: 'Modern flat design aesthetic' },
+      { value: 'isometric', label: 'Isometric', description: '3D isometric perspective' },
+      { value: 'minimalist', label: 'Minimalist', description: 'Clean, simple design' },
+      { value: 'geometric', label: 'Geometric', description: 'Based on geometric shapes' }
+    ],
+    sizes: [
+      { value: '1024x1024', label: '1024×1024 (Square)', description: 'Standard square format' },
+      { value: '1365x1024', label: '1365×1024 (Landscape)', description: 'Wide landscape format' },
+      { value: '1024x1365', label: '1024×1365 (Portrait)', description: 'Tall portrait format' },
+      { value: '1536x1024', label: '1536×1024 (Wide)', description: 'Extra wide format' },
+      { value: '1024x1536', label: '1024×1536 (Tall)', description: 'Extra tall format' }
+    ],
+    responseFormats: [
+      { value: 'url', label: 'URL', description: 'Return image as URL (recommended)' },
+      { value: 'b64_json', label: 'Base64 JSON', description: 'Return image as base64 data' }
+    ]
+  }
   
   const handleGenerate = async () => {
     if (!prompt.trim() || !nodeType.trim()) return
     
     setIsGenerating(true)
     try {
+      // Build the request payload with advanced settings
+      const requestPayload = {
+        prompt: advancedSettings.customPromptPrefix 
+          ? `${advancedSettings.customPromptPrefix} ${prompt}` 
+          : `Create a cybersecurity icon for ${nodeType}: ${prompt}. Style: minimalist, professional, suitable for network diagrams`,
+        nodeType: nodeType.toLowerCase().replace(/\s+/g, '_'),
+        description: prompt,
+        // Advanced Recraft API parameters
+        advancedSettings: {
+          model: advancedSettings.model,
+          style: advancedSettings.style,
+          substyle: advancedSettings.substyle || undefined,
+          size: advancedSettings.size,
+          response_format: advancedSettings.responseFormat
+        }
+      }
+      
       const response = await fetch('/api/icons/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          prompt: `Create a cybersecurity icon for ${nodeType}: ${prompt}. Style: minimalist, professional, suitable for network diagrams`,
-          nodeType: nodeType.toLowerCase().replace(/\s+/g, '_'),
-          style: 'cybersecurity'
-        })
+        body: JSON.stringify(requestPayload)
       })
       
       if (!response.ok) {
@@ -1115,17 +1175,17 @@ const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenera
       }
       
       const result = await response.json()
-      setGeneratedIcon(result.iconPath)
+      setGeneratedIcon(result.iconUrl || result.iconPath)
       
       toast({
         title: 'Icon generated successfully',
-        description: `New icon created for ${nodeType}`,
+        description: `Preview your new ${advancedSettings.style} icon below. Accept it or regenerate with different settings.`,
         status: 'success',
-        duration: 3000,
+        duration: 4000,
         isClosable: true,
       })
       
-      onGenerateSuccess()
+      // Don't call onGenerateSuccess() here - wait for user to accept the icon
     } catch (error) {
       console.error('Generation error:', error)
       
@@ -1156,11 +1216,76 @@ const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenera
     }
   }
   
-  const handleSave = () => {
-    onClose()
+  const handleAccept = async () => {
+    if (!generatedIcon) return
+    
+    try {
+      // The icon is already saved to Cloudinary by the API
+      // We just need to refresh the icon list and close the modal
+      await onGenerateSuccess()
+      
+      toast({
+        title: 'Icon accepted',
+        description: `Icon for ${nodeType} has been saved successfully`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+      
+      // Reset the modal state
+      setPrompt('')
+      setNodeType('')
+      setGeneratedIcon(null)
+      onClose()
+    } catch (error) {
+      console.error('Error accepting icon:', error)
+      toast({
+        title: 'Error saving icon',
+        description: 'Failed to save the generated icon. Please try again.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+  }
+  
+  const handleRegenerate = () => {
+    // Clear the current generated icon and allow user to generate again
+    setGeneratedIcon(null)
+    toast({
+      title: 'Ready to regenerate',
+      description: 'You can now generate a new icon with the same or modified settings',
+      status: 'info',
+      duration: 2000,
+      isClosable: true,
+    })
+  }
+  
+  const handleCancel = () => {
+    // Reset all state and close modal
     setPrompt('')
     setNodeType('')
     setGeneratedIcon(null)
+    onClose()
+  }
+  
+  const resetToDefaults = () => {
+    setAdvancedSettings({
+      model: 'recraftv3',
+      style: 'vector_illustration',
+      substyle: '',
+      size: '1024x1024',
+      responseFormat: 'url',
+      customPromptPrefix: '',
+      qualityLevel: 'standard'
+    })
+    toast({
+      title: 'Settings reset',
+      description: 'Advanced settings have been reset to defaults',
+      status: 'info',
+      duration: 2000,
+      isClosable: true,
+    })
   }
   
   return (
@@ -1171,6 +1296,7 @@ const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenera
         <ModalCloseButton />
         <ModalBody>
           <VStack spacing={4} align="stretch">
+            {/* Basic Controls */}
             <FormControl>
               <FormLabel>Node Type</FormLabel>
               <Input
@@ -1190,6 +1316,162 @@ const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenera
               />
             </FormControl>
             
+            {/* Advanced Options Section */}
+            <Accordion allowToggle>
+              <AccordionItem border="1px solid" borderColor="gray.200" borderRadius="md">
+                <AccordionButton
+                  _hover={{ bg: 'gray.50' }}
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                >
+                  <Box flex="1" textAlign="left">
+                    <HStack>
+                      <SettingsIcon color="gray.500" />
+                      <Text fontWeight="medium">Advanced Options</Text>
+                      <Badge colorScheme="orange" size="sm">Experimental</Badge>
+                    </HStack>
+                  </Box>
+                  <AccordionIcon />
+                </AccordionButton>
+                <AccordionPanel pb={4} bg="gray.50">
+                  <VStack spacing={4} align="stretch">
+                    <Alert status="warning" size="sm" borderRadius="md">
+                      <AlertIcon />
+                      <AlertDescription fontSize="xs">
+                        These are experimental Recraft API parameters. Use defaults for best results.
+                      </AlertDescription>
+                    </Alert>
+                    
+                    <Grid templateColumns="repeat(2, 1fr)" gap={4}>
+                      {/* Model Selection */}
+                      <FormControl>
+                        <FormLabel fontSize="sm">
+                          <Tooltip label="AI model version to use for generation" placement="top">
+                            <Text>Model</Text>
+                          </Tooltip>
+                        </FormLabel>
+                        <Select
+                          size="sm"
+                          value={advancedSettings.model}
+                          onChange={(e) => setAdvancedSettings(prev => ({ ...prev, model: e.target.value }))}
+                        >
+                          {recraftOptions.models.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
+                        <Text fontSize="xs" color="gray.600" mt={1}>
+                          {recraftOptions.models.find(m => m.value === advancedSettings.model)?.description}
+                        </Text>
+                      </FormControl>
+                      
+                      {/* Style Selection */}
+                      <FormControl>
+                        <FormLabel fontSize="sm">
+                          <Tooltip label="Visual style for the generated icon" placement="top">
+                            <Text>Style</Text>
+                          </Tooltip>
+                        </FormLabel>
+                        <Select
+                          size="sm"
+                          value={advancedSettings.style}
+                          onChange={(e) => setAdvancedSettings(prev => ({ ...prev, style: e.target.value }))}
+                        >
+                          {recraftOptions.styles.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
+                        <Text fontSize="xs" color="gray.600" mt={1}>
+                          {recraftOptions.styles.find(s => s.value === advancedSettings.style)?.description}
+                        </Text>
+                      </FormControl>
+                      
+                      {/* Substyle Selection */}
+                      <FormControl>
+                        <FormLabel fontSize="sm">
+                          <Tooltip label="Specific substyle variant" placement="top">
+                            <Text>Substyle</Text>
+                          </Tooltip>
+                        </FormLabel>
+                        <Select
+                          size="sm"
+                          value={advancedSettings.substyle}
+                          onChange={(e) => setAdvancedSettings(prev => ({ ...prev, substyle: e.target.value }))}
+                        >
+                          {recraftOptions.substyles.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
+                        <Text fontSize="xs" color="gray.600" mt={1}>
+                          {recraftOptions.substyles.find(s => s.value === advancedSettings.substyle)?.description}
+                        </Text>
+                      </FormControl>
+                      
+                      {/* Size Selection */}
+                      <FormControl>
+                        <FormLabel fontSize="sm">
+                          <Tooltip label="Output image dimensions" placement="top">
+                            <Text>Size</Text>
+                          </Tooltip>
+                        </FormLabel>
+                        <Select
+                          size="sm"
+                          value={advancedSettings.size}
+                          onChange={(e) => setAdvancedSettings(prev => ({ ...prev, size: e.target.value }))}
+                        >
+                          {recraftOptions.sizes.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Select>
+                        <Text fontSize="xs" color="gray.600" mt={1}>
+                          {recraftOptions.sizes.find(s => s.value === advancedSettings.size)?.description}
+                        </Text>
+                      </FormControl>
+                    </Grid>
+                    
+                    {/* Custom Prompt Prefix */}
+                    <FormControl>
+                      <FormLabel fontSize="sm">
+                        <Tooltip label="Custom prefix to add before the main prompt" placement="top">
+                          <Text>Custom Prompt Prefix</Text>
+                        </Tooltip>
+                      </FormLabel>
+                      <Input
+                        size="sm"
+                        placeholder="e.g., 'Corporate style', 'Hand-drawn aesthetic'..."
+                        value={advancedSettings.customPromptPrefix}
+                        onChange={(e) => setAdvancedSettings(prev => ({ ...prev, customPromptPrefix: e.target.value }))}
+                      />
+                      <Text fontSize="xs" color="gray.600" mt={1}>
+                        Optional prefix to customize the generation prompt
+                      </Text>
+                    </FormControl>
+                    
+                    {/* Reset Button */}
+                    <HStack justify="space-between" pt={2}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        leftIcon={<InfoIcon />}
+                        onClick={resetToDefaults}
+                      >
+                        Reset to Defaults
+                      </Button>
+                      <Text fontSize="xs" color="gray.500">
+                        Current: {advancedSettings.model} • {advancedSettings.style} • {advancedSettings.size}
+                      </Text>
+                    </HStack>
+                  </VStack>
+                </AccordionPanel>
+              </AccordionItem>
+            </Accordion>
+            
             <Alert status="info" borderRadius="md">
               <AlertIcon />
               <AlertDescription fontSize="sm">
@@ -1199,36 +1481,107 @@ const GenerateModal: React.FC<GenerateModalProps> = ({ isOpen, onClose, onGenera
             </Alert>
             
             {generatedIcon && (
-              <Box textAlign="center" p={4} bg="gray.50" borderRadius="md">
-                <Text mb={2} fontWeight="medium">Generated Icon:</Text>
-                <Image
-                  src={generatedIcon}
-                  alt="Generated icon"
-                  maxW="100px"
-                  maxH="100px"
-                  mx="auto"
-                />
+              <Box 
+                textAlign="center" 
+                p={6} 
+                bg="green.50" 
+                borderRadius="lg" 
+                border="2px solid" 
+                borderColor="green.200"
+                position="relative"
+              >
+                <Badge 
+                  colorScheme="green" 
+                  position="absolute" 
+                  top={2} 
+                  right={2} 
+                  fontSize="xs"
+                >
+                  ✓ Generated
+                </Badge>
+                
+                <VStack spacing={4}>
+                  <Text fontSize="lg" fontWeight="bold" color="green.700">
+                    Icon Preview
+                  </Text>
+                  
+                  <Box 
+                    p={4} 
+                    bg="white" 
+                    borderRadius="md" 
+                    shadow="sm"
+                    border="1px solid" 
+                    borderColor="gray.200"
+                  >
+                    <Image
+                      src={generatedIcon}
+                      alt={`Generated ${nodeType} icon`}
+                      maxW="120px"
+                      maxH="120px"
+                      mx="auto"
+                      borderRadius="md"
+                    />
+                  </Box>
+                  
+                  <VStack spacing={1}>
+                    <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                      {nodeType.charAt(0).toUpperCase() + nodeType.slice(1)} Icon
+                    </Text>
+                    <Text fontSize="xs" color="gray.500">
+                      Generated with {advancedSettings.model} • {advancedSettings.style}
+                    </Text>
+                  </VStack>
+                  
+                  <Alert status="success" size="sm" borderRadius="md">
+                    <AlertIcon />
+                    <AlertDescription fontSize="xs">
+                      Review the generated icon above. You can accept it or regenerate with different settings.
+                    </AlertDescription>
+                  </Alert>
+                </VStack>
               </Box>
             )}
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose}>
-            Cancel
-          </Button>
           {generatedIcon ? (
-            <Button colorScheme="green" onClick={handleSave}>
-              Save Icon
-            </Button>
+            // Preview mode: Show Accept and Regenerate buttons
+            <>
+              <Button variant="ghost" mr={3} onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button 
+                colorScheme="orange" 
+                mr={3} 
+                onClick={handleRegenerate}
+                leftIcon={<EditIcon />}
+              >
+                Regenerate
+              </Button>
+              <Button 
+                colorScheme="green" 
+                onClick={handleAccept}
+                leftIcon={<CheckIcon />}
+              >
+                Accept Icon
+              </Button>
+            </>
           ) : (
-            <Button 
-              colorScheme="purple" 
-              onClick={handleGenerate}
-              isLoading={isGenerating}
-              isDisabled={!prompt.trim() || !nodeType.trim()}
-            >
-              Generate
-            </Button>
+            // Generation mode: Show Cancel and Generate buttons
+            <>
+              <Button variant="ghost" mr={3} onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button 
+                colorScheme="purple" 
+                onClick={handleGenerate}
+                isLoading={isGenerating}
+                isDisabled={!prompt.trim() || !nodeType.trim()}
+                leftIcon={isGenerating ? undefined : <AddIcon />}
+              >
+                {isGenerating ? 'Generating...' : 'Generate Icon'}
+              </Button>
+            </>
           )}
         </ModalFooter>
       </ModalContent>

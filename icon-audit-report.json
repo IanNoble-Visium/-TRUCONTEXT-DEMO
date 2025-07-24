@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-07-24T14:56:33.917Z",
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "warnings": 2,
+    "total": 9
+  },
+  "details": [
+    {
+      "test": "Hardcoded Paths",
+      "status": "PASS",
+      "message": "No hardcoded local icon paths found",
+      "details": ""
+    },
+    {
+      "test": "NodeIcon Usage",
+      "status": "PASS",
+      "message": "All data views use centralized icon system",
+      "details": "TableView.tsx: ✅ Uses centralized icon system\n   TimelineView.tsx: ✅ Uses centralized icon system\n   CardsView.tsx: ✅ Uses centralized icon system\n   DashboardView.tsx: ✅ Uses centralized icon system\n   GeoMapView.tsx: ✅ Uses centralized icon system"
+    },
+    {
+      "test": "Cloudinary Functions",
+      "status": "PASS",
+      "message": "All required Cloudinary functions present",
+      "details": ""
+    },
+    {
+      "test": "NodeIcon Integration",
+      "status": "PASS",
+      "message": "NodeIcon properly integrated with Cloudinary",
+      "details": ""
+    },
+    {
+      "test": "Icon Utils Fallback",
+      "status": "PASS",
+      "message": "Proper fallback mechanism implemented",
+      "details": ""
+    },
+    {
+      "test": "Leaflet Map Fallback",
+      "status": "PASS",
+      "message": "Proper fallback mechanism implemented",
+      "details": ""
+    },
+    {
+      "test": "SVG Format",
+      "status": "PASS",
+      "message": "SVG format and dimensions properly maintained",
+      "details": ""
+    },
+    {
+      "test": "public/icons Directory",
+      "status": "WARN",
+      "message": "Directory exists with 34 icon files - consider removal after migration verification",
+      "details": ""
+    },
+    {
+      "test": "public/icons-svg Directory",
+      "status": "WARN",
+      "message": "Directory exists with 36 icon files - consider removal after migration verification",
+      "details": ""
+    }
+  ]
+}

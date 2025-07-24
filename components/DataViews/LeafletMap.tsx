@@ -130,9 +130,10 @@ const loadSVGContent = async (iconUrl: string): Promise<string> => {
       }
     }
     
-    // Legacy fallback for local paths
-    if (iconUrl !== '/icons-svg/unknown.svg' && !iconUrl.includes('cloudinary.com')) {
-      return loadSVGContent('/icons-svg/unknown.svg')
+    // Fallback for non-Cloudinary paths - convert to Cloudinary unknown icon
+    if (!iconUrl.includes('cloudinary.com')) {
+      const unknownUrl = getUnknownIconUrl()
+      return loadSVGContent(unknownUrl)
     }
     
     // Return a simple fallback SVG if all else fails
