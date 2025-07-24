@@ -4,9 +4,19 @@ A comprehensive cybersecurity graph analytics platform built with Next.js, Neo4j
 
 ## 🚀 Latest Updates & Enhancements
 
+### 🤖 **AI-Powered Icon Generation (v3.0) - NEW!**
+- **Dual API Architecture**: Primary Recraft.ai API with Gemini fallback for maximum reliability
+- **Recraft.ai Integration**: High-quality vector illustration generation using recraftv3 model
+- **Intelligent Fallback System**: Automatic switching between APIs if primary service fails
+- **Rate Limit Resolution**: Eliminates Gemini API busy/overload issues with Recraft.ai as primary
+- **Enhanced Prompting**: Optimized prompts for cybersecurity network icons with vector illustration style
+- **Configurable API Selection**: Environment variable control for easy API switching
+- **Improved Error Handling**: Specific error messages and graceful degradation
+- **SVG Compatibility**: Maintains 512x512 SVG format for consistent icon system
+
 ### ✨ **Icon Management System (v2.0)**
 - **Complete Icon Management View** with centralized SVG icon management
-- **AI-Powered Icon Generation** using Google Gemini API for creating custom network/cybersecurity icons
+- **AI-Powered Icon Generation** using dual API system (Recraft.ai + Gemini fallback)
 - **Cloud Storage Integration** with Cloudinary for scalable, production-ready icon storage
 - **Bulk Operations** including export all icons, import from ZIP, and bulk delete functionality
 - **Drag & Drop Upload** with automatic PNG-to-SVG conversion
@@ -44,8 +54,9 @@ A comprehensive cybersecurity graph analytics platform built with Next.js, Neo4j
 - **Cloudinary** for cloud-based asset management
 
 ### **External Integrations**
-- **Google Gemini AI** for intelligent icon generation
-- **Cloudinary CDN** for optimized media delivery
+- **Recraft.ai API** for primary AI-powered icon generation (vector illustrations)
+- **Google Gemini AI** for fallback icon generation and future features
+- **Cloudinary CDN** for optimized media delivery and cloud storage
 - **Vercel** for seamless deployment and hosting
 
 ## 🛠️ Installation & Setup
@@ -55,7 +66,8 @@ A comprehensive cybersecurity graph analytics platform built with Next.js, Neo4j
 - Neo4j Aura database instance
 - PostgreSQL database
 - Cloudinary account
-- Google AI API key
+- Recraft.ai API key (primary)
+- Google AI API key (fallback)
 
 ### Environment Variables
 Create a `.env.local` file with the following variables:
@@ -70,8 +82,15 @@ NEO4J_DATABASE=neo4j
 # PostgreSQL Configuration
 DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
 
-# Google AI Configuration
+# AI Icon Generation Configuration
+# Recraft.ai API (Primary)
+RECRAFT_API_KEY=your-recraft-api-key
+
+# Google AI API (Fallback)
 GOOGLE_API_KEY=your-google-ai-api-key
+
+# Icon Generation API Selection (recraft or gemini)
+ICON_GENERATION_API=recraft
 
 # Cloudinary Configuration
 CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
@@ -180,7 +199,9 @@ CLOUDINARY_API_SECRET=your-api-secret
 Ensure all environment variables are configured in your deployment platform:
 - Neo4j credentials
 - PostgreSQL connection string
-- Google AI API key
+- Recraft.ai API key (primary icon generation)
+- Google AI API key (fallback icon generation)
+- Icon generation API selection (`ICON_GENERATION_API=recraft`)
 - Cloudinary configuration
 
 ## 🔧 Development
@@ -222,6 +243,69 @@ npm run lint         # Run ESLint
 npm run type-check   # Run TypeScript checks
 ```
 
+## 🔧 API Architecture
+
+### **Dual API System for Icon Generation**
+
+The application uses a sophisticated dual API architecture to ensure maximum reliability:
+
+#### **Primary API: Recraft.ai**
+- **Model**: `recraftv3` with `vector_illustration` style
+- **Advantages**: High-quality vector icons, reliable service, optimized for technical diagrams
+- **Output**: 1024x1024 images wrapped in 512x512 SVG format
+- **Prompt Optimization**: "Flat minimalist [nodeType] cybersecurity network icon, [description]. Vector illustration style."
+
+#### **Fallback API: Google Gemini**
+- **Model**: `gemini-1.5-flash`
+- **Purpose**: Automatic fallback when Recraft.ai is unavailable
+- **Output**: Native SVG generation with 512x512 viewBox
+- **Enhanced Processing**: Regex-based SVG extraction and validation
+
+#### **API Selection Logic**
+```typescript
+// Environment variable controls primary API
+ICON_GENERATION_API=recraft  // or 'gemini'
+
+// Automatic fallback sequence:
+1. Try primary API (Recraft.ai)
+2. If fails → Switch to Gemini API
+3. If both fail → Return detailed error
+```
+
+#### **Error Handling & Recovery**
+- **Specific Error Messages**: Different messages for API key issues, rate limits, network errors
+- **Graceful Degradation**: Fallback system ensures icon generation continues
+- **Detailed Logging**: API usage tracking and error categorization
+- **User Feedback**: Clear indication of which API was used for generation
+
+### **Troubleshooting Guide**
+
+#### **Common Issues & Solutions**
+
+**1. Recraft API 400 Error**
+```
+Error: "invalid combination of model recraftv3 and image type icon"
+Solution: ✅ Fixed - Now uses style: 'vector_illustration'
+```
+
+**2. Gemini "Generated content is not valid SVG"**
+```
+Solution: ✅ Enhanced SVG extraction with regex matching
+```
+
+**3. Rate Limiting Issues**
+```
+Solution: ✅ Recraft.ai primary API eliminates Gemini rate limits
+```
+
+**4. API Key Configuration**
+```bash
+# Required environment variables:
+RECRAFT_API_KEY=your-key-here
+GOOGLE_API_KEY=your-key-here  # For fallback
+ICON_GENERATION_API=recraft   # Primary API selection
+```
+
 ## 📈 Performance & Scalability
 
 ### **Optimizations**
@@ -230,12 +314,14 @@ npm run type-check   # Run TypeScript checks
 - **Lazy Loading**: On-demand resource loading
 - **Caching**: Browser and server-side caching
 - **Compression**: Gzip/Brotli compression for assets
+- **API Efficiency**: Dual API system reduces single points of failure
 
 ### **Scalability Features**
 - **Cloud Storage**: Unlimited icon storage capacity
 - **Serverless APIs**: Auto-scaling API endpoints
 - **Database Optimization**: Indexed queries and connection pooling
 - **CDN Integration**: Global content delivery
+- **API Load Balancing**: Automatic switching between AI services
 
 ## 🔒 Security
 
@@ -267,13 +353,20 @@ For support and questions:
 
 ## 🎯 Roadmap
 
+### **Recently Completed**
+- ✅ **Recraft.ai Integration**: Dual API system with automatic fallback
+- ✅ **Rate Limit Resolution**: Eliminated Gemini API busy/overload issues
+- ✅ **Enhanced Error Handling**: Improved user feedback and error recovery
+- ✅ **Vector Illustration Support**: High-quality icon generation with recraftv3
+
 ### **Upcoming Features**
-- **Advanced AI Integration**: Enhanced icon generation with style transfer
-- **Collaborative Features**: Multi-user icon management
+- **Advanced AI Integration**: Enhanced icon generation with style transfer and custom models
+- **Collaborative Features**: Multi-user icon management and sharing
 - **Version Control**: Icon versioning and rollback capabilities
 - **Analytics Dashboard**: Icon usage analytics and insights
 - **API Extensions**: RESTful API for external integrations
 - **Mobile App**: Native mobile application for field operations
+- **Custom AI Models**: Training custom models for cybersecurity-specific iconography
 
 ---
 
