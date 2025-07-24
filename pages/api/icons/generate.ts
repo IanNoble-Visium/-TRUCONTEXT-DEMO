@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { v2 as cloudinary } from 'cloudinary'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 // Configure Cloudinary
 cloudinary.config({
@@ -22,9 +23,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const finalPrompt = prompt || description
 
+    // Check if Google API key is configured
+    const googleApiKey = process.env.GOOGLE_API_KEY
+    if (!googleApiKey) {
+      // Return a fallback response with placeholder icon
+      const placeholderSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+        <rect width="512" height="512" fill="#f0f0f0" stroke="#ccc" stroke-width="2"/>
+        <text x="256" y="256" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="24" fill="#666">${nodeType}</text>
+      </svg>`
+      
+      return res.status(200).json({
+        success: false,
+        error: 'AI generation requires Google API key. Using placeholder icon instead.',
+        iconUrl: null,
+        placeholderSvg: placeholderSvg,
+        nodeType: nodeType
+      })
+    }
+
     // Generate SVG using Gemini AI
-    const { GoogleGenerativeAI } = require('@google/generative-ai')
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
+    const genAI = new GoogleGenerativeAI(googleApiKey)
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
 
     const aiPrompt = `Create a simple, clean SVG icon for a network/cybersecurity component called "${nodeType}". 
@@ -95,8 +113,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   } catch (error: any) {
     console.error('Icon generation error:', error)
-    res.status(500).json({
-      error: 'Failed to generate icon',
+    
+    let errorMessage = 'Failed to generate icon'
+    let statusCode = 500
+    
+    if (error.message?.includes('API key')) {
+      errorMessage = 'AI generation requires Google API key. Please configure GOOGLE_API_KEY in environment variables.'
+      statusCode = 400
+    } else if (error.message?.includes('quota') || error.message?.includes('limit')) {
+      errorMessage = 'AI service quota exceeded. Please try again later.'
+      statusCode = 429
+    } else if (error.message?.includes('network') || error.message?.includes('timeout')) {
+      errorMessage = 'Network error connecting to AI service. Please try again.'
+      statusCode = 503
+    }
+    
+    res.status(statusCode).json({
+      error: errorMessage,
       details: error.message
     })
   }
