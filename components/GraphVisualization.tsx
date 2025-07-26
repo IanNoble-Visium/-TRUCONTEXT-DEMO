@@ -1167,8 +1167,34 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
   }, [loading, error, graphData, containerReady])
 
-  // Cache for icon existence checks in GraphVisualization
+  // Cache for icon existence checks to avoid repeated network requests
   const graphIconExistsCache = new Map<string, boolean>()
+  
+  // Function to clear icon cache and force re-render when icons are updated
+  const clearIconCache = useCallback(() => {
+    console.log('🔄 Clearing GraphVisualization icon cache...')
+    graphIconExistsCache.clear()
+    
+    // Force Cytoscape to re-evaluate all node styles
+    if (cyRef.current) {
+      console.log('🎨 Forcing Cytoscape style refresh...')
+      cyRef.current.nodes().forEach(node => {
+        // Trigger style recalculation by updating a dummy property
+        node.style('opacity', node.style('opacity'))
+      })
+      
+      // Force a complete re-render
+      cyRef.current.forceRender()
+      
+      toast({
+        title: 'Icons Refreshed',
+        description: 'Icon cache cleared and display updated',
+        status: 'success',
+        duration: 2000,
+        isClosable: true
+      })
+    }
+  }, [])
 
   // Helper function to check if an icon file exists
   const checkGraphIconExists = async (iconPath: string): Promise<boolean> => {
@@ -1493,15 +1519,17 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                   return getUnknownIconUrl()
                 }
 
-                // Convert to lowercase for case-insensitive matching
+                // Convert type to lowercase for filename matching
                 const filename = String(type).toLowerCase()
 
-                // Check fallback mappings for common variations
+                // Use the comprehensive fallback mappings from getNodeIconPath
                 const fallbackMappings: { [key: string]: string } = {
                   'threatactor': 'actor',
                   'workstation': 'client',
+                  'cvssmetrics': 'cvsssmetrics', // Fix for CvssMetrics -> cvsssmetrics.svg
                 }
 
+                // Check if we have a fallback mapping
                 const fallbackType = fallbackMappings[filename]
                 if (fallbackType) {
                   return getCloudinaryIconUrl(fallbackType)
@@ -5070,6 +5098,17 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                   isDisabled={Object.keys(groups).length === 0}
                 >
                   Reset Groups
+                </Button>
+              </WrapItem>
+              <WrapItem>
+                <Button
+                  size={isMobile ? "md" : "sm"}
+                  colorScheme="purple"
+                  variant="outline"
+                  onClick={clearIconCache}
+                  isDisabled={nodeCount === 0}
+                >
+                  Refresh Icons
                 </Button>
               </WrapItem>
               <WrapItem>

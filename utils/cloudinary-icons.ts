@@ -4,22 +4,32 @@
  * Get Cloudinary URL for an icon by node type
  * @param nodeType - The node type (e.g., 'firewall', 'database', 'server')
  * @param fallbackToUnknown - Whether to fallback to unknown.svg if icon not found
+ * @param bustCache - Whether to add cache-busting parameter (default: true)
  * @returns Cloudinary URL for the icon
  */
-export function getCloudinaryIconUrl(nodeType: string, fallbackToUnknown: boolean = true): string {
+export function getCloudinaryIconUrl(nodeType: string, fallbackToUnknown: boolean = true, bustCache: boolean = true): string {
   const baseUrl = 'https://res.cloudinary.com/dlogj3gc8/image/upload'
   const iconPath = `trucontext-icons/trucontext-icons/${nodeType.toLowerCase()}`
   
-  // Return the Cloudinary URL with auto-format and quality optimization
-  return `${baseUrl}/f_auto,q_auto/${iconPath}.svg`
+  // Base URL with auto-format and quality optimization
+  let url = `${baseUrl}/f_auto,q_auto/${iconPath}.svg`
+  
+  // Add cache-busting parameter to ensure updated icons are not cached
+  if (bustCache) {
+    const timestamp = Math.floor(Date.now() / (1000 * 60 * 5)) // 5-minute cache window
+    url += `?v=${timestamp}`
+  }
+  
+  return url
 }
 
 /**
  * Get fallback unknown icon URL from Cloudinary
+ * @param bustCache - Whether to add cache-busting parameter (default: true)
  * @returns Cloudinary URL for the unknown icon
  */
-export function getUnknownIconUrl(): string {
-  return getCloudinaryIconUrl('unknown', false)
+export function getUnknownIconUrl(bustCache: boolean = true): string {
+  return getCloudinaryIconUrl('unknown', false, bustCache)
 }
 
 /**
