@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useMemo, useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { Box, Portal, Button, ButtonGroup, VStack, Text, useColorModeValue, HStack } from '@chakra-ui/react'
 import { NodeTooltip, EdgeTooltip } from '../GraphTooltip'
-import { getCloudinaryIconUrl, getUnknownIconUrl, checkIconExists } from '../../utils/cloudinary-icons'
+import { getUnknownIconUrl } from '../../utils/cloudinary-icons'
 import type { Map as LeafletMapType, LatLngBounds } from 'leaflet'
 
 // Dynamically import react-leaflet components to avoid SSR issues
@@ -59,93 +59,58 @@ interface TooltipData {
   position: { x: number; y: number }
 }
 
-// SVG content cache to avoid repeated fetches
-const svgCache = new Map<string, string>()
-
 // Cache for icon existence checks
 const iconExistsCache = new Map<string, boolean>()
 
-// Helper function to check if a Cloudinary icon exists (using imported function)
-const checkCloudinaryIconExists = checkIconExists
+// Get icon URL using the same logic as the topology view
+const getNodeIconUrl = (nodeType: string): string => {
+  if (!nodeType) return '/icons/unknown.png'
 
-// Dynamic icon URL resolution with Cloudinary fallback
-const getNodeIconUrl = async (nodeType: string): Promise<string> => {
-  if (!nodeType) return getUnknownIconUrl()
-
-  // First try to get from Cloudinary
-  try {
-    const iconExists = await checkCloudinaryIconExists(nodeType)
-    if (iconExists) {
-      console.log(`✓ Found Cloudinary icon for ${nodeType}`)
-      return getCloudinaryIconUrl(nodeType, false)
-    }
-
-    // Try fallback mappings in Cloudinary
-    const fallbackMappings: { [key: string]: string } = {
-      'threatactor': 'actor',
-      'workstation': 'client',
-    }
-
-    const filename = nodeType.toLowerCase()
-    const fallbackType = fallbackMappings[filename]
-    if (fallbackType) {
-      const fallbackExists = await checkCloudinaryIconExists(fallbackType)
-      if (fallbackExists) {
-        console.log(`✓ Using Cloudinary fallback icon for ${nodeType}: ${fallbackType}`)
-        return getCloudinaryIconUrl(fallbackType, false)
-      }
-    }
-  } catch (error) {
-    console.warn(`⚠ Error checking Cloudinary icons for ${nodeType}:`, error)
+  // Use the same icon mappings as the topology view
+  const iconMappings: { [key: string]: string } = {
+    'threatactor': 'actor',
+    'workstation': 'client',
+    'cvssmetrics': 'cvsssmetrics', // Fix CVSS metrics icon name
+    'cvss': 'cvss',
+    'cvssseverity': 'cvssseverity',
+    'cwe': 'cwe',
+    'cpe': 'cpe',
+    'server': 'server',
+    'database': 'database',
+    'network': 'network',
+    'user': 'user',
+    'application': 'application',
+    'firewall': 'firewall',
+    'router': 'router',
+    'switch': 'switch',
+    'machine': 'machine',
+    'device': 'device',
+    'storage': 'storage',
+    'software': 'software',
+    'vulnerability': 'vulnerability',
+    'attack': 'attack',
+    'attacker': 'attacker',
+    'agent': 'agent',
+    'client': 'client',
+    'dmz': 'dmz',
+    'domain': 'domain',
+    'entity': 'entity',
+    'event': 'event',
+    'exploit': 'exploit',
+    'externalentry': 'externalentry',
+    'references': 'references',
+    'traffic': 'traffic',
+    'unknown': 'unknown'
   }
 
-  console.warn(`⚠ No Cloudinary icon found for ${nodeType}, using unknown fallback`)
-  return getUnknownIconUrl()
+  const normalizedType = nodeType.toLowerCase()
+  const iconName = iconMappings[normalizedType] || normalizedType
+  const iconUrl = `/icons/${iconName}.png`
+
+  console.log(`✓ Using topology icon for ${nodeType}: ${iconUrl}`)
+  return iconUrl
 }
 
-// Function to load SVG content with better error handling
-// Updated to support Cloudinary URLs
-const loadSVGContent = async (iconUrl: string): Promise<string> => {
-  if (svgCache.has(iconUrl)) {
-    return svgCache.get(iconUrl)!
-  }
-
-  try {
-    const response = await fetch(iconUrl)
-    if (!response.ok) {
-      throw new Error(`Failed to load SVG: ${response.status}`)
-    }
-    const svgText = await response.text()
-    svgCache.set(iconUrl, svgText)
-    console.log(`✓ Successfully loaded SVG: ${iconUrl}`)
-    return svgText
-  } catch (error) {
-    console.warn(`⚠ Failed to load SVG from ${iconUrl}:`, error)
-    
-    // If it's a Cloudinary URL that failed, try the unknown icon
-    if (iconUrl.includes('cloudinary.com')) {
-      const unknownUrl = getUnknownIconUrl()
-      if (unknownUrl !== iconUrl) {
-        return loadSVGContent(unknownUrl)
-      }
-    }
-    
-    // Fallback for non-Cloudinary paths - convert to Cloudinary unknown icon
-    if (!iconUrl.includes('cloudinary.com')) {
-      const unknownUrl = getUnknownIconUrl()
-      return loadSVGContent(unknownUrl)
-    }
-    
-    // Return a simple fallback SVG if all else fails
-    const fallbackSVG = `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="10" cy="10" r="8" fill="#666"/>
-      <text x="10" y="14" text-anchor="middle" font-size="12" fill="white">?</text>
-    </svg>`
-    svgCache.set(iconUrl, fallbackSVG)
-    console.log(`✓ Using fallback SVG for ${iconUrl}`)
-    return fallbackSVG
-  }
-}
 
 // Get color for node type with status-based coloring
 const getNodeColor = (node: GeoNode) => {
@@ -215,7 +180,7 @@ const getIconSizeConfig = (sizeOption: 'small' | 'medium' | 'large', isSelected:
   }
 }
 
-// Custom marker icon based on node properties with SVG support
+// Custom marker icon using PNG icons from public/icons directory
 const createCustomIcon = async (node: GeoNode, iconSizeOption: 'small' | 'medium' | 'large' = 'medium') => {
   if (typeof window === 'undefined') return null
 
@@ -242,111 +207,11 @@ const createCustomIcon = async (node: GeoNode, iconSizeOption: 'small' | 'medium
     "></div>
   ` : ''
 
-  // Load SVG content for the node type
-  const iconUrl = await getNodeIconUrl(node.type)
-  let svgContent = ''
+  // Get PNG icon URL
+  const iconUrl = getNodeIconUrl(node.type)
+  const iconSize = Math.floor(size * 0.85) // Use 85% of container for icon
 
-  try {
-    console.log(`🔍 Attempting to load SVG for ${node.type} from ${iconUrl}`)
-    const rawSVG = await loadSVGContent(iconUrl)
-    console.log(`✅ Loaded SVG for ${node.type} from ${iconUrl}:`, rawSVG.substring(0, 200) + '...')
-
-    // For SVGs with embedded images, we need to handle them specially
-    if (rawSVG.includes('<svg')) {
-      // Calculate optimal icon size - use 85% of container for better visibility while leaving room for borders
-      const iconSize = Math.floor(size * 0.85)
-
-      // Extract viewBox dimensions from the SVG
-      const viewBoxMatch = rawSVG.match(/viewBox="([^"]*)"/)
-      let viewBox = '0 0 512 512' // default
-      if (viewBoxMatch) {
-        viewBox = viewBoxMatch[1]
-      } else {
-        // Try to extract from width/height
-        const widthMatch = rawSVG.match(/width="([^"]*)"/)
-        const heightMatch = rawSVG.match(/height="([^"]*)"/)
-        if (widthMatch && heightMatch) {
-          const w = widthMatch[1]
-          const h = heightMatch[1]
-          viewBox = `0 0 ${w} ${h}`
-        }
-      }
-
-      // Extract the base64 PNG data from the SVG
-      const imageMatch = rawSVG.match(/xlink:href="data:image\/png;base64,([^"]+)"/)
-
-      if (imageMatch && imageMatch[1]) {
-        // Use the extracted PNG data directly as an image
-        const pngDataUrl = `data:image/png;base64,${imageMatch[1]}`
-
-        // Use background image approach for better circular clipping
-        svgContent = `
-          <div style="
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: ${iconSize}px;
-            height: ${iconSize}px;
-            background-image: url('${pngDataUrl}');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            z-index: 1000;
-            pointer-events: none;
-            opacity: 1;
-          "></div>
-        `
-        console.log(`✓ Generated background IMG content for ${node.type}:`, svgContent.substring(0, 200) + '...')
-      } else {
-        // Fallback to SVG embedding if no PNG data found
-        let cleanSVG = rawSVG
-          .replace(/width="[^"]*"/g, `width="${iconSize}"`)
-          .replace(/height="[^"]*"/g, `height="${iconSize}"`)
-          .replace(/viewBox="[^"]*"/g, `viewBox="${viewBox}"`)
-
-        // Ensure viewBox is present for proper scaling
-        if (!cleanSVG.includes('viewBox')) {
-          cleanSVG = cleanSVG.replace('<svg', `<svg viewBox="${viewBox}"`)
-        }
-
-        // Add styling directly to the SVG for proper positioning
-        cleanSVG = cleanSVG.replace('<svg', `<svg style="
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 10;
-          pointer-events: none;
-          display: block;
-        "`)
-
-        svgContent = cleanSVG
-        console.log(`✓ Generated SVG content for ${node.type}:`, cleanSVG.substring(0, 200) + '...')
-      }
-
-      console.log(`✓ Successfully processed SVG for ${node.type}, container: ${size}px, icon: ${iconSize}px (${Math.round((iconSize/size)*100)}%), viewBox: ${viewBox}`)
-    } else {
-      console.warn(`⚠ Invalid SVG content for ${node.type}`)
-    }
-  } catch (error) {
-    console.error(`❌ Failed to load SVG for node ${node.uid} (${node.type}) from ${iconUrl}:`, error)
-    console.log(`❌ SVG content will be empty, falling back to colored circle`)
-  }
-
-  console.log(`✓ Creating icon for node ${node.uid} (${node.type}): color=${color}, size=${size}, selected=${node.isSelected}`)
-
-  // Determine if we should use SVG icon or fallback to colored circle
-  const useSVGIcon = svgContent.trim().length > 0
-  const backgroundColor = useSVGIcon ? 'transparent' : color
-
-  console.log(`✓ Icon creation summary for ${node.uid}:`, {
-    type: node.type,
-    useSVGIcon,
-    svgContentLength: svgContent.length,
-    backgroundColor,
-    size
-  })
+  console.log(`✓ Creating icon for node ${node.uid} (${node.type}): color=${color}, size=${size}, iconUrl=${iconUrl}`)
 
   return L.divIcon({
     className: 'custom-geo-marker',
@@ -355,7 +220,7 @@ const createCustomIcon = async (node: GeoNode, iconSizeOption: 'small' | 'medium
         position: relative;
         width: ${size}px;
         height: ${size}px;
-        background-color: ${backgroundColor};
+        background-color: ${color};
         border: ${borderWidth}px solid ${borderColor};
         border-radius: 50%;
         box-shadow: 0 3px 8px rgba(0,0,0,0.4);
@@ -366,7 +231,19 @@ const createCustomIcon = async (node: GeoNode, iconSizeOption: 'small' | 'medium
         justify-content: center;
         overflow: visible;
       ">
-        ${svgContent}
+        <img src="${iconUrl}"
+             style="
+               position: absolute;
+               top: 50%;
+               left: 50%;
+               transform: translate(-50%, -50%);
+               width: ${iconSize}px;
+               height: ${iconSize}px;
+               z-index: 10;
+               pointer-events: none;
+               object-fit: contain;
+             "
+             alt="${node.type} icon" />
         ${riskIndicator}
       </div>
     `,
@@ -579,19 +456,10 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
     const nodeTypes = Array.from(new Set(geoNodes.map(node => node.type)))
 
     for (const type of nodeTypes) {
-      let iconUrl = await getNodeIconUrl(type)
-      console.log(`Attempting to load icon for ${type}: ${iconUrl}`)
-      
+      console.log(`Creating icon for ${type}`)
+
       try {
-        // Try to load the SVG icon
-        const response = await fetch(iconUrl)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        const svgText = await response.text()
-        console.log(`✅ Loaded SVG for ${type} from ${iconUrl}: ${svgText.substring(0, 50)}...`)
-        
-        // Process SVG and create icon
+        // Create icon using PNG from public/icons directory
         const processedIcon = await createCustomIcon({
           id: type,
           uid: type,
@@ -603,37 +471,15 @@ const LeafletMap: React.FC<LeafletMapProps> = ({ geoNodes, geoEdges = [], onNode
           properties: {},
           isSelected: false
         }, iconSize)
+
         if (processedIcon) {
           iconMap.set(type, processedIcon)
+          console.log(`✓ Created icon for ${type}`)
         } else {
-          console.error(`Failed to process SVG for ${type}`)
-          // Fallback to default icon if processing fails
-          iconMap.set(type, await createCustomIcon({
-            id: type,
-            uid: type,
-            showname: type,
-            type,
-            latitude: 0,
-            longitude: 0,
-            color: '',
-            properties: {},
-            isSelected: false
-          }, iconSize))
+          console.error(`Failed to create icon for ${type}`)
         }
       } catch (error) {
-        console.error(`Failed to load icon for ${type} from ${iconUrl}:`, error)
-        // Fallback to default icon if loading fails
-        iconMap.set(type, await createCustomIcon({
-          id: type,
-          uid: type,
-          showname: type,
-          type,
-          latitude: 0,
-          longitude: 0,
-          color: '',
-          properties: {},
-          isSelected: false
-        }, iconSize))
+        console.error(`Failed to create icon for ${type}:`, error)
       }
     }
 
