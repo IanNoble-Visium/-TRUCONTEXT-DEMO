@@ -4,6 +4,15 @@ A comprehensive cybersecurity graph analytics platform built with Next.js, Neo4j
 
 ## 🚀 Latest Updates & Enhancements
 
+### 🤖 **AI-Powered Dashboard Generation - USER-FRIENDLY ERROR HANDLING!**
+
+- **🚨 Clear Error Messages**: Friendly error handling for missing API keys and configuration issues
+- **📋 Setup Instructions**: Step-by-step guidance for configuring Google Gemini API key
+- **🔧 Environment Template**: Included `.env.local.example` file with all required variables
+- **⚠️ Visual Indicators**: Warning alerts and disabled buttons when API key is missing
+- **🔄 Graceful Fallbacks**: Heuristic suggestions when AI service is unavailable
+- **📖 Documentation Links**: Direct links to API key registration and setup guides
+
 ### 🤖 **AI-Powered Icon Generation (v4.0) - ENHANCED!**
 - **🎯 Seamless Single-Dialog Workflow**: Complete redesign eliminating page refreshes and navigation
 - **👁️ In-Dialog Preview System**: Generated icons display immediately within the same modal
@@ -205,9 +214,15 @@ CLOUDINARY_API_SECRET=your-api-secret
 
 3. **Configure environment variables**
    ```bash
-   cp .env.example .env.local
+   cp .env.local.example .env.local
    # Edit .env.local with your credentials
    ```
+
+   **🚨 Important for AI Dashboard Generation:**
+   - Get an OpenAI API key at: https://platform.openai.com/api-keys
+   - Add `OPENAI_API_KEY=your_api_key_here` to your `.env.local` file
+   - Optionally set `OPENAI_MODEL=gpt-4o-mini` (default) or another model
+   - Without this key, AI dashboard generation will be disabled with helpful error messages
 
 4. **Migrate existing icons to Cloudinary** (if upgrading)
    ```bash

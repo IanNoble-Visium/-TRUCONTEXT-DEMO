@@ -141,6 +141,59 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
     })
   }, [])
 
+  // Handle coordinate updates from GeoMapView wizard
+  const handleApplyCoordinates = useCallback(async (nodeUpdates: Array<{ uid: string; latitude: number; longitude: number }>) => {
+    if (!graphData) return
+
+    try {
+      // Update in-memory data
+      const updatedNodes = graphData.nodes.map(node => {
+        const update = nodeUpdates.find(u => u.uid === node.uid)
+        if (update) {
+          return {
+            ...node,
+            properties: {
+              ...node.properties,
+              latitude: update.latitude,
+              longitude: update.longitude
+            }
+          }
+        }
+        return node
+      })
+
+      setGraphData({ ...graphData, nodes: updatedNodes })
+
+      // Update database
+      const currentDatasetName = localStorage.getItem('currentDatasetName')
+      if (currentDatasetName && nodeUpdates.length > 0) {
+        try {
+          await fetch('/api/nodes/update-properties', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              datasetName: currentDatasetName,
+              nodeUpdates: nodeUpdates.map(update => ({
+                uid: update.uid,
+                property: 'latitude',
+                value: update.latitude
+              })).concat(nodeUpdates.map(update => ({
+                uid: update.uid,
+                property: 'longitude',
+                value: update.longitude
+              })))
+            })
+          })
+        } catch (dbError) {
+          console.error('Failed to update coordinates in database:', dbError)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to apply coordinates:', error)
+      throw error
+    }
+  }, [graphData])
+
   // Enhanced GraphVisualization that exposes data and selection state
   // Create a stable component that only recreates when refreshTrigger changes
   const enhancedGraphComponent = useMemo(() => (
@@ -171,6 +224,7 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
         edges={graphData?.edges || []}
         selectedNodes={selectedNodes}
         onNodeSelect={handleNodeSelect}
+        onApplyCoordinates={handleApplyCoordinates}
         GraphComponent={enhancedGraphComponent}
       />
     </Box>

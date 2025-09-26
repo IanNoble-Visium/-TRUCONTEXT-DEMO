@@ -60,6 +60,7 @@ interface ViewSwitcherProps {
   edges: any[]
   selectedNodes: string[]
   onNodeSelect: (nodeId: string) => void
+  onApplyCoordinates?: (nodeUpdates: Array<{ uid: string; latitude: number; longitude: number }>) => Promise<void>
   // Graph component props
   GraphComponent?: React.ReactNode
 }
@@ -73,6 +74,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
   edges,
   selectedNodes,
   onNodeSelect,
+  onApplyCoordinates,
   GraphComponent
 }) => {
   const bgColor = useColorModeValue("white", "gray.800")
@@ -152,7 +154,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       case 'ai-dashboards':
         return <AIDashboardsView {...commonProps} />
       case 'geomap':
-        return <GeoMapView {...commonProps} />
+        return <GeoMapView {...commonProps} onApplyCoordinates={onApplyCoordinates} />
       case 'icon-management':
         return <IconManagement nodes={nodes} edges={edges} />
       default:
@@ -163,7 +165,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
           />
         )
     }
-  }, [currentView, nodes, edges, selectedNodes, onNodeSelect, GraphComponent])
+  }, [currentView, nodes, edges, selectedNodes, onNodeSelect, onApplyCoordinates, GraphComponent])
 
   return (
     <Box height="100%" display="flex" flexDirection="column">

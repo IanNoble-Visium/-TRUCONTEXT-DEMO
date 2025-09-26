@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSession } from '../../../lib/neo4j'
-import { generateJSON } from '../../../lib/gemini'
+import { generateJSON } from '../../../lib/openai'
 
 async function analyze() {
   const session = await getSession()
@@ -61,7 +61,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json({ suggestions: json.suggestions })
       }
     } catch (e) {
-      console.warn('Gemini suggestions fallback to heuristic:', e)
+      const errorMessage = (e as Error).message
+      console.warn('Gemini suggestions fallback to heuristic:', errorMessage)
+
+      // If API key is missing, return fallback with indicator
+      if (errorMessage.includes('Missing OPENAI_API_KEY')) {
+        const suggestions = heuristicSuggestions(summary.labels)
+        return res.status(200).json({
+          suggestions,
+          fallback: true,
+          message: 'Using fallback suggestions. Configure OPENAI_API_KEY for AI-powered suggestions.'
+        })
+      }
     }
 
     // Fallback heuristics
@@ -69,7 +80,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ suggestions })
   } catch (error) {
     console.error('Suggestions error:', error)
-    res.status(500).json({ error: 'Failed to generate suggestions', details: (error as Error).message })
+
+    // For suggestions, always try to return something useful
+    try {
+      const fallbackSuggestions = [
+        'Top categories with counts and a relationship graph of those categories',
+        'Recent items activity timeline and key entity breakdown by type',
+        'Network topology showing connections between different node types',
+        'Distribution of properties across different entity types'
+      ]
+      return res.status(200).json({
+        suggestions: fallbackSuggestions,
+        fallback: true,
+        message: 'Using basic suggestions due to configuration issues.'
+      })
+    } catch {
+      res.status(500).json({ error: 'Failed to generate suggestions', details: (error as Error).message })
+    }
   }
 }
 

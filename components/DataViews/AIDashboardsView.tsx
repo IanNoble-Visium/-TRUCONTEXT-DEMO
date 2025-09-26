@@ -33,9 +33,15 @@ import {
   Spinner,
   useToast,
   InputGroup,
-  InputRightElement
+  InputRightElement,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  Code,
+  Link
 } from '@chakra-ui/react'
-import { AddIcon } from '@chakra-ui/icons'
+import { AddIcon, WarningIcon } from '@chakra-ui/icons'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, PieChart, Pie, Cell } from 'recharts'
 
 interface AIDashboardsViewProps {
@@ -67,6 +73,8 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
   const [isLoadOpen, setIsLoadOpen] = useState(false)
   const [dashboardList, setDashboardList] = useState<any[]>([])
   const [currentDashboardId, setCurrentDashboardId] = useState<number | null>(null)
+  const [apiKeyMissing, setApiKeyMissing] = useState(false)
+  const [lastError, setLastError] = useState<string | null>(null)
   const toast = useToast()
 
   const bg = useColorModeValue('white', 'gray.800')
@@ -77,20 +85,45 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
     // Load AI suggestions based on current graph
     fetch('/api/ai-dashboards/suggestions')
       .then(r => r.json())
-      .then(d => setSuggestions(d.suggestions || []))
-      .catch(() => setSuggestions([]))
+      .then(d => {
+        setSuggestions(d.suggestions || [])
+        // Check if we got fallback suggestions due to missing API key
+        if (d.fallback) {
+          setApiKeyMissing(true)
+          if (d.message) {
+            console.warn('AI Dashboards:', d.message)
+          }
+        }
+      })
+      .catch((e) => {
+        setSuggestions([])
+        setApiKeyMissing(true)
+      })
   }, [])
 
   async function onCreate() {
     try {
       setLoading(true)
+      setLastError(null)
       const resp = await fetch('/api/ai-dashboards/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt })
       })
       const result = await resp.json()
-      if (!resp.ok) throw new Error(result.error || 'Failed to generate')
+      if (!resp.ok) {
+        // Check for specific error types
+        if (result.code === 'MISSING_API_KEY' || result.code === 'INVALID_API_KEY') {
+          setApiKeyMissing(true)
+          setLastError(result.details || 'API key configuration issue')
+          throw new Error(result.error || 'AI service not configured')
+        }
+        if (result.code === 'QUOTA_EXCEEDED') {
+          setLastError(result.details || 'API quota exceeded')
+          throw new Error(result.error || 'API quota exceeded')
+        }
+        throw new Error(result.error || 'Failed to generate')
+      }
       const gen = result.dashboard
       const mapped: AICard[] = (gen.cards || []).map((c: any, idx: number) => ({
         id: `card-${idx}`,
@@ -100,9 +133,17 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
         options: c.options || {}
       }))
       setCards(mapped)
+      setApiKeyMissing(false) // Success, so API key is working
       onClose()
     } catch (e: any) {
-      toast({ title: 'Generation failed', description: e.message, status: 'error' })
+      const errorMsg = lastError || e.message
+      toast({
+        title: 'Generation failed',
+        description: errorMsg,
+        status: 'error',
+        duration: 8000,
+        isClosable: true
+      })
     } finally {
       setLoading(false)
     }
@@ -171,59 +212,110 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
       <HStack justify="space-between" mb={3}>
         <Text fontSize="lg" fontWeight="semibold">AI Dashboards</Text>
         <HStack>
-          <Button leftIcon={<AddIcon />} colorScheme="blue" onClick={onOpen} size="sm">
+          <Button onClick={() => { setIsLoadOpen(true); loadDashboards() }} size="sm" variant="outline">Load</Button>
+          <Button onClick={() => setIsSaveOpen(true)} size="sm" variant="outline">Save</Button>
+          <Button
+            leftIcon={<AddIcon />}
+            colorScheme="blue"
+            onClick={onOpen}
+            size="sm"
+            isDisabled={apiKeyMissing}
+          >
             Create with AI
           </Button>
         </HStack>
       </HStack>
 
       <Text fontSize="sm" color={subtle} mb={4}>
-        Describe the dashboard you want in natural language. This view ships with a local demo generator. In production, connect this UI to Neo4j Aura AI Dashboards to transform prompts into Cypher and visualizations.
+        Describe the dashboard you want in natural language. Prompts are converted to Cypher-backed cards using Gemini, mirroring Neo4j Aura AI Dashboards.
       </Text>
+
+      {/* API Key Missing Warning */}
+      {apiKeyMissing && (
+        <Alert status="warning" mb={4} borderRadius="md">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>AI Service Not Configured</AlertTitle>
+            <AlertDescription>
+              <VStack align="start" spacing={2}>
+                <Text>
+                  To use AI-powered dashboard generation, add your OpenAI API key to your environment:
+                </Text>
+                <Code p={2} borderRadius="md" fontSize="sm">
+                  OPENAI_API_KEY=your_api_key_here
+                </Code>
+                <Text fontSize="sm">
+                  Add this to your <Code>.env.local</Code> file and restart the development server.{' '}
+                  <Link href="https://platform.openai.com/api-keys" isExternal color="blue.500">
+                    Get an API key →
+                  </Link>
+                </Text>
+              </VStack>
+            </AlertDescription>
+          </Box>
+        </Alert>
+      )}
 
       {/* Content area */}
       {cards.length === 0 ? (
         <Box flex="1" bg={bg} borderRadius="md" border="1px solid" borderColor={border} p={6} display="flex" alignItems="center" justifyContent="center">
           <VStack spacing={4}>
             <Text color={subtle}>No AI dashboard yet.</Text>
-            <Button colorScheme="blue" onClick={onOpen}>Create with AI</Button>
+            <Button
+              colorScheme="blue"
+              onClick={onOpen}
+              isDisabled={apiKeyMissing}
+            >
+              Create with AI
+            </Button>
+            {apiKeyMissing && (
+              <Text fontSize="sm" color="orange.500" textAlign="center">
+                <WarningIcon mr={1} />
+                Configure OpenAI API key to enable AI generation
+              </Text>
+            )}
           </VStack>
         </Box>
       ) : (
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-          {cards.map(card => (
+          {cards.map((card, idx) => (
             <Card key={card.id} variant="outline">
               <CardHeader>
-                <HStack justify="space-between">
+                <HStack justify="space-between" align="center">
                   <VStack align="start" spacing={0}>
                     <Text fontWeight="semibold">{card.title}</Text>
-                    {card.description && (
-                      <Text fontSize="sm" color={subtle}>{card.description}</Text>
-                    )}
+                    <HStack>
+                      <Badge colorScheme="teal">{card.viz_type}</Badge>
+                      <Badge>Cypher</Badge>
+                    </HStack>
                   </VStack>
-                  {card.cypher && (
-                    <Badge colorScheme="teal">Cypher</Badge>
-                  )}
+                  <HStack>
+                    <Button size="xs" onClick={() => runCard(idx)}>Run</Button>
+                  </HStack>
                 </HStack>
               </CardHeader>
               <CardBody>
                 <VStack align="stretch" spacing={3}>
-                  <Box>{card.content}</Box>
+                  <Box>
+                    {card.data ? (
+                      <ChartPreview card={card} />
+                    ) : (
+                      <Text fontSize="sm" color={subtle}>Click Run to preview results.</Text>
+                    )}
+                  </Box>
 
-                  {/* Inline editor for a card's Cypher placeholder */}
-                  {card.cypher !== undefined && (
-                    <Box>
-                      <Text fontSize="xs" color={subtle} mb={1}>Edit Cypher (placeholder)</Text>
-                      <Input
-                        value={card.cypher}
-                        onChange={(e) => {
-                          const v = e.target.value
-                          setCards(prev => prev.map(c => c.id === card.id ? { ...c, cypher: v } : c))
-                        }}
-                        size="sm"
-                      />
-                    </Box>
-                  )}
+                  {/* Inline editor for a card's Cypher */}
+                  <Box>
+                    <Text fontSize="xs" color={subtle} mb={1}>Edit Cypher</Text>
+                    <Input
+                      value={card.cypher}
+                      onChange={(e) => {
+                        const v = e.target.value
+                        setCards(prev => prev.map((c, i) => i === idx ? { ...c, cypher: v } : c))
+                      }}
+                      size="sm"
+                    />
+                  </Box>
                 </VStack>
               </CardBody>
             </Card>
@@ -269,7 +361,7 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
               <Box>
                 <Text fontSize="sm" mb={2} fontWeight="semibold">Suggested prompts</Text>
                 <Wrap>
-                  {suggestedPrompts.map((sp) => (
+                  {suggestions.map((sp) => (
                     <WrapItem key={sp}>
                       <Tag
                         onClick={() => setPrompt(sp)}
@@ -286,17 +378,127 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <HStack spacing={3}>
-              <Text fontSize="xs" color={subtle}>AI can make mistakes — validate and refine your dashboard after it is created.</Text>
-              <Button variant="ghost" onClick={onClose}>Cancel</Button>
-              <Button colorScheme="blue" onClick={onCreate}>Create</Button>
-            </HStack>
+            <VStack spacing={2} align="stretch">
+              {apiKeyMissing && (
+                <Alert status="error" size="sm" borderRadius="md">
+                  <AlertIcon />
+                  <AlertDescription fontSize="sm">
+                    OpenAI API key required. Add OPENAI_API_KEY to your .env.local file.
+                  </AlertDescription>
+                </Alert>
+              )}
+              <HStack spacing={3} justify="space-between">
+                <Text fontSize="xs" color={subtle}>AI can make mistakes — validate and refine your dashboard after it is created.</Text>
+                <HStack spacing={2}>
+                  <Button variant="ghost" onClick={onClose}>Cancel</Button>
+                  <Button
+                    colorScheme="blue"
+                    onClick={onCreate}
+                    isLoading={loading}
+                    isDisabled={!prompt.trim() || apiKeyMissing}
+                  >
+                    Create
+                  </Button>
+                </HStack>
+              </HStack>
+            </VStack>
           </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Save modal */}
+      <Modal isOpen={isSaveOpen} onClose={() => setIsSaveOpen(false)} size="md">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Save Dashboard</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <InputGroup>
+              <Input placeholder="Name" value={saveName} onChange={(e) => setSaveName(e.target.value)} />
+              <InputRightElement width="4.5rem">
+                <Button h="1.75rem" size="sm" onClick={saveDashboard} isLoading={saving}>
+                  Save
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      {/* Load modal */}
+      <Modal isOpen={isLoadOpen} onClose={() => setIsLoadOpen(false)} size="lg">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Load Dashboard</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <VStack align="stretch" spacing={2}>
+              {dashboardList.map(d => (
+                <HStack key={d.id} justify="space-between" borderBottom="1px solid" borderColor={border} py={2}>
+                  <VStack align="start" spacing={0}>
+                    <Text fontWeight="semibold">{d.name || 'Untitled'}</Text>
+                    <Text fontSize="xs" color={subtle}>{d.prompt?.slice(0, 100)}</Text>
+                  </VStack>
+                  <Button size="sm" onClick={() => loadDashboard(d.id)}>Load</Button>
+                </HStack>
+              ))}
+              {dashboardList.length === 0 && <Text color={subtle}>No saved dashboards yet.</Text>}
+            </VStack>
+          </ModalBody>
         </ModalContent>
       </Modal>
     </Box>
   )
 }
 
-export default AIDashboardsView
+function ChartPreview({ card }: { card: AICard }) {
+  const subtle = useColorModeValue('gray.600', 'gray.300')
+  const data = card.data?.rows || []
+  const cols = card.data?.columns || (data.length > 0 ? Object.keys(data[0]) : [])
+  if (card.viz_type === 'bar' && cols.length >= 2) {
+    const xKey = cols[0], yKey = cols[1]
+    return (
+      <Box height="220px">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data}>
+            <XAxis dataKey={xKey} />
+            <YAxis />
+            <RTooltip />
+            <Bar dataKey={yKey} fill="#3182ce" />
+          </BarChart>
+        </ResponsiveContainer>
+      </Box>
+    )
+  }
+  if (card.viz_type === 'pie' && cols.length >= 2) {
+    const nameKey = cols[0], valueKey = cols[1]
+    return (
+      <Box height="220px">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie dataKey={valueKey} data={data} nameKey={nameKey} outerRadius={80}>
+              {data.map((_: any, i: number) => <Cell key={i} fill={['#3182ce','#63b3ed','#9ae6b4','#f6ad55','#fc8181'][i%5]} />)}
+            </Pie>
+            <RTooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </Box>
+    )
+  }
+  // Table fallback
+  return (
+    <VStack align="stretch" spacing={1}>
+      <HStack fontWeight="semibold">
+        {cols.map(c => <Box key={c} flex={1}>{c}</Box>)}
+      </HStack>
+      {data.slice(0, 10).map((row: any, i: number) => (
+        <HStack key={i}>
+          {cols.map(c => <Box key={c} flex={1}><Text fontSize="sm" color={subtle}>{String(row[c])}</Text></Box>)}
+        </HStack>
+      ))}
+      {data.length === 0 && <Text fontSize="sm" color={subtle}>No data</Text>}
+    </VStack>
+  )
+}
 
+export default AIDashboardsView

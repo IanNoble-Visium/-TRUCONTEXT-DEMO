@@ -147,8 +147,24 @@ const loadSVGContent = async (iconUrl: string): Promise<string> => {
   }
 }
 
-// Get color for node type with better color mapping
+// Get color for node type with status-based coloring
 const getNodeColor = (node: GeoNode) => {
+  // Check for critical/high-risk status first
+  const isCritical = (
+    // High CVSS score
+    (node.properties.cvss_score && parseFloat(node.properties.cvss_score) >= 7.0) ||
+    // Critical severity
+    (node.properties.severity && node.properties.severity.toLowerCase() === 'critical') ||
+    // High criticality
+    (node.properties.criticality && node.properties.criticality.toLowerCase() === 'high') ||
+    // Attack-related nodes
+    (node.type.toLowerCase() === 'attack' || node.type.toLowerCase() === 'malware' || node.type.toLowerCase() === 'vulnerability')
+  )
+
+  if (isCritical) {
+    return '#dc2626' // Red for critical/high-risk nodes
+  }
+
   // Use the color from the dataset if available and it's not the default gray
   if (node.color && node.color !== '#666666' && node.color !== '#666') {
     return node.color
@@ -156,23 +172,23 @@ const getNodeColor = (node: GeoNode) => {
 
   // Enhanced color scheme based on type with more vibrant colors
   switch (node.type.toLowerCase()) {
-    case 'server': return '#2563eb'        // Blue
-    case 'application': return '#059669'   // Green
-    case 'database': return '#7c3aed'      // Purple
-    case 'user': return '#ea580c'          // Orange
-    case 'vulnerability': return '#dc2626' // Red
-    case 'firewall': return '#ca8a04'      // Yellow
-    case 'network': return '#0891b2'       // Cyan
-    case 'storage': return '#9333ea'       // Violet
-    case 'laptop': return '#7c2d12'        // Brown
-    case 'malware': return '#1f2937'       // Dark gray
-    case 'attack': return '#991b1b'        // Dark red
-    case 'traffic': return '#374151'       // Gray
-    case 'router': return '#0d9488'        // Teal
-    case 'switch': return '#4338ca'        // Indigo
-    case 'workstation': return '#be185d'   // Pink
-    case 'communication': return '#34c759' // Green
-    default: return '#6b7280'              // Default gray
+    case 'server': return '#6b7280'        // Grey for normal servers
+    case 'application': return '#6b7280'   // Grey for normal applications
+    case 'database': return '#6b7280'      // Grey for normal databases
+    case 'user': return '#6b7280'          // Grey for normal users
+    case 'vulnerability': return '#dc2626' // Red (handled above)
+    case 'firewall': return '#6b7280'      // Grey for normal firewalls
+    case 'network': return '#6b7280'       // Grey for normal networks
+    case 'storage': return '#6b7280'       // Grey for normal storage
+    case 'laptop': return '#6b7280'        // Grey for normal laptops
+    case 'malware': return '#dc2626'       // Red (handled above)
+    case 'attack': return '#dc2626'        // Red (handled above)
+    case 'traffic': return '#6b7280'       // Grey for normal traffic
+    case 'router': return '#6b7280'        // Grey for normal routers
+    case 'switch': return '#6b7280'        // Grey for normal switches
+    case 'workstation': return '#6b7280'   // Grey for normal workstations
+    case 'communication': return '#6b7280' // Grey for normal communication
+    default: return '#6b7280'              // Default grey
   }
 }
 

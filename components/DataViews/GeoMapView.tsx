@@ -1,11 +1,12 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import {
   Box, VStack, HStack, Text, Badge, Input, Select, InputGroup, InputLeftElement,
-  useColorModeValue, Tooltip, Icon, Flex, Spacer, Alert, AlertIcon
+  useColorModeValue, Tooltip, Icon, Flex, Spacer, Alert, AlertIcon, Button
 } from '@chakra-ui/react'
-import { SearchIcon, ViewIcon } from '@chakra-ui/icons'
+import { SearchIcon, ViewIcon, SettingsIcon } from '@chakra-ui/icons'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
+import GeoCoordinateWizard from '../GeoCoordinateWizard'
 
 // Dynamically import the entire Map component to avoid SSR issues
 const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false })
@@ -15,6 +16,7 @@ interface GeoMapViewProps {
   edges: any[]
   selectedNodes: string[]
   onNodeSelect: (nodeId: string) => void
+  onApplyCoordinates?: (nodeUpdates: Array<{ uid: string; latitude: number; longitude: number }>) => Promise<void>
 }
 
 interface GeoNode {
@@ -31,9 +33,10 @@ interface GeoNode {
 
 const MotionBox = motion(Box)
 
-const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, onNodeSelect }) => {
+const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, onNodeSelect, onApplyCoordinates }) => {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
+  const [isWizardOpen, setIsWizardOpen] = useState(false)
 
   // Debug logging - only log once when nodes change significantly
   useEffect(() => {
@@ -160,14 +163,35 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
         border="1px solid"
         borderColor={borderColor}
       >
-        <VStack spacing={4}>
+        <VStack spacing={6}>
           <Icon as={ViewIcon} boxSize={12} color="gray.400" />
-          <Text color="gray.500" textAlign="center">
-            No geographic data available for map view.
-            <br />
-            Add latitude and longitude properties to nodes to see them on the map.
-          </Text>
+          <VStack spacing={4}>
+            <Text color="gray.500" textAlign="center" fontSize="lg">
+              No geographic data available for map view.
+            </Text>
+            <Text color="gray.400" textAlign="center">
+              Use the coordinate assignment wizard to add geographical coordinates to your devices.
+            </Text>
+          </VStack>
+          <Button
+            leftIcon={<SettingsIcon />}
+            colorScheme="blue"
+            size="lg"
+            onClick={() => setIsWizardOpen(true)}
+            isDisabled={!onApplyCoordinates}
+          >
+            Assign Geographic Coordinates
+          </Button>
         </VStack>
+
+        {onApplyCoordinates && isWizardOpen && (
+          <GeoCoordinateWizard
+            isOpen={isWizardOpen}
+            onClose={() => setIsWizardOpen(false)}
+            nodes={nodes}
+            onApplyCoordinates={onApplyCoordinates}
+          />
+        )}
       </MotionBox>
     )
   }
@@ -239,6 +263,121 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
         />
       </Box>
     </MotionBox>
+  )
+
+  // Render wizard if callback is provided
+  return (
+    <>
+      {geoNodes.length === 0 ? (
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          height="100%"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          bg={bgColor}
+          borderRadius="lg"
+          border="1px solid"
+          borderColor={borderColor}
+        >
+          <VStack spacing={6}>
+            <Icon as={ViewIcon} boxSize={12} color="gray.400" />
+            <VStack spacing={4}>
+              <Text color="gray.500" textAlign="center" fontSize="lg">
+                No geographic data available for map view.
+              </Text>
+              <Text color="gray.400" textAlign="center">
+                Use the coordinate assignment wizard to add geographical coordinates to your devices.
+              </Text>
+            </VStack>
+            <Button
+              leftIcon={<SettingsIcon />}
+              colorScheme="blue"
+              size="lg"
+              onClick={() => setIsWizardOpen(true)}
+              isDisabled={!onApplyCoordinates}
+            >
+              Assign Geographic Coordinates
+            </Button>
+          </VStack>
+        </MotionBox>
+      ) : (
+        <MotionBox
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          height="100%"
+          minHeight="600px"
+          width="100%"
+          bg={bgColor}
+          borderRadius="lg"
+          border="1px solid"
+          borderColor={borderColor}
+          overflow="hidden"
+          display="flex"
+          flexDirection="column"
+        >
+          {/* Map Filters */}
+          <Box p={4} borderBottom="1px solid" borderColor={borderColor}>
+            <VStack spacing={3}>
+              <HStack spacing={4} width="100%">
+                <InputGroup flex="1">
+                  <InputLeftElement>
+                    <SearchIcon color="gray.400" />
+                  </InputLeftElement>
+                  <Input
+                    placeholder="Search nodes on map..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </InputGroup>
+                <Select width="200px" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+                  <option value="all">All Types</option>
+                  {nodeTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </Select>
+              </HStack>
+
+              <HStack spacing={2} flexWrap="wrap">
+                <Text fontSize="sm" color="gray.500">
+                  {filteredNodes.length} of {geoNodes.length} nodes shown
+                </Text>
+                {selectedNodes.length > 0 && (
+                  <>
+                    <Text fontSize="sm" color="gray.500">•</Text>
+                    <Text fontSize="sm" color="gray.500">
+                      {selectedNodes.length} selected
+                    </Text>
+                  </>
+                )}
+              </HStack>
+            </VStack>
+          </Box>
+
+          {/* Map Container */}
+          <Box flex="1" position="relative">
+            <LeafletMap
+              geoNodes={filteredNodes}
+              geoEdges={geoEdges}
+              onNodeSelect={handleMarkerClick}
+              height="100%"
+            />
+          </Box>
+        </MotionBox>
+      )}
+
+      {onApplyCoordinates && (
+        <GeoCoordinateWizard
+          isOpen={isWizardOpen}
+          onClose={() => setIsWizardOpen(false)}
+          nodes={nodes}
+          onApplyCoordinates={onApplyCoordinates}
+        />
+      )}
+    </>
   )
 }
 
