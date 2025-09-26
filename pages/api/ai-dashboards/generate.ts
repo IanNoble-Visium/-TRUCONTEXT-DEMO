@@ -5,45 +5,91 @@ import { getSession } from '../../../lib/neo4j'
 // Shape returned to client
 // { cards: [{ title, viz_type: 'table'|'bar'|'pie'|'graph', cypher, options? }], name?, prompt }
 
-async function summarizeSchema() {
+async function getDetailedSchema() {
   const session = await getSession()
   try {
-    // Gather labels and node property keys
-    const nodeRes = await session.run(`
+    // Get all node labels
+    const labelsResult = await session.run(`
       MATCH (n)
-      WITH labels(n) AS labels, keys(n) AS keys
-      RETURN labels, keys
-      LIMIT 200
+      RETURN DISTINCT labels(n) as labels
     `)
-    const relRes = await session.run(`
+
+    const nodeLabels = new Set<string>()
+    labelsResult.records.forEach(record => {
+      const labels = record.get('labels') as string[]
+      labels.forEach(label => nodeLabels.add(label))
+    })
+
+    // Get all relationship types
+    const relsResult = await session.run(`
       MATCH ()-[r]->()
-      WITH type(r) AS type, keys(r) AS keys
-      RETURN type, keys
-      LIMIT 200
+      RETURN DISTINCT type(r) as rel_type
     `)
 
-    const nodeLabels: Record<string, Set<string>> = {}
-    nodeRes.records.forEach(rec => {
-      const labels: string[] = rec.get('labels') || []
-      const keys: string[] = rec.get('keys') || []
-      const label = labels[0] || 'Unknown'
-      if (!nodeLabels[label]) nodeLabels[label] = new Set<string>()
-      keys.forEach(k => nodeLabels[label].add(k))
-    })
+    const relationshipTypes = relsResult.records.map(record =>
+      record.get('rel_type') as string
+    )
 
-    const relTypes: Record<string, Set<string>> = {}
-    relRes.records.forEach(rec => {
-      const type: string = rec.get('type')
-      const keys: string[] = rec.get('keys') || []
-      if (!relTypes[type]) relTypes[type] = new Set<string>()
-      keys.forEach(k => relTypes[type].add(k))
-    })
+    // Get properties for each node label
+    const nodeProperties: Record<string, string[]> = {}
 
-    const schema = {
-      node_types: Object.entries(nodeLabels).map(([label, set]) => ({ label, properties: Array.from(set) })),
-      rel_types: Object.entries(relTypes).map(([type, set]) => ({ type, properties: Array.from(set) }))
+    for (const label of Array.from(nodeLabels)) {
+      const propsResult = await session.run(`
+        MATCH (n:\`${label}\`)
+        WITH n LIMIT 10
+        UNWIND keys(n) as key
+        RETURN DISTINCT key
+        ORDER BY key
+      `)
+
+      nodeProperties[label] = propsResult.records.map(record =>
+        record.get('key') as string
+      )
     }
-    return schema
+
+    // Get relationship patterns with counts
+    const relationshipPatterns: Array<{source: string, relationship: string, target: string, count: number}> = []
+
+    for (const relType of relationshipTypes) {
+      const patternResult = await session.run(`
+        MATCH (a)-[r:\`${relType}\`]->(b)
+        RETURN DISTINCT labels(a)[0] as source_label,
+               type(r) as rel_type,
+               labels(b)[0] as target_label,
+               count(*) as count
+        ORDER BY count DESC
+        LIMIT 3
+      `)
+
+      patternResult.records.forEach(record => {
+        relationshipPatterns.push({
+          source: record.get('source_label') as string,
+          relationship: record.get('rel_type') as string,
+          target: record.get('target_label') as string,
+          count: record.get('count').low || record.get('count')
+        })
+      })
+    }
+
+    return {
+      nodeLabels: Array.from(nodeLabels),
+      relationshipTypes,
+      nodeProperties,
+      relationshipPatterns,
+      // Common patterns for AI to use
+      commonQueries: [
+        {
+          pattern: "Count by category",
+          example: `MATCH (n:${Array.from(nodeLabels)[0] || 'Node'}) WITH n.showname as category, COUNT(n) as count RETURN category, count ORDER BY count DESC LIMIT 10`
+        },
+        {
+          pattern: "Relationship distribution",
+          example: relationshipPatterns.length > 0 ?
+            `MATCH (a:${relationshipPatterns[0].source})-[r:${relationshipPatterns[0].relationship}]->(b:${relationshipPatterns[0].target}) WITH type(r) as rel_type, COUNT(*) as count RETURN rel_type, count` :
+            "MATCH ()-[r]->() WITH type(r) as rel_type, COUNT(*) as count RETURN rel_type, count"
+        }
+      ]
+    }
   } finally {
     await session.close()
   }
@@ -56,7 +102,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { prompt } = req.body as { prompt?: string }
     if (!prompt || !prompt.trim()) return res.status(400).json({ error: 'Missing prompt' })
 
-    const schema = await summarizeSchema()
+    const schema = await getDetailedSchema()
     const schemaDescription = JSON.stringify({
       expected_output: {
         name: 'string (optional) name for the dashboard',
@@ -65,28 +111,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           {
             title: 'string',
             viz_type: "one of: 'table' | 'bar' | 'pie' | 'graph'",
-            cypher: 'string Neo4j Cypher query; use properties and labels present',
+            cypher: 'string Neo4j Cypher query; use ONLY the exact labels, relationships, and properties from the schema',
             options: 'object with chart settings (optional)'
           }
         ]
       },
-      cypher_examples: {
-        aggregation: "MATCH (n:Label) WITH n.property as prop, COUNT(n) as count RETURN prop, count ORDER BY count DESC LIMIT 10",
-        relationship_count: "MATCH (a:LabelA)-[r:REL_TYPE]->(b:LabelB) WITH type(r) as rel_type, COUNT(*) as count RETURN rel_type, count",
-        simple_list: "MATCH (n:Label) RETURN n.name as name, n.property as value LIMIT 20"
+      schema: {
+        available_node_labels: schema.nodeLabels,
+        available_relationship_types: schema.relationshipTypes,
+        node_properties: schema.nodeProperties,
+        relationship_patterns: schema.relationshipPatterns,
+        common_query_examples: schema.commonQueries
       },
-      schema: schema
+      cypher_rules: {
+        "CRITICAL": "Use ONLY the exact labels, relationships, and properties listed in the schema above",
+        "aggregation_syntax": "MATCH (n:Label) WITH n.property as field, COUNT(n) as count RETURN field, count ORDER BY count DESC LIMIT 10",
+        "relationship_syntax": "MATCH (a:LabelA)-[r:REL_TYPE]->(b:LabelB) WITH COUNT(*) as count RETURN count",
+        "property_access": "Use n.showname for display names, n.uid for unique identifiers",
+        "no_group_by": "Never use GROUP BY - use WITH clause for aggregations",
+        "limit_results": "Always add LIMIT 10-20 for chart data"
+      }
     })
 
-    const system = `Generate a domain-agnostic dashboard from the user's prompt for a Neo4j graph.\n` +
-      `- Use ONLY labels, relationship types, and properties evident in the provided schema.\n` +
-      `- Return STRICT JSON matching the expected_output above.\n` +
-      `- Choose appropriate viz_type for each card.\n` +
-      `- Ensure each cypher runs without APOC and returns concise fields for charting.\n` +
-      `- Use proper Cypher syntax: MATCH ... WITH ... RETURN (no GROUP BY clause).\n` +
-      `- For aggregations, use WITH clause before RETURN: MATCH ... WITH field, COUNT(*) as count RETURN field, count\n` +
-      `- Prefer lower cardinality aggregations for charts; use LIMIT 20 when appropriate.\n` +
-      `- Test queries should be valid Neo4j Cypher without syntax errors.`
+    const system = `You are a Neo4j Cypher expert generating dashboard queries for a cybersecurity graph database.
+
+CRITICAL REQUIREMENTS:
+1. Use ONLY the exact node labels, relationship types, and properties from the provided schema
+2. The schema contains: ${schema.nodeLabels.join(', ')} as node labels
+3. Available relationships: ${schema.relationshipTypes.join(', ')}
+4. All nodes have 'showname' property for display and 'uid' for unique identification
+5. Return STRICT JSON matching the expected_output format
+
+CYPHER SYNTAX RULES:
+- Never use GROUP BY (not valid in Cypher)
+- Use WITH clause for aggregations: MATCH (n:Label) WITH n.property as field, COUNT(n) as count RETURN field, count
+- Always add ORDER BY count DESC LIMIT 10-20 for charts
+- Use exact label names with backticks if needed: MATCH (n:\`${schema.nodeLabels[0] || 'Label'}\`)
+
+EXAMPLE VALID QUERIES:
+${schema.commonQueries.map(q => `- ${q.pattern}: ${q.example}`).join('\n')}
+
+Generate dashboard cards that will return actual data from this specific database schema.`
 
     const json = await generateJSON(`${system}\n\nUser prompt: ${prompt}`, schemaDescription)
 

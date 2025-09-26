@@ -420,7 +420,7 @@ const ReviewStep: React.FC<StepProps> = ({
       <Alert status="info">
         <AlertIcon />
         <Text>
-          Clicking "Apply Coordinates" will update {assignments.length} devices with geographical coordinates
+          Clicking &ldquo;Apply Coordinates&rdquo; will update {assignments.length} devices with geographical coordinates
           and save the changes to both the current dataset and database.
         </Text>
       </Alert>
