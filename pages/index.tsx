@@ -35,13 +35,14 @@ import {
   useColorModeValue
 } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronUpIcon, ChevronDownIcon, HamburgerIcon, InfoIcon, AttachmentIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
+import { ChevronUpIcon, ChevronDownIcon, HamburgerIcon, InfoIcon, AttachmentIcon, ViewIcon, ViewOffIcon, SettingsIcon } from '@chakra-ui/icons'
 import Head from 'next/head'
 import Header from '../components/Header'
 import FileUpload from '../components/FileUpload'
 import DatasetManager from '../components/DatasetManager'
 import DataSourceIntegrations from '../components/DataSourceIntegrations'
 import EnhancedGraphVisualization from '../components/EnhancedGraphVisualization'
+import { IconMappingDialog } from '../components/IconMappingDialog'
 import PageTransition from '../components/PageTransition'
 import { ViewType } from '../components/DataViews'
 
@@ -56,6 +57,7 @@ const HomePage: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('executive')
   const { isOpen: isUploadOpen, onOpen: onUploadOpen, onClose: onUploadClose } = useDisclosure()
   const { isOpen: isInfoOpen, onOpen: onInfoOpen, onClose: onInfoClose } = useDisclosure()
+  const { isOpen: isIconMappingOpen, onOpen: onIconMappingOpen, onClose: onIconMappingClose } = useDisclosure()
 
   // Fullscreen state management
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -294,6 +296,20 @@ const HomePage: React.FC = () => {
                         whileTap={buttonTap}
                       />
                     </motion.div>
+
+                    <motion.div variants={slideIn}>
+                      <MotionIconButton
+                        icon={<SettingsIcon />}
+                        aria-label="Icon Mapping Configuration"
+                        colorScheme="orange"
+                        variant="outline"
+                        size="sm"
+                        onClick={onIconMappingOpen}
+                        mr={2}
+                        whileHover={buttonHover}
+                        whileTap={buttonTap}
+                      />
+                    </motion.div>
                   </>
                 )}
 
@@ -367,6 +383,12 @@ const HomePage: React.FC = () => {
               </MotionBox>
             </Box>
           </Flex>
+
+          {/* Icon Mapping Dialog */}
+          <IconMappingDialog
+            isOpen={isIconMappingOpen}
+            onClose={onIconMappingClose}
+          />
 
           {/* Upload Drawer */}
           <Drawer isOpen={isUploadOpen} placement="left" onClose={onUploadClose} size={drawerSize}>

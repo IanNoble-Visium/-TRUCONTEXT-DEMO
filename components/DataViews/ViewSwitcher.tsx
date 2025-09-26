@@ -9,6 +9,7 @@ import TimelineView from './TimelineView'
 import CardsView from './CardsView'
 import DashboardView from './DashboardView'
 import GeoMapView from './GeoMapView'
+import AIDashboardsView from './AIDashboardsView'
 
 // Dynamic import for ExecutiveDashboard to prevent SSR hydration issues
 const ExecutiveDashboard = dynamic(() => import('../ExecutiveDashboard'), {
@@ -50,7 +51,7 @@ const IconManagement = dynamic(() => import('../IconManagement'), {
   )
 })
 
-export type ViewType = 'executive' | 'soc-executive' | 'threat-analysis' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'geomap' | 'icon-management'
+export type ViewType = 'executive' | 'soc-executive' | 'threat-analysis' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'ai-dashboards' | 'geomap' | 'icon-management'
 
 interface ViewSwitcherProps {
   currentView: ViewType
@@ -86,6 +87,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
     { value: 'timeline', label: 'Timeline View', icon: '⏰' },
     { value: 'cards', label: 'Cards View', icon: '🗂️' },
     { value: 'dashboard', label: 'Analytics Dashboard', icon: '📈' },
+    { value: 'ai-dashboards', label: 'AI Dashboards', icon: '✨' },
     { value: 'geomap', label: 'Geographic Map', icon: '🗺️' },
     { value: 'icon-management', label: 'Icon Management', icon: '🎨' }
   ]
@@ -147,6 +149,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
         return <CardsView {...commonProps} />
       case 'dashboard':
         return <DashboardView {...commonProps} />
+      case 'ai-dashboards':
+        return <AIDashboardsView {...commonProps} />
       case 'geomap':
         return <GeoMapView {...commonProps} />
       case 'icon-management':

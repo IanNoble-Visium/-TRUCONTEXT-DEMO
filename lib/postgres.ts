@@ -52,7 +52,7 @@ export interface EdgeRecord {
 // Initialize database schema
 export async function initializeDatabase(): Promise<void> {
   const client = await getClient()
-  
+
   try {
     // Create datasets table
     await client.query(`
@@ -137,6 +137,36 @@ export async function initializeDatabase(): Promise<void> {
       CREATE INDEX IF NOT EXISTS idx_edges_from_to ON edges(from_uid, to_uid)
     `)
 
+    // AI Dashboards tables
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS ai_dashboards (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255),
+        prompt TEXT NOT NULL,
+        dataset_id INTEGER REFERENCES datasets(id) ON DELETE SET NULL,
+        metadata JSONB DEFAULT '{}',
+        shared_slug VARCHAR(64) UNIQUE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+      )
+    `)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS ai_dashboard_cards (
+        id SERIAL PRIMARY KEY,
+        dashboard_id INTEGER REFERENCES ai_dashboards(id) ON DELETE CASCADE,
+        title VARCHAR(255) NOT NULL,
+        viz_type VARCHAR(50) NOT NULL,
+        cypher TEXT NOT NULL,
+        options JSONB DEFAULT '{}',
+        order_index INTEGER DEFAULT 0
+      )
+    `)
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_ai_cards_dashboard ON ai_dashboard_cards(dashboard_id, order_index)
+    `)
+
     console.log('Database schema initialized successfully')
   } catch (error) {
     console.error('Error initializing database schema:', error)
@@ -154,7 +184,7 @@ export async function saveDataset(
   edges: any[]
 ): Promise<DatasetRecord> {
   const client = await getClient()
-  
+
   try {
     await client.query('BEGIN')
 
@@ -162,8 +192,8 @@ export async function saveDataset(
     const datasetResult = await client.query(`
       INSERT INTO datasets (name, description, node_count, edge_count)
       VALUES ($1, $2, $3, $4)
-      ON CONFLICT (name) 
-      DO UPDATE SET 
+      ON CONFLICT (name)
+      DO UPDATE SET
         description = EXCLUDED.description,
         updated_at = CURRENT_TIMESTAMP,
         node_count = EXCLUDED.node_count,
@@ -287,18 +317,18 @@ export async function loadDataset(datasetId: number): Promise<{
   edges: any[]
 }> {
   const client = await getClient()
-  
+
   try {
     // Get dataset info
     const datasetResult = await client.query(
       'SELECT * FROM datasets WHERE id = $1',
       [datasetId]
     )
-    
+
     if (datasetResult.rows.length === 0) {
       throw new Error(`Dataset with id ${datasetId} not found`)
     }
-    
+
     const dataset = datasetResult.rows[0] as DatasetRecord
 
     // Get nodes
@@ -306,7 +336,7 @@ export async function loadDataset(datasetId: number): Promise<{
       'SELECT * FROM nodes WHERE dataset_id = $1 ORDER BY id',
       [datasetId]
     )
-    
+
     const nodes = nodesResult.rows.map(row => ({
       uid: row.uid,
       type: row.type,
@@ -320,7 +350,7 @@ export async function loadDataset(datasetId: number): Promise<{
       'SELECT * FROM edges WHERE dataset_id = $1 ORDER BY id',
       [datasetId]
     )
-    
+
     const edges = edgesResult.rows.map(row => ({
       from: row.from_uid,
       to: row.to_uid,
@@ -340,12 +370,8 @@ export async function loadDataset(datasetId: number): Promise<{
 // List all datasets
 export async function listDatasets(): Promise<DatasetRecord[]> {
   const client = await getClient()
-  
   try {
-    const result = await client.query(
-      'SELECT * FROM datasets ORDER BY updated_at DESC'
-    )
-    
+    const result = await client.query('SELECT * FROM datasets ORDER BY updated_at DESC')
     return result.rows as DatasetRecord[]
   } catch (error) {
     console.error('Error listing datasets:', error)
@@ -355,16 +381,137 @@ export async function listDatasets(): Promise<DatasetRecord[]> {
   }
 }
 
+
+// ==== AI Dashboards Persistence ====
+export interface AIDashboardRecord {
+  id: number
+  name?: string | null
+  prompt: string
+  dataset_id?: number | null
+  metadata: Record<string, any>
+  shared_slug?: string | null
+  created_at: Date
+  updated_at: Date
+}
+
+export interface AIDashboardCardRecord {
+  id: number
+  dashboard_id: number
+  title: string
+  viz_type: string
+  cypher: string
+  options: Record<string, any>
+  order_index: number
+}
+
+function randomSlug(len = 24) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let out = ''
+  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)]
+  return out
+}
+
+export async function saveAIDashboard(
+  name: string,
+  prompt: string,
+  cards: Array<{ title: string; viz_type: string; cypher: string; options?: any }>,
+  datasetId?: number | null,
+  metadata?: Record<string, any>
+): Promise<AIDashboardRecord> {
+  const client = await getClient()
+  try {
+    await client.query('BEGIN')
+    const dashRes = await client.query(
+      `INSERT INTO ai_dashboards (name, prompt, dataset_id, metadata)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [name, prompt, datasetId ?? null, JSON.stringify(metadata || {})]
+    )
+    const dashboard = dashRes.rows[0] as AIDashboardRecord
+
+    let idx = 0
+    for (const c of cards) {
+      await client.query(
+        `INSERT INTO ai_dashboard_cards (dashboard_id, title, viz_type, cypher, options, order_index)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [dashboard.id, c.title, c.viz_type, c.cypher, JSON.stringify(c.options || {}), idx++]
+      )
+    }
+
+    await client.query('COMMIT')
+    return dashboard
+  } catch (e) {
+    await client.query('ROLLBACK')
+    console.error('Error saving AI dashboard:', e)
+    throw e
+  } finally {
+    client.release()
+  }
+}
+
+export async function listAIDashboards(): Promise<AIDashboardRecord[]> {
+  const client = await getClient()
+  try {
+    const res = await client.query('SELECT * FROM ai_dashboards ORDER BY updated_at DESC')
+    return res.rows as AIDashboardRecord[]
+  } finally {
+    client.release()
+  }
+}
+
+export async function getAIDashboard(id: number): Promise<{ dashboard: AIDashboardRecord; cards: AIDashboardCardRecord[] }> {
+  const client = await getClient()
+  try {
+    const dres = await client.query('SELECT * FROM ai_dashboards WHERE id = $1', [id])
+    if (dres.rows.length === 0) throw new Error('Dashboard not found')
+    const cres = await client.query('SELECT * FROM ai_dashboard_cards WHERE dashboard_id = $1 ORDER BY order_index, id', [id])
+    return { dashboard: dres.rows[0] as AIDashboardRecord, cards: cres.rows as AIDashboardCardRecord[] }
+  } finally {
+    client.release()
+  }
+}
+
+export async function deleteAIDashboard(id: number): Promise<void> {
+  const client = await getClient()
+  try {
+    await client.query('BEGIN')
+    await client.query('DELETE FROM ai_dashboard_cards WHERE dashboard_id = $1', [id])
+    await client.query('DELETE FROM ai_dashboards WHERE id = $1', [id])
+    await client.query('COMMIT')
+  } catch (e) {
+    await client.query('ROLLBACK')
+    throw e
+  } finally {
+    client.release()
+  }
+}
+
+export async function publishAIDashboard(id: number): Promise<string> {
+  const client = await getClient()
+  try {
+    const slug = randomSlug(24)
+    const res = await client.query(
+      `UPDATE ai_dashboards SET shared_slug = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING shared_slug`,
+      [slug, id]
+    )
+    if (res.rows.length === 0) throw new Error('Dashboard not found')
+    return res.rows[0].shared_slug as string
+  } finally {
+    client.release()
+  }
+}
+
+
 // Delete dataset
 export async function deleteDataset(datasetId: number): Promise<void> {
   const client = await getClient()
-  
+
   try {
     const result = await client.query(
       'DELETE FROM datasets WHERE id = $1',
       [datasetId]
     )
-    
+
     if (result.rowCount === 0) {
       throw new Error(`Dataset with id ${datasetId} not found`)
     }

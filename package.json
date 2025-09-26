@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup": "node setup.js"
+    "setup": "node setup.js",
+    "setup-icons": "node scripts/setup-icon-mapping.js"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -34,6 +35,7 @@
     "cytoscape-klay": "^3.1.4",
     "cytoscape-no-overlap": "^1.0.1",
     "cytoscape-spread": "^3.0.0",
+    "dotenv": "^17.2.1",
     "elkjs": "^0.10.0",
     "eslint": "8.53.0",
     "eslint-config-next": "14.0.0",
@@ -44,7 +46,7 @@
     "lottie-react": "^2.4.1",
     "neo4j-driver": "^5.14.0",
     "next": "14.0.0",
-    "pg": "^8.16.0",
+    "pg": "^8.16.3",
     "react": "18.2.0",
     "react-circular-progressbar": "^2.2.0",
     "react-countup": "^6.5.3",

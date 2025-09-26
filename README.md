@@ -81,6 +81,54 @@ A comprehensive cybersecurity graph analytics platform built with Next.js, Neo4j
 - **Mobile Responsive**: Optimized for various screen sizes and touch interfaces
 - **Help System**: Comprehensive tooltips and keyboard shortcut documentation
 
+### 🗺️ **Dynamic Icon Mapping Management System (v5.0) - PRODUCTION READY!**
+
+#### 🏢 **Enterprise-Grade PostgreSQL Integration**
+- **Production Database**: Migrated from SQLite to PostgreSQL (Neon) for enterprise scalability
+- **Vercel Compatible**: Persistent data storage that survives deployments and scaling
+- **SSL Security**: Encrypted connections with automatic connection pooling
+- **Auto-scaling**: Handles concurrent users and high-traffic scenarios
+- **ACID Compliance**: Data integrity guaranteed with transaction support
+
+#### 🎛️ **Comprehensive Management Interface**
+- **4-Tab Dialog System**: Streamlined interface accessible via orange settings icon (⚙️) in main toolbar
+  - **Mappings Tab**: View, search, filter, and manage all icon mappings with real-time updates
+  - **Editor Tab**: Create and edit mappings with validation, priority settings, and descriptions
+  - **Test Tab**: Real-time icon resolution testing with detailed chain analysis
+  - **Export Tab**: Bulk export/import with usage statistics and validation data
+- **Advanced Search & Filtering**: Find mappings by source type, target type, or description
+- **Priority Management**: Control mapping precedence with numeric priority system
+- **Active/Inactive States**: Enable/disable mappings without deletion
+
+#### ⚡ **Dynamic Icon Resolution Engine**
+- **Database-Driven Resolution**: Real-time icon mapping from PostgreSQL with intelligent caching
+- **Usage Tracking**: Automatic analytics tracking resolution patterns and performance metrics
+- **Cycle Detection**: Prevents infinite mapping loops with comprehensive validation
+- **Fallback Chain**: Intelligent resolution path with graceful degradation to default icons
+- **Performance Optimization**: 5-minute mapping cache and 10-minute icon existence cache
+- **Context Awareness**: Component-specific resolution tracking (NodeIcon, GraphVisualization, LeafletMap)
+
+#### 📊 **Production Analytics & Monitoring**
+- **Real-time Usage Statistics**: Track icon resolution frequency, contexts, and components
+- **Time-based Filtering**: Analyze usage patterns across 1h, 24h, 7d, 30d, and 90d periods
+- **Performance Metrics**: Resolution time tracking and database health monitoring
+- **Diagnostic Tools**: System health checks, connection pool statistics, and error tracking
+- **Validation Reports**: Comprehensive mapping validation with Cloudinary icon existence verification
+
+#### 🔄 **Advanced Operations**
+- **Bulk Import/Export**: JSON-based configuration management with metadata preservation
+- **Batch Validation**: Validate all mappings against Cloudinary icon repository
+- **Migration Support**: Seamless component migration with helper utilities
+- **API Integration**: RESTful endpoints for external system integration
+- **Backup & Recovery**: Automated database backups with version control
+
+#### 🎯 **Key Benefits**
+- **Zero Downtime Updates**: Modify icon mappings without application restarts
+- **Centralized Management**: Single interface for all icon mapping operations
+- **Production Scalability**: Enterprise-grade database with connection pooling
+- **Developer Friendly**: Easy component integration with dynamic resolver utilities
+- **Analytics Driven**: Data-driven insights for icon usage optimization
+
 ## 🏗️ Architecture
 
 ### **Frontend**
@@ -92,8 +140,8 @@ A comprehensive cybersecurity graph analytics platform built with Next.js, Neo4j
 ### **Backend**
 - **Next.js API Routes** for serverless backend functionality
 - **Neo4j Aura** for graph database operations
-- **PostgreSQL** for relational data storage
-- **Cloudinary** for cloud-based asset management
+- **PostgreSQL (Neon)** for enterprise-grade icon mapping management, usage analytics, and persistent configuration storage
+- **Cloudinary** for cloud-based asset management and icon existence validation
 
 ### **External Integrations**
 - **Recraft.ai API** for primary AI-powered icon generation (vector illustrations)
@@ -106,7 +154,7 @@ A comprehensive cybersecurity graph analytics platform built with Next.js, Neo4j
 ### Prerequisites
 - Node.js 18+ and npm
 - Neo4j Aura database instance
-- PostgreSQL database
+- PostgreSQL database (Neon recommended for production)
 - Cloudinary account
 - Recraft.ai API key (primary)
 - Google AI API key (fallback)
@@ -121,8 +169,9 @@ NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=your-password
 NEO4J_DATABASE=neo4j
 
-# PostgreSQL Configuration
-DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
+# PostgreSQL Configuration (Icon Mapping Management)
+POSTGRES_URL=postgresql://username:password@host:port/database?sslmode=require
+# Alternative: DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
 
 # AI Icon Generation Configuration
 # Recraft.ai API (Primary)
@@ -396,6 +445,11 @@ For support and questions:
 ## 🎯 Roadmap
 
 ### **Recently Completed**
+- ✅ **Dynamic Icon Mapping Management System (v5.0)**: Complete PostgreSQL-powered icon mapping system with real-time configuration, usage analytics, and production-ready deployment
+- ✅ **PostgreSQL Integration**: Migrated from SQLite to enterprise-grade PostgreSQL (Neon) for persistent, scalable data storage compatible with Vercel deployments
+- ✅ **Advanced Icon Resolution**: Database-driven dynamic icon resolution with caching, usage tracking, and cycle detection for optimal performance
+- ✅ **Comprehensive Management UI**: 4-tab interface (Mappings, Editor, Test, Export) with full CRUD operations, real-time validation, and bulk import/export capabilities
+- ✅ **Production Analytics**: Usage tracking, performance monitoring, and detailed diagnostics with time-based filtering and component-level insights
 - ✅ **Enhanced Icon Generation Workflow (v4.0)**: Complete redesign of icon generation UX with in-dialog preview and approval system
 - ✅ **Advanced Recraft API Controls**: Exposed configurable parameters (model, style, substyle, size) with experimental UI panel
 - ✅ **Seamless Single-Dialog Experience**: Eliminated page refreshes and navigation - users stay in context throughout generation process
