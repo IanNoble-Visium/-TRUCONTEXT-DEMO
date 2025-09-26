@@ -368,6 +368,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   const [controlsCollapsed, setControlsCollapsed] = useState(false)
   const [layoutRunning, setLayoutRunning] = useState(false)
   const [groupOperationRunning, setGroupOperationRunning] = useState(false)
+  const [currentDatasetName, setCurrentDatasetName] = useState<string>(() => {
+    // Initialize from localStorage if available
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('currentDatasetName') || 'default'
+    }
+    return 'default'
+  })
   const { isOpen: isGroupModalOpen, onOpen: onGroupModalOpen, onClose: onGroupModalClose } = useDisclosure()
   const { isOpen: isAlarmFilterOpen, onOpen: onAlarmFilterOpen, onClose: onAlarmFilterClose } = useDisclosure()
   const [alarmFilters, setAlarmFilters] = useState<{[key: string]: boolean}>({
@@ -2246,10 +2253,20 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
       console.log('Loaded graph data:', data)
 
-      // Store current dataset name in localStorage for property persistence
+      // Store current dataset name in localStorage and state for property persistence
       if (data.currentDatasetName) {
         localStorage.setItem('currentDatasetName', data.currentDatasetName)
+        setCurrentDatasetName(data.currentDatasetName)
         console.log('Stored dataset name for property persistence:', data.currentDatasetName)
+
+        // Check if positions exist for this dataset
+        const positionKey = `trucontext-node-positions-${data.currentDatasetName}`
+        const hasExistingPositions = localStorage.getItem(positionKey) !== null
+        console.log('📍 Dataset positions check:', {
+          dataset: data.currentDatasetName,
+          key: positionKey,
+          hasExistingPositions
+        })
       }
       
       // Store original data for reference
@@ -4806,14 +4823,25 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     runLayout(currentLayout).catch(console.error)
   }, [groups])
 
+  // Re-run layout when dataset changes to load positions for the new dataset
+  useEffect(() => {
+    if (cyRef.current && graphData && containerReady) {
+      console.log('🔄 Dataset changed, reloading layout with new positions')
+      runLayout(currentLayout).catch(console.error)
+    }
+  }, [currentDatasetName])
+
   // Add state for fCoSE anchor node
   const [fcoseAnchorNode, setFcoseAnchorNode] = useState<string | null>(null)
 
   // Position persistence utilities
   const getPositionStorageKey = useCallback((datasetName?: string): string => {
-    const currentDataset = datasetName || localStorage.getItem('currentDatasetName') || 'default'
-    return `trucontext-node-positions-${currentDataset}`
-  }, [])
+    // Use provided dataset name, or state, or default
+    const currentDataset = datasetName || currentDatasetName
+    const key = `trucontext-node-positions-${currentDataset}`
+    console.log('🔑 Using position storage key:', key, 'for dataset:', currentDataset)
+    return key
+  }, [currentDatasetName])
 
   const saveNodePositions = useCallback((cy: Core) => {
     if (!cy) return
@@ -4841,8 +4869,10 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       const saved = localStorage.getItem(storageKey)
       if (saved) {
         const positions = JSON.parse(saved)
-        console.log(`📂 Loaded ${Object.keys(positions).length} saved node positions from localStorage`)
+        console.log(`📂 Loaded ${Object.keys(positions).length} saved node positions from localStorage for key: ${storageKey}`)
         return positions
+      } else {
+        console.log(`📂 No saved positions found in localStorage for key: ${storageKey}`)
       }
     } catch (error) {
       console.error('Error loading node positions:', error)

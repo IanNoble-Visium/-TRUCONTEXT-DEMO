@@ -475,6 +475,7 @@ For support and questions:
 - ✅ **Vector Illustration Support**: High-quality icon generation with recraftv3
 
 ### **Upcoming Features**
+- **Real-time Shared Topology Persistence**: Multi-user synchronized node positioning with WebSocket-based updates (currently local-only)
 - **Icon Style Transfer**: AI-powered style transfer between existing icons
 - **Custom AI Model Training**: Training specialized models for cybersecurity iconography
 - **Collaborative Features**: Multi-user icon management and sharing capabilities
