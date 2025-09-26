@@ -23,23 +23,57 @@ async function analyze() {
   }
 }
 
-function heuristicSuggestions(labels: string[]): string[] {
+function schemaAwareSuggestions(labels: string[], relationships: string[]): string[] {
   const s: string[] = []
-  const has = (n: string) => labels.some(l => l.toLowerCase().includes(n))
-  if (has('vulnerab') || has('cve')) {
-    s.push('Top CVEs impacting the most assets with severity distribution')
-    s.push('Asset exposure graph showing exploit paths to internet-facing systems')
+  const hasLabel = (n: string) => labels.some(l => l.toLowerCase().includes(n.toLowerCase()))
+  const hasRel = (n: string) => relationships.some(r => r.toLowerCase().includes(n.toLowerCase()))
+
+  // Vulnerability-focused suggestions based on actual schema
+  if (hasLabel('Vulnerability')) {
+    s.push('Show vulnerability distribution by severity levels')
+    if (hasLabel('Machine') && hasRel('ON')) {
+      s.push('Show machines with the most vulnerabilities')
+    }
+    if (hasLabel('CvssSeverity') && hasRel('SEVERITY')) {
+      s.push('Display CVSS severity breakdown across all vulnerabilities')
+    }
+    if (hasLabel('Software') && hasRel('SOFTWARE')) {
+      s.push('Show software components with associated vulnerabilities')
+    }
   }
-  if (has('user')) {
-    s.push('Suspicious user lateral movement paths over the last 24 hours')
+
+  // Machine and Domain analysis
+  if (hasLabel('Machine') && hasLabel('Domain')) {
+    s.push('Show machine distribution across domains')
+    if (hasRel('LAUNCHES') && hasLabel('Exploit')) {
+      s.push('Display machines that can launch exploits')
+    }
   }
-  if (has('alert') || has('incident')) {
-    s.push('Alerts by severity and affected systems with time trend')
+
+  // Exploit analysis
+  if (hasLabel('Exploit') && hasLabel('Machine')) {
+    s.push('Show exploit launch capabilities by machine')
   }
-  if (s.length < 5) {
-    s.push('Top categories with counts and a relationship graph of those categories')
-    s.push('Recent items activity timeline and key entity breakdown by type')
+
+  // CWE analysis
+  if (hasLabel('Cwe') && hasLabel('Vulnerability')) {
+    s.push('Show Common Weakness Enumeration (CWE) distribution')
   }
+
+  // References and external data
+  if (hasLabel('References') && hasLabel('ExternalEntry')) {
+    s.push('Show external reference sources and their usage')
+  }
+
+  // Generic fallbacks using actual labels
+  if (s.length < 6) {
+    s.push(`Show distribution of ${labels[0] || 'entities'} by type`)
+    s.push(`Display relationship patterns between different node types`)
+    if (labels.length > 1) {
+      s.push(`Analyze connections between ${labels[0]} and ${labels[1]} entities`)
+    }
+  }
+
   return s.slice(0, 8)
 }
 
@@ -49,12 +83,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const summary = await analyze()
 
-    // Ask Gemini for domain-aware, cybersecurity-focused suggestions using schema
+    // Ask AI for domain-aware, cybersecurity-focused suggestions using actual schema
     try {
-      const schemaDescription = JSON.stringify({ summary, expected_output: { suggestions: ['string'] } })
+      const schemaDescription = JSON.stringify({
+        available_labels: summary.labels,
+        available_relationships: summary.relationships,
+        expected_output: { suggestions: ['string'] },
+        context: "This is a cybersecurity graph database with vulnerability, machine, and exploit data"
+      })
       const json = await generateJSON(
-        `Generate 8 concise cybersecurity-relevant dashboard prompt ideas for this graph schema. ` +
-          `Be specific to the labels and relationships when possible. Do not mention labels not present.`,
+        `Generate 8 specific dashboard suggestions for this cybersecurity graph database. ` +
+          `Use ONLY the exact labels: ${summary.labels.join(', ')} and relationships: ${summary.relationships.join(', ')}. ` +
+          `Focus on vulnerability analysis, machine security, exploit tracking, and severity assessment. ` +
+          `Make suggestions actionable for security analysts.`,
         schemaDescription
       )
       if (json && Array.isArray(json.suggestions) && json.suggestions.length > 0) {
@@ -66,17 +107,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // If API key is missing, return fallback with indicator
       if (errorMessage.includes('Missing OPENAI_API_KEY')) {
-        const suggestions = heuristicSuggestions(summary.labels)
+        const suggestions = schemaAwareSuggestions(summary.labels, summary.relationships)
         return res.status(200).json({
           suggestions,
           fallback: true,
-          message: 'Using fallback suggestions. Configure OPENAI_API_KEY for AI-powered suggestions.'
+          message: 'Using schema-aware suggestions. Configure OPENAI_API_KEY for AI-powered suggestions.'
         })
       }
     }
 
     // Fallback heuristics
-    const suggestions = heuristicSuggestions(summary.labels)
+    const suggestions = schemaAwareSuggestions(summary.labels, summary.relationships)
     return res.status(200).json({ suggestions })
   } catch (error) {
     console.error('Suggestions error:', error)

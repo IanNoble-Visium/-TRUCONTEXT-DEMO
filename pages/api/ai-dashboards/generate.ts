@@ -2,6 +2,28 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { generateJSON } from '../../../lib/openai'
 import { getSession } from '../../../lib/neo4j'
 
+async function validateQuery(cypher: string): Promise<{isValid: boolean, error?: string, hasResults?: boolean}> {
+  const session = await getSession()
+  try {
+    // Test the query with a small limit
+    const testQuery = cypher.includes('LIMIT') ? cypher : `${cypher} LIMIT 1`
+    const result = await session.run(testQuery)
+
+    return {
+      isValid: true,
+      hasResults: result.records.length > 0
+    }
+  } catch (error) {
+    return {
+      isValid: false,
+      error: (error as Error).message,
+      hasResults: false
+    }
+  } finally {
+    await session.close()
+  }
+}
+
 // Shape returned to client
 // { cards: [{ title, viz_type: 'table'|'bar'|'pie'|'graph', cypher, options? }], name?, prompt }
 
@@ -160,8 +182,44 @@ Generate dashboard cards that will return actual data from this specific databas
       return res.status(500).json({ error: 'AI did not return cards' })
     }
 
+    // Validate each query and filter out invalid ones
+    const validatedCards = []
+    for (const card of json.cards) {
+      if (card.cypher) {
+        const validation = await validateQuery(card.cypher)
+        if (validation.isValid && validation.hasResults) {
+          validatedCards.push(card)
+        } else {
+          console.warn(`Skipping invalid query for card "${card.title}":`, validation.error)
+          // Try to fix common issues and re-validate
+          let fixedQuery = card.cypher
+          if (fixedQuery.includes('GROUP BY')) {
+            fixedQuery = fixedQuery.replace(/GROUP BY [^\\s]+/i, 'ORDER BY count DESC')
+          }
+          if (!fixedQuery.includes('LIMIT')) {
+            fixedQuery += ' LIMIT 10'
+          }
+
+          const revalidation = await validateQuery(fixedQuery)
+          if (revalidation.isValid && revalidation.hasResults) {
+            card.cypher = fixedQuery
+            validatedCards.push(card)
+            console.log(`Fixed and validated query for card "${card.title}"`)
+          }
+        }
+      }
+    }
+
+    if (validatedCards.length === 0) {
+      return res.status(500).json({
+        error: 'No valid queries generated',
+        details: 'All generated queries failed validation or returned no results'
+      })
+    }
+
     // Attach prompt if missing
     json.prompt = json.prompt || prompt
+    json.cards = validatedCards
 
     res.status(200).json({ dashboard: json })
   } catch (error) {
