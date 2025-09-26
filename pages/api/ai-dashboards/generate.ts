@@ -24,6 +24,76 @@ async function validateQuery(cypher: string): Promise<{isValid: boolean, error?:
   }
 }
 
+function generateFallbackCards(prompt: string, schema: any): any[] {
+  const cards = []
+  const promptLower = prompt.toLowerCase()
+
+  // Vulnerability severity analysis
+  if (promptLower.includes('vulnerability') && (promptLower.includes('severity') || promptLower.includes('distribution'))) {
+    cards.push({
+      title: 'Vulnerability Severity Distribution',
+      viz_type: 'bar',
+      cypher: 'MATCH (v:Vulnerability)-[:CVSS]->(c:Cvss)-[:SEVERITY]->(s:CvssSeverity) WITH s.showname as severity, COUNT(v) as count RETURN severity, count ORDER BY count DESC LIMIT 10'
+    })
+  }
+
+  // Machine vulnerability analysis
+  if (promptLower.includes('machine') && promptLower.includes('vulnerability')) {
+    cards.push({
+      title: 'Machines with Most Vulnerabilities',
+      viz_type: 'bar',
+      cypher: 'MATCH (v:Vulnerability)-[:ON]->(m:Machine) WITH m.showname as machine, COUNT(v) as vuln_count RETURN machine, vuln_count ORDER BY vuln_count DESC LIMIT 10'
+    })
+  }
+
+  // Domain analysis
+  if (promptLower.includes('domain') || promptLower.includes('machine')) {
+    cards.push({
+      title: 'Machine Distribution by Domain',
+      viz_type: 'pie',
+      cypher: 'MATCH (m:Machine)-[:IN]->(d:Domain) WITH d.showname as domain, COUNT(m) as machine_count RETURN domain, machine_count ORDER BY machine_count DESC LIMIT 10'
+    })
+  }
+
+  // Exploit analysis
+  if (promptLower.includes('exploit')) {
+    cards.push({
+      title: 'Exploit Launch Capabilities',
+      viz_type: 'bar',
+      cypher: 'MATCH (m:Machine)-[:LAUNCHES]->(e:Exploit) WITH m.showname as machine, COUNT(e) as exploit_count RETURN machine, exploit_count ORDER BY exploit_count DESC LIMIT 10'
+    })
+  }
+
+  // CWE analysis
+  if (promptLower.includes('cwe') || promptLower.includes('weakness')) {
+    cards.push({
+      title: 'Common Weakness Enumeration Distribution',
+      viz_type: 'bar',
+      cypher: 'MATCH (v:Vulnerability)-[:CWE]->(c:Cwe) WITH c.showname as weakness, COUNT(v) as count RETURN weakness, count ORDER BY count DESC LIMIT 10'
+    })
+  }
+
+  // Software analysis
+  if (promptLower.includes('software')) {
+    cards.push({
+      title: 'Software Vulnerability Mapping',
+      viz_type: 'bar',
+      cypher: 'MATCH (v:Vulnerability)-[:SOFTWARE]->(s:Software) WITH s.showname as software, COUNT(v) as vuln_count RETURN software, vuln_count ORDER BY vuln_count DESC LIMIT 10'
+    })
+  }
+
+  // Default fallback
+  if (cards.length === 0) {
+    cards.push({
+      title: 'Vulnerability Severity Overview',
+      viz_type: 'bar',
+      cypher: 'MATCH (v:Vulnerability)-[:CVSS]->(c:Cvss)-[:SEVERITY]->(s:CvssSeverity) WITH s.showname as severity, COUNT(v) as count RETURN severity, count ORDER BY count DESC LIMIT 10'
+    })
+  }
+
+  return cards
+}
+
 // Shape returned to client
 // { cards: [{ title, viz_type: 'table'|'bar'|'pie'|'graph', cypher, options? }], name?, prompt }
 
@@ -98,17 +168,31 @@ async function getDetailedSchema() {
       relationshipTypes,
       nodeProperties,
       relationshipPatterns,
-      // Common patterns for AI to use
+      // Common patterns for AI to use based on actual data
       commonQueries: [
         {
-          pattern: "Count by category",
-          example: `MATCH (n:${Array.from(nodeLabels)[0] || 'Node'}) WITH n.showname as category, COUNT(n) as count RETURN category, count ORDER BY count DESC LIMIT 10`
+          pattern: "Vulnerability severity distribution",
+          example: "MATCH (v:Vulnerability)-[:CVSS]->(c:Cvss)-[:SEVERITY]->(s:CvssSeverity) WITH s.showname as severity, COUNT(v) as count RETURN severity, count ORDER BY count DESC LIMIT 10"
         },
         {
-          pattern: "Relationship distribution",
-          example: relationshipPatterns.length > 0 ?
-            `MATCH (a:${relationshipPatterns[0].source})-[r:${relationshipPatterns[0].relationship}]->(b:${relationshipPatterns[0].target}) WITH type(r) as rel_type, COUNT(*) as count RETURN rel_type, count` :
-            "MATCH ()-[r]->() WITH type(r) as rel_type, COUNT(*) as count RETURN rel_type, count"
+          pattern: "Machine vulnerability count",
+          example: "MATCH (v:Vulnerability)-[:ON]->(m:Machine) WITH m.showname as machine, COUNT(v) as vuln_count RETURN machine, vuln_count ORDER BY vuln_count DESC LIMIT 10"
+        },
+        {
+          pattern: "Domain machine distribution",
+          example: "MATCH (m:Machine)-[:IN]->(d:Domain) WITH d.showname as domain, COUNT(m) as machine_count RETURN domain, machine_count ORDER BY machine_count DESC LIMIT 10"
+        },
+        {
+          pattern: "Exploit launch capabilities",
+          example: "MATCH (m:Machine)-[:LAUNCHES]->(e:Exploit) WITH m.showname as machine, COUNT(e) as exploit_count RETURN machine, exploit_count ORDER BY exploit_count DESC LIMIT 10"
+        },
+        {
+          pattern: "CWE weakness distribution",
+          example: "MATCH (v:Vulnerability)-[:CWE]->(c:Cwe) WITH c.showname as weakness, COUNT(v) as count RETURN weakness, count ORDER BY count DESC LIMIT 10"
+        },
+        {
+          pattern: "Software vulnerability mapping",
+          example: "MATCH (v:Vulnerability)-[:SOFTWARE]->(s:Software) WITH s.showname as software, COUNT(v) as vuln_count RETURN software, vuln_count ORDER BY vuln_count DESC LIMIT 10"
         }
       ]
     }
@@ -170,16 +254,30 @@ CYPHER SYNTAX RULES:
 - Always add ORDER BY count DESC LIMIT 10-20 for charts
 - Use exact label names with backticks if needed: MATCH (n:\`${schema.nodeLabels[0] || 'Label'}\`)
 
-EXAMPLE VALID QUERIES:
+EXAMPLE VALID QUERIES (use these exact patterns):
 ${schema.commonQueries.map(q => `- ${q.pattern}: ${q.example}`).join('\n')}
+
+CRITICAL: Use these exact relationship paths:
+- Vulnerability → CVSS → Cvss → SEVERITY → CvssSeverity (for severity data)
+- Vulnerability → ON → Machine (for affected machines)
+- Vulnerability → CWE → Cwe (for weakness types)
+- Vulnerability → SOFTWARE → Software (for affected software)
+- Machine → IN → Domain (for domain mapping)
+- Machine → LAUNCHES → Exploit (for exploit capabilities)
 
 Generate dashboard cards that will return actual data from this specific database schema.`
 
-    const json = await generateJSON(`${system}\n\nUser prompt: ${prompt}`, schemaDescription)
+    let json = await generateJSON(`${system}\n\nUser prompt: ${prompt}`, schemaDescription)
 
     // Basic validation
     if (!json || !Array.isArray(json.cards)) {
-      return res.status(500).json({ error: 'AI did not return cards' })
+      console.warn('AI did not return valid cards, using fallback')
+      const fallbackCards = generateFallbackCards(prompt, schema)
+      json = {
+        name: `${prompt} Dashboard`,
+        prompt: prompt,
+        cards: fallbackCards
+      }
     }
 
     // Validate each query and filter out invalid ones
@@ -211,10 +309,20 @@ Generate dashboard cards that will return actual data from this specific databas
     }
 
     if (validatedCards.length === 0) {
-      return res.status(500).json({
-        error: 'No valid queries generated',
-        details: 'All generated queries failed validation or returned no results'
-      })
+      // Fallback to pre-validated queries based on the prompt
+      const fallbackCards = generateFallbackCards(prompt, schema)
+      if (fallbackCards.length > 0) {
+        json.cards = fallbackCards
+        json.name = json.name || `${prompt} Dashboard`
+        console.log('Using fallback cards due to AI validation failures')
+      } else {
+        return res.status(500).json({
+          error: 'No valid queries generated',
+          details: 'All generated queries failed validation or returned no results'
+        })
+      }
+    } else {
+      json.cards = validatedCards
     }
 
     // Attach prompt if missing

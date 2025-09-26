@@ -1977,6 +1977,17 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
         }
       })
 
+      // Position persistence: Save positions when nodes are dragged
+      cy.on('dragfree', 'node', () => {
+        // Debounce position saving to avoid excessive localStorage writes
+        if (cyRef.current) {
+          clearTimeout((cy as any).positionSaveTimeout)
+          ;(cy as any).positionSaveTimeout = setTimeout(() => {
+            saveNodePositions(cy)
+          }, 500) // Save after 500ms of no dragging
+        }
+      })
+
       // Comprehensive context menu prevention
       const container = cy.container()
       if (container) {
@@ -2511,8 +2522,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     return rootId
   }
 
-  // Enhanced layout with smooth transitions
-  const runLayout = async (layoutName?: string) => {
+  // Enhanced layout with smooth transitions and position persistence
+  const runLayout = async (layoutName?: string, forceRecalculate: boolean = false) => {
     if (!cyRef.current) {
       console.log('No cytoscape instance available for layout')
       return
@@ -2526,6 +2537,95 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     const cy = cyRef.current
     const activeLayout = layoutName || currentLayout
     console.log('Running layout:', activeLayout, 'on', cy.nodes().length, 'nodes')
+
+    // Check if we have saved positions and should use them instead of recalculating
+    const savedPositions = loadNodePositions()
+    const hasSavedPositions = Object.keys(savedPositions).length > 0
+
+    if (hasSavedPositions && !forceRecalculate) {
+      console.log('📍 Using saved positions for available nodes')
+
+      // Create a combined positions object: saved positions + auto positions for new nodes
+      const allNodeIds = cy.nodes().map(node => node.id())
+      const combinedPositions: { [nodeId: string]: { x: number; y: number } } = {}
+
+      // Use saved positions where available
+      allNodeIds.forEach(nodeId => {
+        if (savedPositions[nodeId]) {
+          combinedPositions[nodeId] = savedPositions[nodeId]
+        }
+      })
+
+      const savedCount = Object.keys(combinedPositions).length
+      const totalCount = allNodeIds.length
+
+      console.log(`📍 Using saved positions for ${savedCount}/${totalCount} nodes`)
+
+      // Use preset layout with combined positions
+      const presetConfig = {
+        name: 'preset',
+        positions: (node: any) => {
+          // Return saved position if available, otherwise let Cytoscape auto-position
+          const nodeId = node.id()
+          if (combinedPositions[nodeId]) {
+            return combinedPositions[nodeId]
+          }
+          // For nodes without saved positions, return undefined to let Cytoscape position them
+          return undefined
+        },
+        fit: true,
+        padding: 50,
+        animate: true,
+        animationDuration: 500,
+        animationEasing: 'ease-out'
+      }
+
+      setLayoutRunning(true)
+
+      try {
+        const layout = cy.layout(presetConfig)
+        layout.one('layoutstop', () => {
+          console.log('✅ Preset layout with saved positions completed')
+          setLayoutRunning(false)
+
+          // After preset layout, position any nodes that weren't positioned
+          const positionedNodes = cy.nodes().filter((node: any) => {
+            const pos = node.position()
+            return pos && typeof pos.x === 'number' && typeof pos.y === 'number' &&
+                   !isNaN(pos.x) && !isNaN(pos.y)
+          })
+
+          if (positionedNodes.length < cy.nodes().length) {
+            console.log('🔄 Some nodes need positioning, running secondary layout')
+            // Run a quick layout to position remaining nodes
+            setTimeout(() => {
+              if (cyRef.current) {
+                const remainingLayout = cyRef.current.layout({
+                  name: 'random',
+                  fit: false,
+                  animate: false
+                })
+                remainingLayout.one('layoutstop', () => {
+                  // Apply overlap prevention after secondary layout
+                  applyOverlapPreventionAfterLayout(300)
+                })
+                remainingLayout.run()
+              }
+            }, 100)
+          } else {
+            // Apply overlap prevention after preset layout
+            applyOverlapPreventionAfterLayout(300)
+          }
+        })
+
+        layout.run()
+        return // Exit early, don't run the normal layout logic
+      } catch (error) {
+        console.warn('Error with preset layout, falling back to normal layout:', error)
+        setLayoutRunning(false)
+        // Continue with normal layout logic below
+      }
+    }
 
     // Safety check to prevent passing 'hierarchical-tree' directly to Cytoscape
     if (activeLayout === 'hierarchical-tree') {
@@ -3044,12 +3144,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   }
 
   // Change layout with smooth transition
-  const changeLayout = (layoutName: string) => {
-    console.log('changeLayout called with:', layoutName)
+  const changeLayout = (layoutName: string, forceRecalculate: boolean = false) => {
+    console.log('changeLayout called with:', layoutName, forceRecalculate ? '(force recalculate)' : '')
 
     if (layoutRunning) {
       console.log('Layout currently running, deferring layout change...')
-      setTimeout(() => changeLayout(layoutName), 100)
+      setTimeout(() => changeLayout(layoutName, forceRecalculate), 100)
       return
     }
 
@@ -3058,7 +3158,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
     setTimeout(() => {
       console.log('About to run layout:', layoutName)
-      runLayout(layoutName).catch(console.error)
+      runLayout(layoutName, forceRecalculate).catch(console.error)
 
       // Get human-readable layout name for toast
       const layoutOption = LAYOUT_OPTIONS.find(option => option.value === layoutName)
@@ -4709,6 +4809,47 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
   // Add state for fCoSE anchor node
   const [fcoseAnchorNode, setFcoseAnchorNode] = useState<string | null>(null)
 
+  // Position persistence utilities
+  const getPositionStorageKey = useCallback((datasetName?: string): string => {
+    const currentDataset = datasetName || localStorage.getItem('currentDatasetName') || 'default'
+    return `trucontext-node-positions-${currentDataset}`
+  }, [])
+
+  const saveNodePositions = useCallback((cy: Core) => {
+    if (!cy) return
+
+    try {
+      const positions: { [nodeId: string]: { x: number; y: number } } = {}
+      cy.nodes().forEach(node => {
+        const pos = node.position()
+        if (pos && typeof pos.x === 'number' && typeof pos.y === 'number') {
+          positions[node.id()] = { x: pos.x, y: pos.y }
+        }
+      })
+
+      const storageKey = getPositionStorageKey()
+      localStorage.setItem(storageKey, JSON.stringify(positions))
+      console.log(`💾 Saved ${Object.keys(positions).length} node positions to localStorage`)
+    } catch (error) {
+      console.error('Error saving node positions:', error)
+    }
+  }, [getPositionStorageKey])
+
+  const loadNodePositions = useCallback((datasetName?: string): { [nodeId: string]: { x: number; y: number } } => {
+    try {
+      const storageKey = getPositionStorageKey(datasetName)
+      const saved = localStorage.getItem(storageKey)
+      if (saved) {
+        const positions = JSON.parse(saved)
+        console.log(`📂 Loaded ${Object.keys(positions).length} saved node positions from localStorage`)
+        return positions
+      }
+    } catch (error) {
+      console.error('Error loading node positions:', error)
+    }
+    return {}
+  }, [getPositionStorageKey])
+
   // Handler to set fCoSE anchor node
   const setNodeAsFcoseAnchor = useCallback((nodeId: string) => {
     if (!cyRef.current) {
@@ -4871,6 +5012,18 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
                   size={isMobile ? "md" : "sm"}
                   variant="outline"
                   onClick={centerAndFitGraph}
+                  isDisabled={nodeCount === 0}
+                />
+              </Tooltip>
+
+              <Tooltip label="Reset layout and recalculate all positions">
+                <IconButton
+                  icon={<ViewOffIcon />}
+                  aria-label="Reset layout"
+                  size={isMobile ? "md" : "sm"}
+                  variant="outline"
+                  colorScheme="orange"
+                  onClick={() => changeLayout(currentLayout, true)}
                   isDisabled={nodeCount === 0}
                 />
               </Tooltip>
@@ -5347,10 +5500,16 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
             color={textColor}
             zIndex={10}
           >
-            {nodeCount} nodes, {edgeCount} edges
-            {Object.keys(groups).length > 0 && (
-              <Text>{Object.keys(groups).length} groups</Text>
-            )}
+            <VStack spacing={0} align="end">
+              <Text>{nodeCount} nodes, {edgeCount} edges</Text>
+              {Object.keys(groups).length > 0 && (
+                <Text>{Object.keys(groups).length} groups</Text>
+              )}
+              <HStack spacing={1} align="center">
+                <Text fontSize="xs" color="green.500">💾</Text>
+                <Text fontSize="xs" color="green.500">Positions saved</Text>
+              </HStack>
+            </VStack>
           </Box>
         )}
       </Box>
