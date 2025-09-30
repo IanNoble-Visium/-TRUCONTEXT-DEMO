@@ -164,7 +164,26 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
 
       setGraphData({ ...graphData, nodes: updatedNodes })
 
-      // Update database
+      // Update Neo4j database
+      for (const update of nodeUpdates) {
+        try {
+          await fetch('/api/nodes/update-neo4j-properties', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              uid: update.uid,
+              properties: {
+                latitude: update.latitude,
+                longitude: update.longitude
+              }
+            })
+          })
+        } catch (neo4jError) {
+          console.error(`Failed to update coordinates in Neo4j for node ${update.uid}:`, neo4jError)
+        }
+      }
+
+      // Update PostgreSQL database
       const currentDatasetName = localStorage.getItem('currentDatasetName')
       if (currentDatasetName && nodeUpdates.length > 0) {
         try {
@@ -185,7 +204,7 @@ const EnhancedGraphVisualization: React.FC<EnhancedGraphVisualizationProps> = ({
             })
           })
         } catch (dbError) {
-          console.error('Failed to update coordinates in database:', dbError)
+          console.error('Failed to update coordinates in PostgreSQL:', dbError)
         }
       }
     } catch (error) {

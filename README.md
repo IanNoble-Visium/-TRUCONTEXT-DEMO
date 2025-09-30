@@ -1,8 +1,82 @@
 # TruContext Demo - Advanced Graph Analytics Platform
 
+**Version 0.2.0** - *Latest: Geographic Coordinate Persistence & Continuous Integration*
+
 A comprehensive cybersecurity graph analytics platform built with Next.js, Neo4j, and advanced visualization capabilities. This application provides real-time network analysis, threat detection, and comprehensive icon management for cybersecurity professionals.
 
 ## 🚀 Latest Updates & Enhancements
+
+### 🗺️ **Geographic Coordinate Assignment Wizard - PERSISTENT STORAGE & CONTINUOUS INTEGRATION!**
+
+#### 🏗️ **Dual Database Persistence Architecture**
+- **Neo4j Primary Storage**: Geographic coordinates now persist in the graph database, ensuring data survives page refreshes
+- **PostgreSQL Backup**: Maintains coordinate data in relational database for archival and analytics
+- **Automatic Synchronization**: Both databases updated simultaneously for data consistency
+
+#### 🎯 **Enhanced Geographic Map Integration**
+- **Continuous Addition**: "Add Coordinates" button enables ongoing geographic dataset expansion
+- **Wizard Integration**: Coordinate assignment wizard accessible from populated maps, not just empty states
+- **Real-time Updates**: Map refreshes immediately after coordinate assignment
+- **Persistent Visualization**: Geographic data maintained across sessions and deployments
+
+#### ⚡ **Technical Implementation**
+- **New API Endpoint**: `/api/nodes/update-neo4j-properties` for direct Neo4j coordinate updates
+- **Dual Update Logic**: Enhanced `EnhancedGraphVisualization.tsx` with parallel database operations
+- **Error Handling**: Graceful degradation if one database update fails
+- **Performance Optimized**: Minimal latency impact with parallel processing
+
+#### ✅ **Key Benefits**
+- **Zero Data Loss**: Coordinates persist through page refreshes and application restarts
+- **Scalable Expansion**: Add geographic data to existing datasets without recreation
+- **Production Ready**: Enterprise-grade persistence with dual database reliability
+- **User-Friendly**: Seamless workflow with immediate visual feedback
+
+## 📋 Changes
+
+### **Version 0.2.0 (Latest)**
+- ✅ **Geographic Coordinate Persistence**: Fixed coordinate loss on page refresh by implementing dual database updates (Neo4j + PostgreSQL)
+- ✅ **Continuous Geographic Integration**: Added "Add Coordinates" button to Geographic Map view for ongoing dataset expansion
+- ✅ **New API Endpoint**: `/api/nodes/update-neo4j-properties` for direct Neo4j coordinate updates
+- ✅ **Enhanced User Experience**: Coordinate wizard now accessible from populated maps, not just empty states
+- ✅ **Dual Database Architecture**: Simultaneous updates to both Neo4j (primary) and PostgreSQL (backup) databases
+- ✅ **Real-time Map Updates**: Immediate visualization of coordinate changes without page refresh
+
+### **Version 0.1.0**
+- ✅ **Dynamic Icon Mapping Management System (v5.0)**: Complete PostgreSQL-powered icon mapping system
+- ✅ **PostgreSQL Integration**: Migrated to enterprise-grade database for persistent storage
+- ✅ **Enhanced Icon Generation Workflow (v4.0)**: Single-dialog experience with preview and approval
+- ✅ **AI-Powered Icon Generation**: Dual API system with Recraft.ai primary and Gemini fallback
+
+## 🐛 Known Issues
+
+- **Real-time Shared Topology Persistence**: Node positioning currently local-only, multi-user synchronization planned for future release
+- **Icon Style Transfer**: AI-powered style transfer between existing icons not yet implemented
+- **Mobile Application**: Native mobile app for field operations not yet available
+
+## 🤝 Contributing
+
+We welcome contributions to the TruContext Demo project! Here's how you can help:
+
+### **Development Setup**
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes following our coding standards
+4. Test thoroughly across different view modes and data scenarios
+5. Commit with clear, descriptive messages
+6. Push to your branch and create a Pull Request
+
+### **Contribution Guidelines**
+- **Code Quality**: Ensure TypeScript types are properly defined and code is well-documented
+- **Testing**: Test changes across all dashboard views (Executive, SOC, Threat Analysis, Geographic Map, etc.)
+- **Database Changes**: Any schema modifications must be backward compatible
+- **UI/UX**: Maintain consistency with existing Chakra UI design system
+- **Performance**: Ensure changes don't negatively impact graph rendering or data loading
+
+### **Reporting Issues**
+- Use the GitHub Issues template with detailed reproduction steps
+- Include browser console logs and network tab information
+- Specify which view mode and data scenario the issue occurs in
+- Attach screenshots or screen recordings when possible
 
 ### 🤖 **AI-Powered Dashboard Generation - USER-FRIENDLY ERROR HANDLING!**
 
@@ -248,7 +322,7 @@ CLOUDINARY_API_SECRET=your-api-secret
 - **Timeline View**: Chronological event analysis
 - **Cards View**: Card-based data presentation
 - **Analytics Dashboard**: Advanced analytics and reporting
-- **Geographic Map**: Geospatial threat visualization
+- **Geographic Map**: Geospatial threat visualization with persistent coordinate assignment
 - **Icon Management**: Comprehensive icon management system
 
 ### **Icon Management Features**
@@ -268,6 +342,8 @@ CLOUDINARY_API_SECRET=your-api-secret
 - **Real-time Updates**: Live data synchronization
 - **Context Menus**: Right-click actions for nodes and edges
 - **Property Panels**: Detailed information display
+- **Geographic Mapping**: Interactive map view with persistent coordinate assignment
+- **Coordinate Wizard**: Automated geographic coordinate assignment with dual database persistence
 - **Export Capabilities**: Save visualizations and data
 
 ### **Security Features**
@@ -290,6 +366,8 @@ CLOUDINARY_API_SECRET=your-api-secret
 
 ### **Data APIs**
 - `GET /api/graph-data` - Retrieve graph data from Neo4j
+- `POST /api/nodes/update-properties` - Update node properties in PostgreSQL
+- `POST /api/nodes/update-neo4j-properties` - Update node properties in Neo4j (for coordinate persistence)
 - `POST /api/threat-paths` - Create new threat path
 - `GET /api/analytics` - Get analytics data
 - `POST /api/export` - Export data in various formats
@@ -438,13 +516,6 @@ ICON_GENERATION_API=recraft   # Primary API selection
 - **File Upload Security**: Type validation and size limits
 - **HTTPS Enforcement**: Secure data transmission
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📝 License
 
@@ -460,6 +531,7 @@ For support and questions:
 ## 🎯 Roadmap
 
 ### **Recently Completed**
+- ✅ **Geographic Coordinate Assignment Wizard - Persistent Storage**: Dual database architecture ensuring coordinates persist in both Neo4j and PostgreSQL, with continuous integration into Geographic Map view
 - ✅ **Dynamic Icon Mapping Management System (v5.0)**: Complete PostgreSQL-powered icon mapping system with real-time configuration, usage analytics, and production-ready deployment
 - ✅ **PostgreSQL Integration**: Migrated from SQLite to enterprise-grade PostgreSQL (Neon) for persistent, scalable data storage compatible with Vercel deployments
 - ✅ **Advanced Icon Resolution**: Database-driven dynamic icon resolution with caching, usage tracking, and cycle detection for optimal performance

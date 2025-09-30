@@ -159,7 +159,8 @@ export async function initializeDatabase(): Promise<void> {
         viz_type VARCHAR(50) NOT NULL,
         cypher TEXT NOT NULL,
         options JSONB DEFAULT '{}',
-        order_index INTEGER DEFAULT 0
+        order_index INTEGER DEFAULT 0,
+        original_prompt TEXT
       )
     `)
 
@@ -402,6 +403,7 @@ export interface AIDashboardCardRecord {
   cypher: string
   options: Record<string, any>
   order_index: number
+  original_prompt?: string
 }
 
 function randomSlug(len = 24) {
@@ -414,7 +416,7 @@ function randomSlug(len = 24) {
 export async function saveAIDashboard(
   name: string,
   prompt: string,
-  cards: Array<{ title: string; viz_type: string; cypher: string; options?: any }>,
+  cards: Array<{ title: string; viz_type: string; cypher: string; options?: any; originalPrompt?: string }>,
   datasetId?: number | null,
   metadata?: Record<string, any>
 ): Promise<AIDashboardRecord> {
@@ -432,9 +434,9 @@ export async function saveAIDashboard(
     let idx = 0
     for (const c of cards) {
       await client.query(
-        `INSERT INTO ai_dashboard_cards (dashboard_id, title, viz_type, cypher, options, order_index)
-         VALUES ($1, $2, $3, $4, $5, $6)`,
-        [dashboard.id, c.title, c.viz_type, c.cypher, JSON.stringify(c.options || {}), idx++]
+        `INSERT INTO ai_dashboard_cards (dashboard_id, title, viz_type, cypher, options, order_index, original_prompt)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [dashboard.id, c.title, c.viz_type, c.cypher, JSON.stringify(c.options || {}), idx++, c.originalPrompt || null]
       )
     }
 

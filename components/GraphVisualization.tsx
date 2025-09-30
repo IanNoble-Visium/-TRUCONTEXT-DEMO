@@ -1441,7 +1441,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     console.log(`✓ Icon checks completed for ${uniqueTypes.length} types`)
   }
 
-  const initializeCytoscape = async (processedNodes: any[], processedEdges: any[]) => {
+  const initializeCytoscape = async (processedNodes: any[], processedEdges: any[], savedPositions?: { [nodeId: string]: { x: number; y: number } } | null) => {
     // Preload icon existence checks
     await preloadIconChecks(processedNodes)
     if (!containerRef.current) {
@@ -1495,7 +1495,7 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       const cy = cytoscape({
         container: containerRef.current,
         elements: elements,
-        
+
         // Mobile-optimized settings
         wheelSensitivity: isMobile ? 0.1 : 0.5,
         minZoom: 0.1,
@@ -2039,6 +2039,30 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
 
       cyRef.current = cy
 
+      // Load saved positions for direct positioning
+      const savedPositions = loadNodePositions()
+      const hasSavedPositions = Object.keys(savedPositions).length > 0
+
+      // If we have saved positions, set them directly on nodes and fit
+      if (hasSavedPositions) {
+        console.log(`Setting ${Object.keys(savedPositions).length} saved positions directly on nodes`)
+        cy.nodes().forEach(node => {
+          const nodeId = node.id()
+          const pos = savedPositions[nodeId]
+          if (pos && typeof pos.x === 'number' && typeof pos.y === 'number' && !isNaN(pos.x) && !isNaN(pos.y) && isFinite(pos.x) && isFinite(pos.y)) {
+            node.position(pos)
+          }
+        })
+        // Fit and center after a short delay to ensure positions are set
+        setTimeout(() => {
+          if (cyRef.current) {
+            cyRef.current.fit(cyRef.current.elements(), 50)
+            cyRef.current.center()
+            console.log('Fitted and centered graph with saved positions')
+          }
+        }, 100)
+      }
+
       // Apply no-overlap extension to prevent node overlapping during drag operations
       // Skip for CoSE layout as it has built-in physics-based spacing
       if (overlapPreventionEnabled && currentLayout !== 'cose') {
@@ -2071,11 +2095,13 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
       console.log('Edges count:', cy.edges().length)
 
       setLoading(false)
-      
-      // Run initial layout
+
+      // Run layout only if we don't have saved positions
       setTimeout(() => {
-        console.log('Starting layout with:', currentLayout)
-        runLayout(currentLayout).catch(console.error)
+        if (!hasSavedPositions) {
+          console.log('Starting layout with:', currentLayout)
+          runLayout(currentLayout).catch(console.error)
+        }
         setNodeCount(cy.nodes().length)
         setEdgeCount(cy.edges().length)
 
@@ -2857,7 +2883,8 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     }
 
     // Special handling for CoSE layout to ensure proper physics-based positioning
-    if (activeLayout === 'cose') {
+    // Only apply this if we're not using saved positions
+    if (activeLayout === 'cose' && !hasSavedPositions) {
       // Remove any preset positions from node data
       cy.nodes().forEach((node) => {
         node.removeData('position');
@@ -4717,6 +4744,10 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     if (graphData && graphData.nodes.length > 0 && containerReady && containerRef.current) {
       console.log('Initializing Cytoscape with ready container and data...')
 
+      // Check if we have saved positions for initial layout decision
+      const savedPositions = loadNodePositions()
+      const shouldUsePreset = Object.keys(savedPositions).length > 0
+
       // Simple initialization with minimal retry logic
       const initializeGraph = async () => {
         try {
@@ -4729,12 +4760,12 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
           }
 
           console.log('Container verified, proceeding with Cytoscape initialization')
-          const success = await initializeCytoscape(graphData.nodes, graphData.edges)
+          const success = await initializeCytoscape(graphData.nodes, graphData.edges, shouldUsePreset ? savedPositions : null)
 
           if (!success) {
             console.warn('Cytoscape initialization failed, retrying once...')
             setTimeout(async () => {
-              await initializeCytoscape(graphData.nodes, graphData.edges)
+              await initializeCytoscape(graphData.nodes, graphData.edges, shouldUsePreset ? savedPositions : null)
             }, 200)
           }
         } catch (error) {
@@ -4843,6 +4874,23 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     return key
   }, [currentDatasetName])
 
+  const loadNodePositions = useCallback((datasetName?: string): { [nodeId: string]: { x: number; y: number } } => {
+    try {
+      const storageKey = getPositionStorageKey(datasetName)
+      const saved = localStorage.getItem(storageKey)
+      if (saved) {
+        const positions = JSON.parse(saved)
+        console.log(`📂 Loaded ${Object.keys(positions).length} saved node positions from localStorage for key: ${storageKey}`)
+        return positions
+      } else {
+        console.log(`📂 No saved positions found in localStorage for key: ${storageKey}`)
+      }
+    } catch (error) {
+      console.error('Error loading node positions:', error)
+    }
+    return {}
+  }, [getPositionStorageKey])
+
   const saveNodePositions = useCallback((cy: Core) => {
     if (!cy) return
 
@@ -4861,23 +4909,6 @@ const GraphVisualization: React.FC<GraphVisualizationProps> = ({
     } catch (error) {
       console.error('Error saving node positions:', error)
     }
-  }, [getPositionStorageKey])
-
-  const loadNodePositions = useCallback((datasetName?: string): { [nodeId: string]: { x: number; y: number } } => {
-    try {
-      const storageKey = getPositionStorageKey(datasetName)
-      const saved = localStorage.getItem(storageKey)
-      if (saved) {
-        const positions = JSON.parse(saved)
-        console.log(`📂 Loaded ${Object.keys(positions).length} saved node positions from localStorage for key: ${storageKey}`)
-        return positions
-      } else {
-        console.log(`📂 No saved positions found in localStorage for key: ${storageKey}`)
-      }
-    } catch (error) {
-      console.error('Error loading node positions:', error)
-    }
-    return {}
   }, [getPositionStorageKey])
 
   // Handler to set fCoSE anchor node

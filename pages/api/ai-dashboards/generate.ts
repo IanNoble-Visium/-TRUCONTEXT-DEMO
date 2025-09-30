@@ -205,8 +205,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   try {
-    const { prompt } = req.body as { prompt?: string }
+    const { prompt, viz_type } = req.body as { prompt?: string, viz_type?: string }
     if (!prompt || !prompt.trim()) return res.status(400).json({ error: 'Missing prompt' })
+
+    // Default viz_type if not provided
+    const requestedVizType = viz_type || 'bar'
 
     const schema = await getDetailedSchema()
     const schemaDescription = JSON.stringify({
@@ -216,7 +219,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         cards: [
           {
             title: 'string',
-            viz_type: "one of: 'table' | 'bar' | 'pie' | 'graph'",
+            viz_type: `'${requestedVizType}' (use this exact value: ${requestedVizType})`,
             cypher: 'string Neo4j Cypher query; use ONLY the exact labels, relationships, and properties from the schema',
             options: 'object with chart settings (optional)'
           }
@@ -248,11 +251,20 @@ CRITICAL REQUIREMENTS:
 4. All nodes have 'showname' property for display and 'uid' for unique identification
 5. Return STRICT JSON matching the expected_output format
 
+QUERY COMPLEXITY MATCHING:
+- Analyze the user prompt carefully to identify ALL mentioned entity types and relationships
+- If the prompt mentions multiple entities (e.g., "Exploits, Machines, Vulnerabilities"), your query MUST include ALL of them
+- If the prompt mentions relationships or connections (e.g., "targets", "exploits", "associated with"), use multi-hop relationship traversals
+- Match the complexity of your Cypher query to the complexity of the user's request
+- DO NOT simplify complex prompts into basic single-entity queries
+- If the prompt asks about relationships between entities, your query must traverse those relationships
+
 CYPHER SYNTAX RULES:
 - Never use GROUP BY (not valid in Cypher)
 - Use WITH clause for aggregations: MATCH (n:Label) WITH n.property as field, COUNT(n) as count RETURN field, count
 - Always add ORDER BY count DESC LIMIT 10-20 for charts
 - Use exact label names with backticks if needed: MATCH (n:\`${schema.nodeLabels[0] || 'Label'}\`)
+- For multi-entity queries, use relationship patterns: MATCH (a:LabelA)-[:REL]->(b:LabelB)-[:REL2]->(c:LabelC)
 
 EXAMPLE VALID QUERIES (use these exact patterns):
 ${schema.commonQueries.map(q => `- ${q.pattern}: ${q.example}`).join('\n')}
@@ -264,6 +276,12 @@ CRITICAL: Use these exact relationship paths:
 - Vulnerability → SOFTWARE → Software (for affected software)
 - Machine → IN → Domain (for domain mapping)
 - Machine → LAUNCHES → Exploit (for exploit capabilities)
+- Exploit → VICTIM → Machine (for exploit targets)
+
+EXAMPLES OF COMPLEX QUERIES:
+- For "Show Exploits and their target Machines": MATCH (e:Exploit)-[:VICTIM]->(m:Machine) WITH e.showname as exploit, COUNT(DISTINCT m) as machine_count RETURN exploit, machine_count ORDER BY machine_count DESC LIMIT 10
+- For "Vulnerabilities with severity and affected machines": MATCH (v:Vulnerability)-[:CVSS]->(c:Cvss)-[:SEVERITY]->(s:CvssSeverity), (v)-[:ON]->(m:Machine) WITH v.showname as vuln, s.showname as severity, COUNT(DISTINCT m) as machines RETURN vuln, severity, machines ORDER BY machines DESC LIMIT 10
+- For "Exploits, Machines, and Vulnerabilities": MATCH (e:Exploit)-[:VICTIM]->(m:Machine)<-[:ON]-(v:Vulnerability) WITH e.showname as exploit, COUNT(DISTINCT m) as machines, COUNT(DISTINCT v) as vulns RETURN exploit, machines, vulns ORDER BY machines DESC LIMIT 10
 
 Generate dashboard cards that will return actual data from this specific database schema.`
 
@@ -273,11 +291,20 @@ Generate dashboard cards that will return actual data from this specific databas
     if (!json || !Array.isArray(json.cards)) {
       console.warn('AI did not return valid cards, using fallback')
       const fallbackCards = generateFallbackCards(prompt, schema)
+      // Apply requested viz_type to fallback cards
+      fallbackCards.forEach(card => {
+        card.viz_type = requestedVizType
+      })
       json = {
         name: `${prompt} Dashboard`,
         prompt: prompt,
         cards: fallbackCards
       }
+    } else {
+      // Ensure all cards use the requested viz_type
+      json.cards.forEach((card: any) => {
+        card.viz_type = requestedVizType
+      })
     }
 
     // Validate each query and filter out invalid ones

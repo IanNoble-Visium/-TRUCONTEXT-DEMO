@@ -235,8 +235,18 @@ const GeoMapView: React.FC<GeoMapViewProps> = ({ nodes, edges, selectedNodes, on
                 <option key={type} value={type}>{type}</option>
               ))}
             </Select>
+            <Button
+              leftIcon={<SettingsIcon />}
+              colorScheme="blue"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsWizardOpen(true)}
+              isDisabled={!onApplyCoordinates}
+            >
+              Add Coordinates
+            </Button>
           </HStack>
-          
+
           <HStack spacing={2} flexWrap="wrap">
             <Text fontSize="sm" color="gray.500">
               {filteredNodes.length} of {geoNodes.length} nodes shown
