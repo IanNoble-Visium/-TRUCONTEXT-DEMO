@@ -443,7 +443,7 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
           <Box flex="1">
             <AlertTitle>Dashboard Builder Mode</AlertTitle>
             <AlertDescription>
-              Add more cards to your dashboard or save it when you're done.
+              Add more cards to your dashboard or save it when you&apos;re done.
             </AlertDescription>
           </Box>
           <HStack>
