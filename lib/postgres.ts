@@ -182,6 +182,10 @@ export async function initializeDatabase(): Promise<void> {
                       WHERE table_name='ai_dashboard_cards' AND column_name='cypher_graph') THEN
           ALTER TABLE ai_dashboard_cards ADD COLUMN cypher_graph TEXT;
         END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                      WHERE table_name='ai_dashboard_cards' AND column_name='original_prompt') THEN
+          ALTER TABLE ai_dashboard_cards ADD COLUMN original_prompt TEXT;
+        END IF;
       END $$;
     `)
 

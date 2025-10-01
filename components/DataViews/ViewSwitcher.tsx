@@ -197,7 +197,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       {/* View Content */}
       <Box
         flex="1"
-        overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' || currentView === 'ai-agents' ? 'auto' : 'hidden'}
+        overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' || currentView === 'ai-agents' || currentView === 'ai-dashboards' ? 'auto' : 'hidden'}
         position="relative"
         minHeight={0}
       >

@@ -47,7 +47,7 @@ import {
   EditableInput,
   EditablePreview
 } from '@chakra-ui/react'
-import { AddIcon, WarningIcon, ChevronUpIcon, ChevronDownIcon, DeleteIcon, EditIcon, StarIcon, InfoIcon } from '@chakra-ui/icons'
+import { AddIcon, WarningIcon, ChevronUpIcon, ChevronDownIcon, DeleteIcon, EditIcon, StarIcon, InfoIcon, CopyIcon } from '@chakra-ui/icons'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
 import cytoscape from 'cytoscape'
 
@@ -111,6 +111,27 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
   const border = useColorModeValue('gray.200', 'gray.700')
   const selectedPromptBg = useColorModeValue('blue.50', 'blue.900')
   const editableHoverBg = useColorModeValue('gray.100', 'gray.700')
+
+  // Copy to clipboard function
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast({
+        title: 'Copied to clipboard',
+        description: 'Prompt copied successfully',
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+      })
+    }).catch((err) => {
+      toast({
+        title: 'Copy failed',
+        description: 'Could not copy to clipboard',
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+      })
+    })
+  }
 
   useEffect(() => {
     // Load AI suggestions based on current graph
@@ -468,9 +489,9 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
   }
 
   return (
-    <Box height="100%" display="flex" flexDirection="column" overflow="hidden">
+    <Box minH="100%" w="100%">
       {/* Header row */}
-      <HStack justify="space-between" mb={3} flexShrink={0}>
+      <HStack justify="space-between" mb={3}>
         <Text fontSize="lg" fontWeight="semibold">AI Dashboards</Text>
         <HStack>
           <Button onClick={() => { setIsLoadOpen(true); loadDashboards() }} size="sm" variant="outline">Load</Button>
@@ -487,7 +508,7 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
         </HStack>
       </HStack>
 
-      <Text fontSize="sm" color={subtle} mb={4} flexShrink={0}>
+      <Text fontSize="sm" color={subtle} mb={4}>
         Describe the dashboard you want in natural language. Prompts are converted to Cypher-backed cards using Gemini, mirroring Neo4j Aura AI Dashboards.
       </Text>
 
@@ -544,9 +565,8 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
         </Alert>
       )}
 
-      {/* Content area - Scrollable container */}
-      <Box flex="1" overflowY="auto" overflowX="hidden">
-        {!builderMode && cards.length === 0 ? (
+      {/* Content area */}
+      {!builderMode && cards.length === 0 ? (
           <Box bg={bg} borderRadius="md" border="1px solid" borderColor={border} p={6} display="flex" alignItems="center" justifyContent="center" minHeight="300px">
             <VStack spacing={4}>
               <Text color={subtle}>No AI dashboard yet.</Text>
@@ -595,24 +615,36 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
                       <EditableInput px={2} py={1} />
                     </Editable>
                     {card.originalPrompt && (
-                      <Tooltip
-                        label={
-                          <Box>
-                            <Text fontWeight="bold" mb={1}>Generated from prompt:</Text>
-                            <Text fontSize="sm">{card.originalPrompt}</Text>
-                          </Box>
-                        }
-                        placement="top"
-                        hasArrow
-                      >
-                        <IconButton
-                          aria-label="View original prompt"
-                          icon={<InfoIcon />}
-                          size="xs"
-                          variant="ghost"
-                          colorScheme="blue"
-                        />
-                      </Tooltip>
+                      <HStack spacing={0}>
+                        <Tooltip
+                          label={
+                            <Box>
+                              <Text fontWeight="bold" mb={1}>Generated from prompt:</Text>
+                              <Text fontSize="sm">{card.originalPrompt}</Text>
+                            </Box>
+                          }
+                          placement="top"
+                          hasArrow
+                        >
+                          <IconButton
+                            aria-label="View original prompt"
+                            icon={<InfoIcon />}
+                            size="xs"
+                            variant="ghost"
+                            colorScheme="blue"
+                          />
+                        </Tooltip>
+                        <Tooltip label="Copy prompt to clipboard" placement="top">
+                          <IconButton
+                            aria-label="Copy prompt to clipboard"
+                            icon={<CopyIcon />}
+                            size="xs"
+                            variant="ghost"
+                            colorScheme="green"
+                            onClick={() => copyToClipboard(card.originalPrompt!)}
+                          />
+                        </Tooltip>
+                      </HStack>
                     )}
                     <HStack spacing={1}>
                       <Tooltip label="Move up">
@@ -707,24 +739,36 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
                       <HStack>
                         <Text fontWeight="semibold">{card.title}</Text>
                         {card.originalPrompt && (
-                          <Tooltip
-                            label={
-                              <Box>
-                                <Text fontWeight="bold" mb={1}>Generated from prompt:</Text>
-                                <Text fontSize="sm">{card.originalPrompt}</Text>
-                              </Box>
-                            }
-                            placement="top"
-                            hasArrow
-                          >
-                            <IconButton
-                              aria-label="View original prompt"
-                              icon={<InfoIcon />}
-                              size="xs"
-                              variant="ghost"
-                              colorScheme="blue"
-                            />
-                          </Tooltip>
+                          <HStack spacing={0}>
+                            <Tooltip
+                              label={
+                                <Box>
+                                  <Text fontWeight="bold" mb={1}>Generated from prompt:</Text>
+                                  <Text fontSize="sm">{card.originalPrompt}</Text>
+                                </Box>
+                              }
+                              placement="top"
+                              hasArrow
+                            >
+                              <IconButton
+                                aria-label="View original prompt"
+                                icon={<InfoIcon />}
+                                size="xs"
+                                variant="ghost"
+                                colorScheme="blue"
+                              />
+                            </Tooltip>
+                            <Tooltip label="Copy prompt to clipboard" placement="top">
+                              <IconButton
+                                aria-label="Copy prompt to clipboard"
+                                icon={<CopyIcon />}
+                                size="xs"
+                                variant="ghost"
+                                colorScheme="green"
+                                onClick={() => copyToClipboard(card.originalPrompt!)}
+                              />
+                            </Tooltip>
+                          </HStack>
                         )}
                       </HStack>
                       <HStack>
@@ -773,7 +817,6 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
             ))}
           </SimpleGrid>
         )}
-      </Box>
 
       {/* Create with AI modal */}
       <Modal isOpen={isOpen} onClose={onClose} size="xl">

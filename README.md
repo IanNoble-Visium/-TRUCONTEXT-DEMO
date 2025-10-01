@@ -78,6 +78,79 @@ We welcome contributions to the TruContext Demo project! Here's how you can help
 - Specify which view mode and data scenario the issue occurs in
 - Attach screenshots or screen recordings when possible
 
+## 🔧 Adding New Views with Scrollable Content
+
+When adding new dashboard views or content-heavy components that require vertical scrolling, developers must update **THREE overflow conditions** to ensure scroll bars appear correctly:
+
+### **Required Updates**
+
+#### **1. Main App Container** (`pages/index.tsx` ~line 231)
+```tsx
+// Add your new view to the overflow condition
+<Box
+  height="100dvh"
+  overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' || currentView === 'ai-agents' || currentView === 'ai-dashboards' || currentView === 'your-new-view' ? 'auto' : 'hidden'}
+>
+```
+
+#### **2. Graph MotionBox Container** (`pages/index.tsx` ~line 369)
+```tsx
+// Add your new view to the overflow condition
+<MotionBox
+  height="100%"
+  overflow={currentView === 'threat-analysis' || currentView === 'ai-agents' || currentView === 'ai-dashboards' || currentView === 'your-new-view' ? 'auto' : 'hidden'}
+>
+```
+
+#### **3. ViewSwitcher Component** (`components/DataViews/ViewSwitcher.tsx` ~line 200)
+```tsx
+// Add your new view to the overflow condition
+<Box
+  flex="1"
+  overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' || currentView === 'ai-agents' || currentView === 'ai-dashboards' || currentView === 'your-new-view' ? 'auto' : 'hidden'}
+  position="relative"
+  minHeight={0}
+>
+```
+
+### **View Component Requirements**
+
+Your view component should use `minH="100%"` (not `height="100%"`) to allow content expansion:
+
+```tsx
+// ✅ Correct - allows content to expand beyond viewport
+<Box p={6} bg={bgColor} minH="100%" w="100%">
+  {/* Your content */}
+</Box>
+
+// ❌ Incorrect - constrains content to viewport height
+<Box p={6} bg={bgColor} height="100%" overflow="hidden">
+  {/* Content will be cut off */}
+</Box>
+```
+
+### **How It Works**
+
+1. **ViewSwitcher** handles the actual scrolling with `overflow='auto'`
+2. **Parent containers** must allow scrolling by including the view in their overflow conditions
+3. **View component** uses `minH="100%"` to expand beyond viewport when needed
+4. **Scroll bar appears** on the right side when content exceeds viewport height
+
+### **Testing Checklist**
+
+- [ ] Scroll bar appears when content extends beyond viewport
+- [ ] Scroll bar is visible on the right side of the screen
+- [ ] All content is accessible via scrolling
+- [ ] No content is cut off or hidden
+- [ ] Scrolling works smoothly with mouse wheel and trackpad
+- [ ] Layout remains responsive on different screen sizes
+
+### **Common Issues**
+
+- **Missing scroll bar**: Check that all three overflow conditions include your view
+- **Content cut off**: Ensure view component uses `minH="100%"` not `height="100%"`
+- **Double scroll bars**: Remove any internal `overflow="auto"` from view components
+
 ### 🤖 **AI-Powered Dashboard Generation - USER-FRIENDLY ERROR HANDLING!**
 
 - **🚨 Clear Error Messages**: Friendly error handling for missing API keys and configuration issues

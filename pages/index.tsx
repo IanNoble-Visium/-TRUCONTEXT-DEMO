@@ -228,7 +228,7 @@ const HomePage: React.FC = () => {
       </Head>
 
       <PageTransition animationKey="home" direction="up" duration={0.5}>
-        <Box height="100dvh" bg={bgColor} overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' ? 'auto' : 'hidden'}>
+        <Box height="100dvh" bg={bgColor} overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' || currentView === 'ai-agents' || currentView === 'ai-dashboards' ? 'auto' : 'hidden'}>
           {/* Animated Header - Hidden in fullscreen mode */}
           {!isFullscreen && (
             <MotionBox variants={headerVariants}>
@@ -366,7 +366,7 @@ const HomePage: React.FC = () => {
                 borderRadius={isFullscreen ? "none" : "lg"}
                 shadow={isFullscreen ? "none" : "md"}
                 height="100%"
-                overflow={currentView === 'threat-analysis' ? 'auto' : 'hidden'}
+                overflow={currentView === 'threat-analysis' || currentView === 'ai-agents' || currentView === 'ai-dashboards' ? 'auto' : 'hidden'}
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}

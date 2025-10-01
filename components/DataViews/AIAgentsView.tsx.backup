@@ -240,6 +240,7 @@ const AIAgentsView: React.FC<AIAgentsViewProps> = ({ nodes, edges, selectedNodes
 
   return (
     <Box p={6} bg={bgColor} minH="100%" w="100%">
+      {/* Header */}
       <MotionBox
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
