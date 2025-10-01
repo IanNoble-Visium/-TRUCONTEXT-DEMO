@@ -5,6 +5,7 @@ export { default as CardsView } from './CardsView'
 export { default as DashboardView } from './DashboardView'
 export { default as GeoMapView } from './GeoMapView'
 export { default as AIDashboardsView } from './AIDashboardsView'
+export { default as AIAgentsView } from './AIAgentsView'
 
 export { default as ThreatPathAnalysisView } from '../ThreatPathAnalysisView'
 export { default as ThreatPathVisualization } from '../ThreatPathVisualization'

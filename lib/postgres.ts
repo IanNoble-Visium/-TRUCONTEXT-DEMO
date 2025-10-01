@@ -158,6 +158,8 @@ export async function initializeDatabase(): Promise<void> {
         title VARCHAR(255) NOT NULL,
         viz_type VARCHAR(50) NOT NULL,
         cypher TEXT NOT NULL,
+        cypher_aggregation TEXT,
+        cypher_graph TEXT,
         options JSONB DEFAULT '{}',
         order_index INTEGER DEFAULT 0,
         original_prompt TEXT
@@ -166,6 +168,21 @@ export async function initializeDatabase(): Promise<void> {
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_ai_cards_dashboard ON ai_dashboard_cards(dashboard_id, order_index)
+    `)
+
+    // Add new columns if they don't exist (for existing databases)
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                      WHERE table_name='ai_dashboard_cards' AND column_name='cypher_aggregation') THEN
+          ALTER TABLE ai_dashboard_cards ADD COLUMN cypher_aggregation TEXT;
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                      WHERE table_name='ai_dashboard_cards' AND column_name='cypher_graph') THEN
+          ALTER TABLE ai_dashboard_cards ADD COLUMN cypher_graph TEXT;
+        END IF;
+      END $$;
     `)
 
     console.log('Database schema initialized successfully')
@@ -401,6 +418,8 @@ export interface AIDashboardCardRecord {
   title: string
   viz_type: string
   cypher: string
+  cypher_aggregation?: string
+  cypher_graph?: string
   options: Record<string, any>
   order_index: number
   original_prompt?: string
@@ -434,9 +453,19 @@ export async function saveAIDashboard(
     let idx = 0
     for (const c of cards) {
       await client.query(
-        `INSERT INTO ai_dashboard_cards (dashboard_id, title, viz_type, cypher, options, order_index, original_prompt)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [dashboard.id, c.title, c.viz_type, c.cypher, JSON.stringify(c.options || {}), idx++, c.originalPrompt || null]
+        `INSERT INTO ai_dashboard_cards (dashboard_id, title, viz_type, cypher, cypher_aggregation, cypher_graph, options, order_index, original_prompt)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+        [
+          dashboard.id,
+          c.title,
+          c.viz_type,
+          c.cypher,
+          (c as any).cypherAggregation || null,
+          (c as any).cypherGraph || null,
+          JSON.stringify(c.options || {}),
+          idx++,
+          c.originalPrompt || null
+        ]
       )
     }
 

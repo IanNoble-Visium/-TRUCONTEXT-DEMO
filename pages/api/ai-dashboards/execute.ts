@@ -31,17 +31,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session = await getSession()
     try {
       const result = await session.run(queryToExecute, params || {})
+
+      // Track nodes and relationships for graph visualization
+      const nodeMap = new Map<string, any>()
+      const relationships: any[] = []
+
       const records = result.records.map(r => {
         const obj: Record<string, any> = {}
         for (let i = 0; i < r.keys.length; i++) {
           const k = String(r.keys[i])
           const v = r.get(i)
-          obj[k] = serializeNeo4jValue(v)
+          const serialized = serializeNeo4jValue(v)
+          obj[k] = serialized
+
+          // Track nodes and relationships for graph queries
+          if (serialized && typeof serialized === 'object') {
+            if (serialized.labels && serialized.properties) {
+              // It's a node
+              const nodeId = serialized.id
+              if (nodeId && !nodeMap.has(nodeId)) {
+                nodeMap.set(nodeId, serialized)
+              }
+            } else if (serialized.type && serialized.source && serialized.target) {
+              // It's a relationship
+              relationships.push(serialized)
+            }
+          }
         }
         return obj
       })
+
       // Include validation info in response if query was fixed
       const response: any = { columns: (result.records[0]?.keys as string[]) || [], rows: records }
+
+      // Add graph data if nodes/relationships were found (for mini-topology visualization)
+      if (nodeMap.size > 0 || relationships.length > 0) {
+        response.graphData = {
+          nodes: Array.from(nodeMap.values()),
+          edges: relationships
+        }
+      }
+
       if (validation.warnings.length > 0) {
         response._meta = {
           queryFixed: validation.fixedQuery !== cypher,
@@ -84,21 +114,34 @@ function serializeNeo4jValue(v: any): any {
     // Neo4j node/relationship/path handling
     if (v.properties && v.labels) {
       // Node - recursively serialize properties
+      // IMPORTANT: Include both internal ID and uid for graph visualization
       return {
         labels: v.labels,
         properties: Object.fromEntries(
           Object.entries(v.properties).map(([key, value]) => [key, serializeNeo4jValue(value)])
         ),
-        id: v.properties?.uid || undefined
+        id: v.properties?.uid || v.identity?.toString() || `node-${Math.random()}`,
+        elementId: v.elementId || v.identity?.toString() // Neo4j 5.x uses elementId
       }
     }
     if (v.properties && v.type) {
       // Relationship - recursively serialize properties
+      // CRITICAL: Include start/end node IDs for graph visualization
+      // IMPORTANT: Use the same ID format as nodes (uid || identity) for consistency
+      const sourceId = v.start?.properties?.uid || v.start?.identity?.toString() || v.startNodeElementId || 'unknown'
+      const targetId = v.end?.properties?.uid || v.end?.identity?.toString() || v.endNodeElementId || 'unknown'
+
       return {
         type: v.type,
         properties: Object.fromEntries(
           Object.entries(v.properties).map(([key, value]) => [key, serializeNeo4jValue(value)])
-        )
+        ),
+        id: v.elementId || v.identity?.toString() || `edge-${Math.random()}`,
+        // Extract source and target node IDs using the same logic as node ID extraction
+        source: sourceId,
+        target: targetId,
+        startNodeElementId: v.startNodeElementId,
+        endNodeElementId: v.endNodeElementId
       }
     }
     if (v.start && v.end && v.segments) {

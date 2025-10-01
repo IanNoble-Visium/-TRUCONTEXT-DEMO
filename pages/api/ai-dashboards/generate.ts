@@ -218,9 +218,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         prompt: 'string original user prompt',
         cards: [
           {
-            title: 'string',
+            title: 'string - MUST be a descriptive, human-readable title that summarizes what the query shows (e.g., "Top 10 Machines by Vulnerability Count", "Vulnerability Severity Distribution", "Exploit Launch Capabilities by Machine")',
             viz_type: `'${requestedVizType}' (use this exact value: ${requestedVizType})`,
-            cypher: 'string Neo4j Cypher query; use ONLY the exact labels, relationships, and properties from the schema',
+            cypher: 'string Neo4j Cypher query (legacy field for backward compatibility)',
+            cypherAggregation: 'string Cypher query that returns aggregated data for charts/tables (e.g., WITH ... COUNT() RETURN field, count)',
+            cypherGraph: 'string Cypher query that returns nodes and relationships for mini-topology (e.g., RETURN n, r, m)',
             options: 'object with chart settings (optional)'
           }
         ]
@@ -250,6 +252,54 @@ CRITICAL REQUIREMENTS:
 3. Available relationships: ${schema.relationshipTypes.join(', ')}
 4. All nodes have 'showname' property for display and 'uid' for unique identification
 5. Return STRICT JSON matching the expected_output format
+6. **IMPORTANT**: Generate BOTH cypherAggregation AND cypherGraph for EVERY card, regardless of the requested viz_type
+
+CARD TITLE REQUIREMENTS:
+- Each card MUST have a unique, descriptive, human-readable title
+- Titles should summarize what the query shows, NOT just repeat the user prompt
+- Use business-friendly language that executives and analysts can understand
+- Include key metrics or entities in the title (e.g., "Top 10 Machines by Vulnerability Count" instead of "Machine Analysis")
+- Avoid generic titles like "Card 1", "Dashboard Card", or "Query Results"
+- Examples of GOOD titles:
+  * "Vulnerability Severity Distribution"
+  * "Top 10 Machines with Most Exploits"
+  * "Domain-Based Machine Clustering"
+  * "Critical CVE Weaknesses by Type"
+  * "Exploit Launch Capabilities by Machine"
+- Examples of BAD titles:
+  * "Card 1"
+  * "Query Results"
+  * "Dashboard"
+  * "Analysis"
+
+DUAL QUERY GENERATION:
+For each card, you MUST generate TWO queries:
+- **cypherAggregation**: Returns aggregated data for charts/tables (WITH ... COUNT() RETURN field, count)
+- **cypherGraph**: Returns nodes and relationships for mini-topology visualization (RETURN n, r, m)
+
+This allows users to switch between visualization types without regenerating queries.
+
+VISUALIZATION TYPE HANDLING:
+${requestedVizType === 'mini-topology' ? `
+**MINI-TOPOLOGY MODE ACTIVATED**
+For mini-topology visualizations, you MUST generate queries that return actual graph structures (nodes and relationships), NOT aggregated data.
+
+MINI-TOPOLOGY QUERY RULES:
+- RETURN actual node and relationship objects using variables: RETURN n, r, m
+- DO NOT use WITH clause for aggregation
+- DO NOT use COUNT(), SUM(), or other aggregation functions
+- DO NOT return just properties - return the full node/relationship objects
+- Use LIMIT 10-20 to keep the graph manageable
+- Pattern: MATCH (n:Label1)-[r:REL_TYPE]->(m:Label2) RETURN n, r, m LIMIT 10
+
+MINI-TOPOLOGY EXAMPLES:
+- For "Show Machines and Exploits": MATCH (m:Machine)-[r:LAUNCHES]->(e:Exploit) RETURN m, r, e LIMIT 10
+- For "Show Vulnerabilities on Machines": MATCH (v:Vulnerability)-[r:ON]->(m:Machine) RETURN v, r, m LIMIT 15
+- For "Show Exploit targets": MATCH (e:Exploit)-[r:VICTIM]->(m:Machine) RETURN e, r, m LIMIT 10
+- For "Show Domain structure": MATCH (m:Machine)-[r:IN]->(d:Domain) RETURN m, r, d LIMIT 20
+` : `
+**CHART/TABLE MODE**
+For ${requestedVizType} visualizations, generate queries that return aggregated data for charts/tables.
 
 QUERY COMPLEXITY MATCHING:
 - Analyze the user prompt carefully to identify ALL mentioned entity types and relationships
@@ -258,11 +308,15 @@ QUERY COMPLEXITY MATCHING:
 - Match the complexity of your Cypher query to the complexity of the user's request
 - DO NOT simplify complex prompts into basic single-entity queries
 - If the prompt asks about relationships between entities, your query must traverse those relationships
+`}
 
 CYPHER SYNTAX RULES:
 - Never use GROUP BY (not valid in Cypher)
-- Use WITH clause for aggregations: MATCH (n:Label) WITH n.property as field, COUNT(n) as count RETURN field, count
-- Always add ORDER BY count DESC LIMIT 10-20 for charts
+${requestedVizType === 'mini-topology' ?
+  '- For mini-topology: RETURN node and relationship objects directly (e.g., RETURN n, r, m)' :
+  '- Use WITH clause for aggregations: MATCH (n:Label) WITH n.property as field, COUNT(n) as count RETURN field, count'
+}
+- Always add LIMIT 10-20 to keep results manageable
 - Use exact label names with backticks if needed: MATCH (n:\`${schema.nodeLabels[0] || 'Label'}\`)
 - For multi-entity queries, use relationship patterns: MATCH (a:LabelA)-[:REL]->(b:LabelB)-[:REL2]->(c:LabelC)
 
@@ -278,10 +332,18 @@ CRITICAL: Use these exact relationship paths:
 - Machine → LAUNCHES → Exploit (for exploit capabilities)
 - Exploit → VICTIM → Machine (for exploit targets)
 
-EXAMPLES OF COMPLEX QUERIES:
+${requestedVizType === 'mini-topology' ? `
+MINI-TOPOLOGY QUERY EXAMPLES (RETURN NODES AND RELATIONSHIPS):
+- For "Show Exploits and their target Machines": MATCH (e:Exploit)-[r:VICTIM]->(m:Machine) RETURN e, r, m LIMIT 10
+- For "Vulnerabilities on Machines": MATCH (v:Vulnerability)-[r:ON]->(m:Machine) RETURN v, r, m LIMIT 15
+- For "Machine exploit capabilities": MATCH (m:Machine)-[r:LAUNCHES]->(e:Exploit) RETURN m, r, e LIMIT 10
+- For "Domain structure": MATCH (m:Machine)-[r:IN]->(d:Domain) RETURN m, r, d LIMIT 20
+` : `
+CHART/TABLE QUERY EXAMPLES (RETURN AGGREGATED DATA):
 - For "Show Exploits and their target Machines": MATCH (e:Exploit)-[:VICTIM]->(m:Machine) WITH e.showname as exploit, COUNT(DISTINCT m) as machine_count RETURN exploit, machine_count ORDER BY machine_count DESC LIMIT 10
 - For "Vulnerabilities with severity and affected machines": MATCH (v:Vulnerability)-[:CVSS]->(c:Cvss)-[:SEVERITY]->(s:CvssSeverity), (v)-[:ON]->(m:Machine) WITH v.showname as vuln, s.showname as severity, COUNT(DISTINCT m) as machines RETURN vuln, severity, machines ORDER BY machines DESC LIMIT 10
 - For "Exploits, Machines, and Vulnerabilities": MATCH (e:Exploit)-[:VICTIM]->(m:Machine)<-[:ON]-(v:Vulnerability) WITH e.showname as exploit, COUNT(DISTINCT m) as machines, COUNT(DISTINCT v) as vulns RETURN exploit, machines, vulns ORDER BY machines DESC LIMIT 10
+`}
 
 Generate dashboard cards that will return actual data from this specific database schema.`
 
@@ -310,10 +372,39 @@ Generate dashboard cards that will return actual data from this specific databas
     // Validate each query and filter out invalid ones
     const validatedCards = []
     for (const card of json.cards) {
-      if (card.cypher) {
+      let isValid = false
+
+      // Validate cypherAggregation if present
+      if (card.cypherAggregation) {
+        const validation = await validateQuery(card.cypherAggregation)
+        if (validation.isValid && validation.hasResults) {
+          isValid = true
+        } else {
+          console.warn(`Invalid cypherAggregation for card "${card.title}":`, validation.error)
+        }
+      }
+
+      // Validate cypherGraph if present
+      if (card.cypherGraph) {
+        const validation = await validateQuery(card.cypherGraph)
+        if (validation.isValid && validation.hasResults) {
+          isValid = true
+        } else {
+          console.warn(`Invalid cypherGraph for card "${card.title}":`, validation.error)
+        }
+      }
+
+      // Fallback to legacy cypher field
+      if (!isValid && card.cypher) {
         const validation = await validateQuery(card.cypher)
         if (validation.isValid && validation.hasResults) {
-          validatedCards.push(card)
+          isValid = true
+          // Migrate legacy cypher to appropriate field based on viz_type
+          if (card.viz_type === 'mini-topology') {
+            card.cypherGraph = card.cypher
+          } else {
+            card.cypherAggregation = card.cypher
+          }
         } else {
           console.warn(`Skipping invalid query for card "${card.title}":`, validation.error)
           // Try to fix common issues and re-validate
@@ -328,10 +419,19 @@ Generate dashboard cards that will return actual data from this specific databas
           const revalidation = await validateQuery(fixedQuery)
           if (revalidation.isValid && revalidation.hasResults) {
             card.cypher = fixedQuery
-            validatedCards.push(card)
+            if (card.viz_type === 'mini-topology') {
+              card.cypherGraph = fixedQuery
+            } else {
+              card.cypherAggregation = fixedQuery
+            }
+            isValid = true
             console.log(`Fixed and validated query for card "${card.title}"`)
           }
         }
+      }
+
+      if (isValid) {
+        validatedCards.push(card)
       }
     }
 

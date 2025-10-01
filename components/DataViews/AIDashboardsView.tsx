@@ -63,9 +63,15 @@ interface AICard {
   id: string
   title: string
   viz_type: 'table' | 'bar' | 'pie' | 'line' | 'mini-topology'
-  cypher: string
+  cypher: string // Legacy field - kept for backward compatibility
+  cypherAggregation?: string // For chart/table visualizations (returns aggregated data)
+  cypherGraph?: string // For mini-topology visualization (returns nodes and relationships)
   options?: any
-  data?: { columns: string[]; rows: any[] }
+  data?: {
+    columns: string[]
+    rows: any[]
+    graphData?: { nodes: any[], edges: any[] } // For mini-topology visualization
+  }
   originalPrompt?: string // The natural language prompt that generated this card
 }
 
@@ -104,6 +110,7 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
   const subtle = useColorModeValue('gray.600', 'gray.300')
   const border = useColorModeValue('gray.200', 'gray.700')
   const selectedPromptBg = useColorModeValue('blue.50', 'blue.900')
+  const editableHoverBg = useColorModeValue('gray.100', 'gray.700')
 
   useEffect(() => {
     // Load AI suggestions based on current graph
@@ -142,12 +149,22 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
   }, [])
 
   async function onCreate() {
+    // DUPLICATE PREVENTION: Check if already loading
+    if (loading) {
+      console.warn('AIDashboards: onCreate() called while already loading - ignoring duplicate call')
+      return
+    }
+
+    console.log('AIDashboards: onCreate() called', { prompt, builderMode, existingCards: builderCards.length })
+
     try {
       setLoading(true)
       setLastError(null)
 
       // Get selected viz type for the current prompt
       const selectedVizType = selectedVizTypes[prompt] || 'bar'
+
+      console.log('AIDashboards: Fetching AI generation...', { prompt, selectedVizType })
 
       const resp = await fetch('/api/ai-dashboards/generate', {
         method: 'POST',
@@ -169,20 +186,36 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
         throw new Error(result.error || 'Failed to generate')
       }
       const gen = result.dashboard
+
+      console.log('AIDashboards: AI generation response:', { cardCount: gen.cards?.length, cards: gen.cards })
+
+      // Generate unique IDs with timestamp and random component to prevent collisions
+      const timestamp = Date.now()
+      const randomSuffix = Math.random().toString(36).substring(2, 9)
       const mapped: AICard[] = (gen.cards || []).map((c: any, idx: number) => ({
-        id: `card-${Date.now()}-${idx}`,
+        id: `card-${timestamp}-${randomSuffix}-${idx}`,
         title: c.title || `Card ${idx + 1}`,
         viz_type: c.viz_type || selectedVizType || 'table',
         cypher: c.cypher || 'MATCH (n) RETURN labels(n)[0] AS label, count(*) AS count LIMIT 10',
+        cypherAggregation: c.cypherAggregation,
+        cypherGraph: c.cypherGraph,
         options: c.options || {},
         originalPrompt: prompt // Capture the original natural language prompt
       }))
 
+      console.log('AIDashboards: Mapped cards:', { count: mapped.length, ids: mapped.map(c => c.id) })
+
       // Check if we're already in builder mode (adding another card)
       if (builderMode) {
+        console.log('AIDashboards: Appending to existing builder cards', { existing: builderCards.length, new: mapped.length })
         // Append new cards to existing builder cards
-        setBuilderCards(prev => [...prev, ...mapped])
+        setBuilderCards(prev => {
+          const updated = [...prev, ...mapped]
+          console.log('AIDashboards: Builder cards updated', { previousCount: prev.length, newCount: updated.length, newIds: updated.map(c => c.id) })
+          return updated
+        })
       } else {
+        console.log('AIDashboards: Entering builder mode with new cards', { count: mapped.length })
         // Enter builder mode with the first card
         setBuilderMode(true)
         setBuilderCards(mapped)
@@ -208,6 +241,7 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
       })
     } finally {
       setLoading(false)
+      console.log('AIDashboards: onCreate() completed')
     }
   }
 
@@ -270,9 +304,30 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
     try {
       const cardList = builderMode ? builderCards : cards
       const c = cardList[index]
+
+      // Select the appropriate query based on visualization type
+      let queryToExecute: string
+      if (c.viz_type === 'mini-topology') {
+        // For mini-topology, prefer cypherGraph, fallback to cypher
+        queryToExecute = c.cypherGraph || c.cypher
+        if (!c.cypherGraph && c.cypher) {
+          console.warn(`Card "${c.title}": Using legacy cypher field for mini-topology. Consider migrating to cypherGraph.`)
+        }
+      } else {
+        // For charts/tables, prefer cypherAggregation, fallback to cypher
+        queryToExecute = c.cypherAggregation || c.cypher
+        if (!c.cypherAggregation && c.cypher) {
+          console.warn(`Card "${c.title}": Using legacy cypher field for ${c.viz_type}. Consider migrating to cypherAggregation.`)
+        }
+      }
+
+      if (!queryToExecute) {
+        throw new Error(`No ${c.viz_type === 'mini-topology' ? 'graph' : 'aggregation'} query available for this visualization type`)
+      }
+
       const resp = await fetch('/api/ai-dashboards/execute', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cypher: c.cypher })
+        body: JSON.stringify({ cypher: queryToExecute })
       })
       const data = await resp.json()
       if (!resp.ok) throw new Error(data.error || 'Query failed')
@@ -316,7 +371,31 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
   }
 
   function updateBuilderCardVizType(cardId: string, vizType: 'table' | 'bar' | 'pie' | 'line' | 'mini-topology') {
-    setBuilderCards(prev => prev.map(c => c.id === cardId ? { ...c, viz_type: vizType } : c))
+    setBuilderCards(prev => prev.map(c => {
+      if (c.id !== cardId) return c
+
+      // Check if the appropriate query exists for the new viz type
+      const needsGraph = vizType === 'mini-topology'
+      const needsAggregation = vizType !== 'mini-topology'
+
+      if (needsGraph && !c.cypherGraph && !c.cypher) {
+        toast({
+          title: 'No graph query available',
+          description: 'This card does not have a graph-returning query. The visualization may not work correctly.',
+          status: 'warning',
+          duration: 5000
+        })
+      } else if (needsAggregation && !c.cypherAggregation && !c.cypher) {
+        toast({
+          title: 'No aggregation query available',
+          description: 'This card does not have an aggregation query. The visualization may not work correctly.',
+          status: 'warning',
+          duration: 5000
+        })
+      }
+
+      return { ...c, viz_type: vizType }
+    }))
   }
 
   function updateBuilderCardTitle(cardId: string, title: string) {
@@ -378,6 +457,8 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
       title: c.title,
       viz_type: c.viz_type,
       cypher: c.cypher,
+      cypherAggregation: c.cypher_aggregation,
+      cypherGraph: c.cypher_graph,
       options: c.options,
       originalPrompt: c.original_prompt // Load the original prompt from database
     }))
@@ -387,9 +468,9 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
   }
 
   return (
-    <Box height="100%" display="flex" flexDirection="column">
+    <Box height="100%" display="flex" flexDirection="column" overflow="hidden">
       {/* Header row */}
-      <HStack justify="space-between" mb={3}>
+      <HStack justify="space-between" mb={3} flexShrink={0}>
         <Text fontSize="lg" fontWeight="semibold">AI Dashboards</Text>
         <HStack>
           <Button onClick={() => { setIsLoadOpen(true); loadDashboards() }} size="sm" variant="outline">Load</Button>
@@ -406,7 +487,7 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
         </HStack>
       </HStack>
 
-      <Text fontSize="sm" color={subtle} mb={4}>
+      <Text fontSize="sm" color={subtle} mb={4} flexShrink={0}>
         Describe the dashboard you want in natural language. Prompts are converted to Cypher-backed cards using Gemini, mirroring Neo4j Aura AI Dashboards.
       </Text>
 
@@ -463,28 +544,29 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
         </Alert>
       )}
 
-      {/* Content area */}
-      {!builderMode && cards.length === 0 ? (
-        <Box flex="1" bg={bg} borderRadius="md" border="1px solid" borderColor={border} p={6} display="flex" alignItems="center" justifyContent="center">
-          <VStack spacing={4}>
-            <Text color={subtle}>No AI dashboard yet.</Text>
-            <Button
-              colorScheme="blue"
-              onClick={onOpen}
-              isDisabled={apiKeyMissing}
-            >
-              Create with AI
-            </Button>
-            {apiKeyMissing && (
-              <Text fontSize="sm" color="orange.500" textAlign="center">
-                <WarningIcon mr={1} />
-                Configure OpenAI API key to enable AI generation
-              </Text>
-            )}
-          </VStack>
-        </Box>
-      ) : builderMode ? (
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+      {/* Content area - Scrollable container */}
+      <Box flex="1" overflowY="auto" overflowX="hidden">
+        {!builderMode && cards.length === 0 ? (
+          <Box bg={bg} borderRadius="md" border="1px solid" borderColor={border} p={6} display="flex" alignItems="center" justifyContent="center" minHeight="300px">
+            <VStack spacing={4}>
+              <Text color={subtle}>No AI dashboard yet.</Text>
+              <Button
+                colorScheme="blue"
+                onClick={onOpen}
+                isDisabled={apiKeyMissing}
+              >
+                Create with AI
+              </Button>
+              {apiKeyMissing && (
+                <Text fontSize="sm" color="orange.500" textAlign="center">
+                  <WarningIcon mr={1} />
+                  Configure OpenAI API key to enable AI generation
+                </Text>
+              )}
+            </VStack>
+          </Box>
+        ) : builderMode ? (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} pb={4}>
           {builderCards.map((card, idx) => (
             <Card key={card.id} variant="outline" borderColor="blue.300" borderWidth="2px">
               <CardHeader>
@@ -496,9 +578,21 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
                       fontSize="md"
                       fontWeight="semibold"
                       flex={1}
+                      placeholder="Enter card title..."
                     >
-                      <EditablePreview />
-                      <EditableInput />
+                      <Tooltip label="Click to edit title" placement="top" hasArrow>
+                        <EditablePreview
+                          cursor="pointer"
+                          _hover={{
+                            bg: editableHoverBg,
+                            borderRadius: 'md',
+                            px: 2
+                          }}
+                          px={2}
+                          py={1}
+                        />
+                      </Tooltip>
+                      <EditableInput px={2} py={1} />
                     </Editable>
                     {card.originalPrompt && (
                       <Tooltip
@@ -578,12 +672,22 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
                     )}
                   </Box>
                   <Box>
-                    <Text fontSize="xs" color={subtle} mb={1}>Edit Cypher</Text>
+                    <Text fontSize="xs" color={subtle} mb={1}>
+                      Edit Cypher {card.viz_type === 'mini-topology' ? '(Graph Query)' : '(Aggregation Query)'}
+                    </Text>
                     <Input
-                      value={card.cypher}
+                      value={card.viz_type === 'mini-topology' ? (card.cypherGraph || card.cypher) : (card.cypherAggregation || card.cypher)}
                       onChange={(e) => {
                         const v = e.target.value
-                        setBuilderCards(prev => prev.map((c) => c.id === card.id ? { ...c, cypher: v } : c))
+                        setBuilderCards(prev => prev.map((c) => {
+                          if (c.id !== card.id) return c
+                          // Update the appropriate query field based on viz_type
+                          if (c.viz_type === 'mini-topology') {
+                            return { ...c, cypherGraph: v, cypher: v } // Update both for backward compatibility
+                          } else {
+                            return { ...c, cypherAggregation: v, cypher: v } // Update both for backward compatibility
+                          }
+                        }))
                       }}
                       size="sm"
                     />
@@ -593,74 +697,83 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
             </Card>
           ))}
         </SimpleGrid>
-      ) : (
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-          {cards.map((card, idx) => (
-            <Card key={card.id} variant="outline">
-              <CardHeader>
-                <HStack justify="space-between" align="center">
-                  <VStack align="start" spacing={0}>
-                    <HStack>
-                      <Text fontWeight="semibold">{card.title}</Text>
-                      {card.originalPrompt && (
-                        <Tooltip
-                          label={
-                            <Box>
-                              <Text fontWeight="bold" mb={1}>Generated from prompt:</Text>
-                              <Text fontSize="sm">{card.originalPrompt}</Text>
-                            </Box>
-                          }
-                          placement="top"
-                          hasArrow
-                        >
-                          <IconButton
-                            aria-label="View original prompt"
-                            icon={<InfoIcon />}
-                            size="xs"
-                            variant="ghost"
-                            colorScheme="blue"
-                          />
-                        </Tooltip>
-                      )}
-                    </HStack>
-                    <HStack>
-                      <Badge colorScheme="teal">{card.viz_type}</Badge>
-                      <Badge>Cypher</Badge>
-                    </HStack>
-                  </VStack>
-                  <HStack>
+        ) : (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4} pb={4}>
+            {cards.map((card, idx) => (
+              <Card key={card.id} variant="outline">
+                <CardHeader>
+                  <HStack justify="space-between" align="center">
+                    <VStack align="start" spacing={0}>
+                      <HStack>
+                        <Text fontWeight="semibold">{card.title}</Text>
+                        {card.originalPrompt && (
+                          <Tooltip
+                            label={
+                              <Box>
+                                <Text fontWeight="bold" mb={1}>Generated from prompt:</Text>
+                                <Text fontSize="sm">{card.originalPrompt}</Text>
+                              </Box>
+                            }
+                            placement="top"
+                            hasArrow
+                          >
+                            <IconButton
+                              aria-label="View original prompt"
+                              icon={<InfoIcon />}
+                              size="xs"
+                              variant="ghost"
+                              colorScheme="blue"
+                            />
+                          </Tooltip>
+                        )}
+                      </HStack>
+                      <HStack>
+                        <Badge>{card.viz_type}</Badge>
+                        <Badge>Cypher</Badge>
+                      </HStack>
+                    </VStack>
                     <Button size="xs" onClick={() => runCard(idx)}>Run</Button>
                   </HStack>
-                </HStack>
-              </CardHeader>
-              <CardBody>
-                <VStack align="stretch" spacing={3}>
-                  <Box>
-                    {card.data ? (
-                      <ChartPreview card={card} nodes={nodes} edges={edges} />
-                    ) : (
-                      <Text fontSize="sm" color={subtle}>Click Run to preview results.</Text>
-                    )}
-                  </Box>
+                </CardHeader>
+                <CardBody>
+                  <VStack align="stretch" spacing={3}>
+                    <Box>
+                      {card.data ? (
+                        <ChartPreview card={card} nodes={nodes} edges={edges} />
+                      ) : (
+                        <Text fontSize="sm" color={subtle}>Click Run to preview results.</Text>
+                      )}
+                    </Box>
 
-                  {/* Inline editor for a card's Cypher */}
-                  <Box>
-                    <Text fontSize="xs" color={subtle} mb={1}>Edit Cypher</Text>
-                    <Input
-                      value={card.cypher}
-                      onChange={(e) => {
-                        const v = e.target.value
-                        setCards(prev => prev.map((c, i) => i === idx ? { ...c, cypher: v } : c))
-                      }}
-                      size="sm"
-                    />
-                  </Box>
-                </VStack>
-              </CardBody>
-            </Card>
-          ))}
-        </SimpleGrid>
-      )}
+                    {/* Inline editor for a card's Cypher */}
+                    <Box>
+                      <Text fontSize="xs" color={subtle} mb={1}>
+                        Edit Cypher {card.viz_type === 'mini-topology' ? '(Graph Query)' : '(Aggregation Query)'}
+                      </Text>
+                      <Input
+                        value={card.viz_type === 'mini-topology' ? (card.cypherGraph || card.cypher) : (card.cypherAggregation || card.cypher)}
+                        onChange={(e) => {
+                          const v = e.target.value
+                          setCards(prev => prev.map((c, i) => {
+                            if (i !== idx) return c
+                            // Update the appropriate query field based on viz_type
+                            if (c.viz_type === 'mini-topology') {
+                              return { ...c, cypherGraph: v, cypher: v } // Update both for backward compatibility
+                            } else {
+                              return { ...c, cypherAggregation: v, cypher: v } // Update both for backward compatibility
+                            }
+                          }))
+                        }}
+                        size="sm"
+                      />
+                    </Box>
+                  </VStack>
+                </CardBody>
+              </Card>
+            ))}
+          </SimpleGrid>
+        )}
+      </Box>
 
       {/* Create with AI modal */}
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
@@ -802,12 +915,13 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
               <HStack spacing={3} justify="space-between">
                 <Text fontSize="xs" color={subtle}>AI can make mistakes — validate and refine your dashboard after it is created.</Text>
                 <HStack spacing={2}>
-                  <Button variant="ghost" onClick={onClose}>Cancel</Button>
+                  <Button variant="ghost" onClick={onClose} isDisabled={loading}>Cancel</Button>
                   <Button
                     colorScheme="blue"
                     onClick={onCreate}
                     isLoading={loading}
-                    isDisabled={!prompt.trim() || apiKeyMissing}
+                    isDisabled={!prompt.trim() || apiKeyMissing || loading}
+                    loadingText="Creating..."
                   >
                     Create
                   </Button>
@@ -879,128 +993,293 @@ const AIDashboardsView: React.FC<AIDashboardsViewProps> = ({ nodes, edges }) => 
 }
 
 // Mini Topology Component for graph visualization
-function MiniTopology({ data, nodes, edges }: { data: any[], nodes?: any[], edges?: any[] }) {
+function MiniTopology({ data, graphData, nodes, edges }: {
+  data: any[],
+  graphData?: { nodes: any[], edges: any[] },
+  nodes?: any[],
+  edges?: any[]
+}) {
   const containerRef = React.useRef<HTMLDivElement>(null)
   const cyRef = React.useRef<any>(null)
   const bg = useColorModeValue('#ffffff', '#1a202c')
   const nodeBg = useColorModeValue('#3182ce', '#63b3ed')
   const edgeColor = useColorModeValue('#718096', '#a0aec0')
+  const subtle = useColorModeValue('gray.600', 'gray.400')
 
   useEffect(() => {
-    if (!containerRef.current || data.length === 0) return
+    if (!containerRef.current) return
 
-    // Extract nodes and edges from query results
-    const graphNodes: any[] = []
-    const graphEdges: any[] = []
-    const nodeMap = new Map()
+    // Priority 1: Use graphData from API response (for queries that return nodes/relationships)
+    let graphNodes: any[] = []
+    let graphEdges: any[] = []
 
-    data.forEach((row, idx) => {
-      Object.values(row).forEach((value: any) => {
-        // Check if value is a Neo4j node
-        if (value && typeof value === 'object' && value.labels && value.properties) {
-          const nodeId = value.properties.uid || value.id || `node-${idx}`
-          if (!nodeMap.has(nodeId)) {
-            nodeMap.set(nodeId, true)
+    if (graphData && graphData.nodes && graphData.nodes.length > 0) {
+      console.log('MiniTopology: Using graphData from API', graphData)
+
+      // Create a Set of valid node IDs for fast lookup
+      // IMPORTANT: We need to track BOTH the actual Cytoscape ID and all possible source IDs
+      const validNodeIds = new Set<string>()
+      const nodeIdMapping = new Map<string, string>() // Maps source ID formats to Cytoscape ID
+
+      // Convert API graph data to Cytoscape format
+      graphNodes = graphData.nodes.map((node: any) => {
+        // Determine the Cytoscape ID (same logic as before)
+        const cytoscapeId = node.id || node.elementId || `node-${Math.random()}`
+
+        // Add the Cytoscape ID to valid IDs
+        validNodeIds.add(cytoscapeId)
+
+        // Also add all possible ID formats that might be used in edge source/target
+        // and map them to the Cytoscape ID
+        if (node.id) {
+          validNodeIds.add(node.id)
+          nodeIdMapping.set(node.id, cytoscapeId)
+        }
+        if (node.elementId) {
+          validNodeIds.add(node.elementId)
+          nodeIdMapping.set(node.elementId, cytoscapeId)
+        }
+        if (node.properties?.uid) {
+          validNodeIds.add(node.properties.uid)
+          nodeIdMapping.set(node.properties.uid, cytoscapeId)
+        }
+
+        return {
+          data: {
+            id: cytoscapeId,
+            label: node.properties?.showname || node.properties?.name || node.id || 'Node',
+            type: node.labels?.[0] || 'Node',
+            ...node.properties
+          }
+        }
+      })
+
+      console.log('MiniTopology: Valid node IDs:', Array.from(validNodeIds).slice(0, 5), '... (total:', validNodeIds.size, ')')
+      console.log('MiniTopology: Node ID mapping sample:', Array.from(nodeIdMapping.entries()).slice(0, 3))
+
+      // Filter edges to only include those with valid source and target nodes
+      // IMPORTANT: Map edge source/target IDs to Cytoscape node IDs
+      const allEdges = (graphData.edges || []).map((edge: any, idx: number) => {
+        // Map source and target to Cytoscape IDs if they exist in the mapping
+        const mappedSource = nodeIdMapping.get(edge.source) || edge.source
+        const mappedTarget = nodeIdMapping.get(edge.target) || edge.target
+
+        return {
+          data: {
+            id: edge.id || `edge-${idx}`,
+            source: mappedSource,
+            target: mappedTarget,
+            label: edge.type || 'RELATED',
+            ...edge.properties
+          }
+        }
+      })
+
+      // Debug: Log first edge to see ID format
+      if (allEdges.length > 0) {
+        console.log('MiniTopology: Sample edge:', allEdges[0].data)
+        console.log('MiniTopology: Sample edge from API:', graphData.edges[0])
+      }
+
+      // Validate edges and filter out orphaned ones
+      graphEdges = allEdges.filter(edge => {
+        const hasValidSource = validNodeIds.has(edge.data.source)
+        const hasValidTarget = validNodeIds.has(edge.data.target)
+
+        if (!hasValidSource || !hasValidTarget) {
+          console.warn(`MiniTopology: Filtering out orphaned edge ${edge.data.id}`, {
+            source: edge.data.source,
+            target: edge.data.target,
+            hasValidSource,
+            hasValidTarget,
+            availableNodeIds: Array.from(validNodeIds).slice(0, 10)
+          })
+          return false
+        }
+        return true
+      })
+
+      console.log(`MiniTopology: Validated ${graphEdges.length}/${allEdges.length} edges`)
+    } else {
+      // Priority 2: Extract from raw query results (fallback)
+      console.log('MiniTopology: Extracting from raw data', data)
+      const nodeMap = new Map()
+      const tempEdges: any[] = []
+
+      data.forEach((row, idx) => {
+        Object.values(row).forEach((value: any) => {
+          // Check if value is a Neo4j node
+          if (value && typeof value === 'object' && value.labels && value.properties) {
+            const nodeId = value.id || value.elementId || value.properties.uid || `node-${idx}`
+            if (!nodeMap.has(nodeId)) {
+              nodeMap.set(nodeId, true)
+              graphNodes.push({
+                data: {
+                  id: nodeId,
+                  label: value.properties.showname || value.properties.name || nodeId,
+                  type: value.labels[0] || 'Node',
+                  ...value.properties
+                }
+              })
+            }
+          }
+          // Check if value is a Neo4j relationship
+          if (value && typeof value === 'object' && value.type && (value.source || value.start)) {
+            const edgeId = value.id || value.elementId || `edge-${tempEdges.length}`
+            const source = value.source || value.start
+            const target = value.target || value.end
+
+            if (source && target) {
+              tempEdges.push({
+                data: {
+                  id: edgeId,
+                  source: source,
+                  target: target,
+                  label: value.type,
+                  ...value.properties
+                }
+              })
+            }
+          }
+        })
+      })
+
+      // Validate edges against collected nodes
+      const validNodeIds = new Set(graphNodes.map(n => n.data.id))
+      graphEdges = tempEdges.filter(edge => {
+        const hasValidSource = validNodeIds.has(edge.data.source)
+        const hasValidTarget = validNodeIds.has(edge.data.target)
+
+        if (!hasValidSource || !hasValidTarget) {
+          console.warn(`MiniTopology: Filtering out orphaned edge ${edge.data.id}`, {
+            source: edge.data.source,
+            target: edge.data.target,
+            hasValidSource,
+            hasValidTarget
+          })
+          return false
+        }
+        return true
+      })
+
+      console.log(`MiniTopology: Validated ${graphEdges.length}/${tempEdges.length} edges from raw data`)
+
+      // Priority 3: Create simple visualization from tabular data (last resort)
+      if (graphNodes.length === 0 && data.length > 0) {
+        console.log('MiniTopology: Creating simple visualization from tabular data')
+        data.slice(0, 10).forEach((row, idx) => {
+          const keys = Object.keys(row)
+          if (keys.length >= 1) {
+            const nodeId = `node-${idx}`
             graphNodes.push({
               data: {
                 id: nodeId,
-                label: value.properties.showname || value.properties.name || nodeId,
-                type: value.labels[0] || 'Node'
+                label: String(row[keys[0]]).slice(0, 20),
+                type: 'Data'
               }
             })
           }
-        }
-        // Check if value is a Neo4j relationship
-        if (value && typeof value === 'object' && value.type && value.properties) {
-          graphEdges.push({
-            data: {
-              id: `edge-${idx}`,
-              source: value.start || `node-${idx}`,
-              target: value.end || `node-${idx + 1}`,
-              label: value.type
-            }
-          })
-        }
-      })
-    })
-
-    // If no graph data found, try to create simple visualization from tabular data
-    if (graphNodes.length === 0 && data.length > 0) {
-      data.slice(0, 10).forEach((row, idx) => {
-        const keys = Object.keys(row)
-        if (keys.length >= 1) {
-          const nodeId = `node-${idx}`
-          graphNodes.push({
-            data: {
-              id: nodeId,
-              label: String(row[keys[0]]).slice(0, 20),
-              type: 'Data'
-            }
-          })
-        }
-      })
+        })
+      }
     }
+
+    console.log('MiniTopology: Final graph data', { nodes: graphNodes.length, edges: graphEdges.length })
 
     if (cyRef.current) {
       cyRef.current.destroy()
     }
 
-    cyRef.current = cytoscape({
-      container: containerRef.current,
-      elements: [...graphNodes, ...graphEdges],
-      style: [
-        {
-          selector: 'node',
-          style: {
-            'background-color': nodeBg,
-            'label': 'data(label)',
-            'color': '#fff',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'font-size': '10px',
-            'width': '30px',
-            'height': '30px',
-            'text-wrap': 'wrap',
-            'text-max-width': '60px'
+    if (graphNodes.length === 0) {
+      console.warn('MiniTopology: No nodes to display')
+      return
+    }
+
+    try {
+      cyRef.current = cytoscape({
+        container: containerRef.current,
+        elements: [...graphNodes, ...graphEdges],
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'background-color': nodeBg,
+              'label': 'data(label)',
+              'color': '#fff',
+              'text-valign': 'center',
+              'text-halign': 'center',
+              'font-size': '10px',
+              'width': '30px',
+              'height': '30px',
+              'text-wrap': 'wrap',
+              'text-max-width': '60px'
+            }
+          },
+          {
+            selector: 'edge',
+            style: {
+              'width': 2,
+              'line-color': edgeColor,
+              'target-arrow-color': edgeColor,
+              'target-arrow-shape': 'triangle',
+              'curve-style': 'bezier',
+              'label': 'data(label)',
+              'font-size': '8px',
+              'text-rotation': 'autorotate',
+              'color': edgeColor
+            }
           }
-        },
-        {
-          selector: 'edge',
-          style: {
-            'width': 2,
-            'line-color': edgeColor,
-            'target-arrow-color': edgeColor,
-            'target-arrow-shape': 'triangle',
-            'curve-style': 'bezier',
-            'label': 'data(label)',
-            'font-size': '8px',
-            'text-rotation': 'autorotate'
-          }
+        ],
+        layout: {
+          name: graphEdges.length > 0 ? 'cose' : 'circle',
+          animate: false,
+          padding: 10
         }
-      ],
-      layout: {
-        name: 'circle',
-        animate: false
-      }
-    })
+      })
+    } catch (error) {
+      console.error('MiniTopology: Failed to initialize Cytoscape', error)
+      console.error('MiniTopology: Graph data that caused error:', {
+        nodes: graphNodes,
+        edges: graphEdges
+      })
+      // Don't throw - just log the error and leave the component empty
+    }
 
     return () => {
       if (cyRef.current) {
         cyRef.current.destroy()
       }
     }
-  }, [data, nodeBg, edgeColor])
+  }, [data, graphData, nodeBg, edgeColor])
+
+  // Check if we have any data to display
+  const hasData = (graphData && graphData.nodes && graphData.nodes.length > 0) ||
+                  (data && data.length > 0)
 
   return (
-    <Box
-      ref={containerRef}
-      height="220px"
-      width="100%"
-      bg={bg}
-      borderRadius="md"
-      border="1px solid"
-      borderColor={useColorModeValue('gray.200', 'gray.700')}
-    />
+    <Box position="relative" height="220px" width="100%">
+      <Box
+        ref={containerRef}
+        height="100%"
+        width="100%"
+        bg={bg}
+        borderRadius="md"
+        border="1px solid"
+        borderColor={useColorModeValue('gray.200', 'gray.700')}
+      />
+      {!hasData && (
+        <Box
+          position="absolute"
+          top="50%"
+          left="50%"
+          transform="translate(-50%, -50%)"
+          textAlign="center"
+          color={subtle}
+        >
+          <Text fontSize="sm">No graph data available</Text>
+          <Text fontSize="xs" mt={1}>Query must return nodes and relationships</Text>
+        </Box>
+      )}
+    </Box>
   )
 }
 
@@ -1030,7 +1309,7 @@ function ChartPreview({ card, nodes, edges }: { card: AICard, nodes?: any[], edg
 
   // Mini Topology visualization
   if (card.viz_type === 'mini-topology') {
-    return <MiniTopology data={rawData} nodes={nodes} edges={edges} />
+    return <MiniTopology data={rawData} graphData={card.data?.graphData} nodes={nodes} edges={edges} />
   }
 
   // Bar chart

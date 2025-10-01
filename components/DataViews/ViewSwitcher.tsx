@@ -10,6 +10,7 @@ import CardsView from './CardsView'
 import DashboardView from './DashboardView'
 import GeoMapView from './GeoMapView'
 import AIDashboardsView from './AIDashboardsView'
+import AIAgentsView from './AIAgentsView'
 
 // Dynamic import for ExecutiveDashboard to prevent SSR hydration issues
 const ExecutiveDashboard = dynamic(() => import('../ExecutiveDashboard'), {
@@ -51,7 +52,7 @@ const IconManagement = dynamic(() => import('../IconManagement'), {
   )
 })
 
-export type ViewType = 'executive' | 'soc-executive' | 'threat-analysis' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'ai-dashboards' | 'geomap' | 'icon-management'
+export type ViewType = 'executive' | 'soc-executive' | 'threat-analysis' | 'graph' | 'table' | 'timeline' | 'cards' | 'dashboard' | 'ai-dashboards' | 'ai-agents' | 'geomap' | 'icon-management'
 
 interface ViewSwitcherProps {
   currentView: ViewType
@@ -90,6 +91,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
     { value: 'cards', label: 'Cards View', icon: '🗂️' },
     { value: 'dashboard', label: 'Analytics Dashboard', icon: '📈' },
     { value: 'ai-dashboards', label: 'AI Dashboards', icon: '✨' },
+    { value: 'ai-agents', label: '🤖 AI Agents', icon: '🤖' },
     { value: 'geomap', label: 'Geographic Map', icon: '🗺️' },
     { value: 'icon-management', label: 'Icon Management', icon: '🎨' }
   ]
@@ -153,6 +155,8 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
         return <DashboardView {...commonProps} />
       case 'ai-dashboards':
         return <AIDashboardsView {...commonProps} />
+      case 'ai-agents':
+        return <AIAgentsView {...commonProps} />
       case 'geomap':
         return <GeoMapView {...commonProps} onApplyCoordinates={onApplyCoordinates} />
       case 'icon-management':
@@ -193,7 +197,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
       {/* View Content */}
       <Box
         flex="1"
-        overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' ? 'auto' : 'hidden'}
+        overflow={currentView === 'executive' || currentView === 'soc-executive' || currentView === 'threat-analysis' || currentView === 'ai-agents' ? 'auto' : 'hidden'}
         position="relative"
         minHeight={0}
       >
