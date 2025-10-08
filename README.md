@@ -160,6 +160,36 @@ Your view component should use `minH="100%"` (not `height="100%"`) to allow cont
 - **🔄 Graceful Fallbacks**: Heuristic suggestions when AI service is unavailable
 - **📖 Documentation Links**: Direct links to API key registration and setup guides
 
+#### 📋 **Copy-to-Clipboard Feature for Dashboard Prompts**
+
+Every AI-generated dashboard card includes a convenient copy-to-clipboard feature for the natural language prompt that created it:
+
+**Features:**
+- **📝 Dual Icon Display**: Info icon (ℹ️) shows the full prompt in a tooltip, Copy icon (📋) copies it to clipboard
+- **🎨 Visual Design**: Blue info icon for viewing, green copy icon for copying
+- **✅ Success Feedback**: Toast notification confirms successful copy: "Copied to clipboard - Prompt copied successfully"
+- **🔄 Works Everywhere**: Available in both builder mode and saved dashboard views
+
+**How to Use:**
+1. **View the Prompt**: Hover over the blue info icon (ℹ️) to see the full natural language prompt
+2. **Copy the Prompt**: Click the green copy icon (📋) next to it
+3. **Confirmation**: Success toast appears confirming the copy
+4. **Paste Anywhere**: Use Ctrl+V (or Cmd+V on Mac) to paste the prompt elsewhere
+
+**Use Cases:**
+- **Testing**: Copy prompts to test in other AI tools or query builders
+- **Documentation**: Save prompts for documentation or training materials
+- **Sharing**: Share successful prompts with team members via email, chat, or collaboration tools
+- **Debugging**: Copy prompts to analyze what generated specific results
+- **Recreation**: Reuse successful prompts to create similar cards in other dashboards
+- **Learning**: Study effective prompt patterns for better AI dashboard generation
+
+**Technical Details:**
+- Uses browser's native `navigator.clipboard.writeText()` API
+- Graceful error handling if clipboard access is denied
+- Works across all modern browsers (Chrome, Firefox, Safari, Edge)
+- No external dependencies or permissions required
+
 ### 🤖 **AI-Powered Icon Generation (v4.0) - ENHANCED!**
 - **🎯 Seamless Single-Dialog Workflow**: Complete redesign eliminating page refreshes and navigation
 - **👁️ In-Dialog Preview System**: Generated icons display immediately within the same modal
@@ -460,6 +490,600 @@ Ensure all environment variables are configured in your deployment platform:
 - Google AI API key (fallback icon generation)
 - Icon generation API selection (`ICON_GENERATION_API=recraft`)
 - Cloudinary configuration
+
+### **Kubernetes Deployment**
+
+Deploy the TruContext Demo application to a Kubernetes cluster for production-grade scalability, high availability, and enterprise deployment scenarios.
+
+#### **Prerequisites**
+
+Before deploying to Kubernetes, ensure you have:
+
+- **Docker** installed (version 20.10+)
+- **Kubernetes cluster** (v1.24+) - Options include:
+  - Cloud providers: AWS EKS, Google GKE, Azure AKS
+  - On-premises: kubeadm, Rancher, OpenShift
+  - Local development: Minikube, kind, Docker Desktop
+- **kubectl** configured and connected to your cluster
+- **Container registry** access (Docker Hub, AWS ECR, Google GCR, Azure ACR, or private registry)
+- **Helm** (optional, for advanced deployments)
+
+#### **Step 1: Create Dockerfile**
+
+Create a `Dockerfile` in the project root:
+
+```dockerfile
+# Multi-stage build for optimized production image
+FROM node:18-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy application code
+COPY . .
+
+# Build Next.js application
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Set production environment
+ENV NODE_ENV=production
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built application from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Set ownership to non-root user
+RUN chown -R nextjs:nodejs /app
+
+# Switch to non-root user
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Set environment variable for Next.js
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+# Start application
+CMD ["node", "server.js"]
+```
+
+**Note**: Ensure `next.config.js` includes `output: 'standalone'` for Docker optimization:
+
+```javascript
+module.exports = {
+  output: 'standalone',
+  // ... other config
+}
+```
+
+#### **Step 2: Build and Push Docker Image**
+
+```bash
+# Build the Docker image
+docker build -t trucontext-demo:latest .
+
+# Tag for your container registry
+docker tag trucontext-demo:latest your-registry.com/trucontext-demo:latest
+
+# Push to container registry
+docker push your-registry.com/trucontext-demo:latest
+```
+
+**For specific registries:**
+
+```bash
+# Docker Hub
+docker tag trucontext-demo:latest yourusername/trucontext-demo:latest
+docker push yourusername/trucontext-demo:latest
+
+# AWS ECR
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789.dkr.ecr.us-east-1.amazonaws.com
+docker tag trucontext-demo:latest 123456789.dkr.ecr.us-east-1.amazonaws.com/trucontext-demo:latest
+docker push 123456789.dkr.ecr.us-east-1.amazonaws.com/trucontext-demo:latest
+
+# Google GCR
+gcloud auth configure-docker
+docker tag trucontext-demo:latest gcr.io/your-project-id/trucontext-demo:latest
+docker push gcr.io/your-project-id/trucontext-demo:latest
+```
+
+#### **Step 3: Create Kubernetes Manifests**
+
+Create a `k8s/` directory with the following manifest files:
+
+**3.1 ConfigMap** (`k8s/configmap.yaml`)
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trucontext-config
+  namespace: default
+data:
+  # Neo4j Configuration
+  NEO4J_URI: "neo4j+s://your-instance.databases.neo4j.io"
+  NEO4J_USERNAME: "neo4j"
+  NEO4J_DATABASE: "neo4j"
+
+  # Icon Generation API Selection
+  ICON_GENERATION_API: "recraft"
+
+  # Cloudinary Configuration
+  CLOUDINARY_CLOUD_NAME: "your-cloud-name"
+
+  # Application Configuration
+  NODE_ENV: "production"
+```
+
+**3.2 Secret** (`k8s/secret.yaml`)
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: trucontext-secrets
+  namespace: default
+type: Opaque
+stringData:
+  # Neo4j Password
+  NEO4J_PASSWORD: "your-neo4j-password"
+
+  # PostgreSQL Connection String
+  POSTGRES_URL: "postgresql://username:password@host:port/database?sslmode=require"
+
+  # AI API Keys
+  RECRAFT_API_KEY: "your-recraft-api-key"
+  GOOGLE_API_KEY: "your-google-api-key"
+  OPENAI_API_KEY: "your-openai-api-key"
+
+  # Cloudinary Credentials
+  CLOUDINARY_URL: "cloudinary://api_key:api_secret@cloud_name"
+  CLOUDINARY_API_KEY: "your-cloudinary-api-key"
+  CLOUDINARY_API_SECRET: "your-cloudinary-api-secret"
+```
+
+**Security Best Practice**: Use base64 encoding or external secret management:
+
+```bash
+# Create secret from literal values
+kubectl create secret generic trucontext-secrets \
+  --from-literal=NEO4J_PASSWORD='your-password' \
+  --from-literal=POSTGRES_URL='postgresql://...' \
+  --from-literal=RECRAFT_API_KEY='your-key' \
+  --dry-run=client -o yaml > k8s/secret.yaml
+
+# Or use external secret managers (AWS Secrets Manager, HashiCorp Vault, etc.)
+```
+
+**3.3 Deployment** (`k8s/deployment.yaml`)
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trucontext-demo
+  namespace: default
+  labels:
+    app: trucontext-demo
+spec:
+  replicas: 3  # High availability with 3 replicas
+  selector:
+    matchLabels:
+      app: trucontext-demo
+  template:
+    metadata:
+      labels:
+        app: trucontext-demo
+    spec:
+      containers:
+      - name: trucontext-demo
+        image: your-registry.com/trucontext-demo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+
+        # Environment variables from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: trucontext-config
+
+        # Sensitive environment variables from Secret
+        env:
+        - name: NEO4J_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: trucontext-secrets
+              key: NEO4J_PASSWORD
+        - name: POSTGRES_URL
+          valueFrom:
+            secretKeyRef:
+              name: trucontext-secrets
+              key: POSTGRES_URL
+        - name: RECRAFT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: trucontext-secrets
+              key: RECRAFT_API_KEY
+        - name: GOOGLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: trucontext-secrets
+              key: GOOGLE_API_KEY
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: trucontext-secrets
+              key: OPENAI_API_KEY
+        - name: CLOUDINARY_URL
+          valueFrom:
+            secretKeyRef:
+              name: trucontext-secrets
+              key: CLOUDINARY_URL
+        - name: CLOUDINARY_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: trucontext-secrets
+              key: CLOUDINARY_API_KEY
+        - name: CLOUDINARY_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: trucontext-secrets
+              key: CLOUDINARY_API_SECRET
+
+        # Resource limits and requests
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
+      # Image pull secrets (if using private registry)
+      # imagePullSecrets:
+      # - name: registry-credentials
+
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+```
+
+**3.4 Service** (`k8s/service.yaml`)
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: trucontext-demo-service
+  namespace: default
+  labels:
+    app: trucontext-demo
+spec:
+  type: LoadBalancer  # Use ClusterIP for internal-only, LoadBalancer for external access
+  selector:
+    app: trucontext-demo
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+  sessionAffinity: ClientIP  # Sticky sessions for better user experience
+```
+
+**3.5 Ingress** (Optional - `k8s/ingress.yaml`)
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trucontext-demo-ingress
+  namespace: default
+  annotations:
+    # NGINX Ingress Controller annotations
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+    # Certificate Manager (for HTTPS)
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - trucontext.yourdomain.com
+    secretName: trucontext-tls-cert
+  rules:
+  - host: trucontext.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: trucontext-demo-service
+            port:
+              number: 80
+```
+
+**3.6 HorizontalPodAutoscaler** (Optional - `k8s/hpa.yaml`)
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: trucontext-demo-hpa
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: trucontext-demo
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+```
+
+#### **Step 4: Deploy to Kubernetes**
+
+```bash
+# Create namespace (optional)
+kubectl create namespace trucontext
+
+# Apply all manifests
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/ingress.yaml  # Optional
+kubectl apply -f k8s/hpa.yaml      # Optional
+
+# Or apply all at once
+kubectl apply -f k8s/
+```
+
+#### **Step 5: Verify Deployment**
+
+```bash
+# Check deployment status
+kubectl get deployments
+kubectl rollout status deployment/trucontext-demo
+
+# Check pods
+kubectl get pods -l app=trucontext-demo
+kubectl describe pod <pod-name>
+
+# Check service
+kubectl get services
+kubectl describe service trucontext-demo-service
+
+# Check ingress (if configured)
+kubectl get ingress
+kubectl describe ingress trucontext-demo-ingress
+
+# View logs
+kubectl logs -f deployment/trucontext-demo
+kubectl logs -f <pod-name>
+
+# Check resource usage
+kubectl top pods -l app=trucontext-demo
+kubectl top nodes
+```
+
+#### **Step 6: Access the Application**
+
+**Option 1: LoadBalancer Service**
+```bash
+# Get external IP
+kubectl get service trucontext-demo-service
+
+# Access via external IP
+# http://<EXTERNAL-IP>
+```
+
+**Option 2: Ingress**
+```bash
+# Access via configured domain
+# https://trucontext.yourdomain.com
+```
+
+**Option 3: Port Forwarding (Development/Testing)**
+```bash
+# Forward local port to service
+kubectl port-forward service/trucontext-demo-service 3000:80
+
+# Access at http://localhost:3000
+```
+
+#### **Troubleshooting Common Issues**
+
+**1. Pods Not Starting**
+```bash
+# Check pod events
+kubectl describe pod <pod-name>
+
+# Check logs
+kubectl logs <pod-name>
+
+# Common issues:
+# - Image pull errors: Verify registry credentials
+# - CrashLoopBackOff: Check application logs and environment variables
+# - Resource limits: Adjust memory/CPU requests
+```
+
+**2. Service Not Accessible**
+```bash
+# Verify service endpoints
+kubectl get endpoints trucontext-demo-service
+
+# Check service selector matches pod labels
+kubectl get pods --show-labels
+
+# Test service internally
+kubectl run -it --rm debug --image=busybox --restart=Never -- wget -O- http://trucontext-demo-service
+```
+
+**3. Environment Variables Not Loading**
+```bash
+# Verify ConfigMap
+kubectl get configmap trucontext-config -o yaml
+
+# Verify Secret
+kubectl get secret trucontext-secrets -o yaml
+
+# Check pod environment
+kubectl exec <pod-name> -- env | grep NEO4J
+```
+
+**4. Database Connection Issues**
+```bash
+# Test Neo4j connectivity from pod
+kubectl exec -it <pod-name> -- sh
+# Inside pod: curl -v neo4j+s://your-instance.databases.neo4j.io
+
+# Check PostgreSQL connection
+kubectl exec -it <pod-name> -- sh
+# Inside pod: nc -zv your-postgres-host 5432
+```
+
+**5. Image Pull Errors**
+```bash
+# Create image pull secret for private registry
+kubectl create secret docker-registry registry-credentials \
+  --docker-server=your-registry.com \
+  --docker-username=your-username \
+  --docker-password=your-password \
+  --docker-email=your-email@example.com
+
+# Add to deployment spec under imagePullSecrets
+```
+
+#### **Scaling Considerations**
+
+**Manual Scaling**
+```bash
+# Scale deployment
+kubectl scale deployment trucontext-demo --replicas=5
+
+# Verify scaling
+kubectl get pods -l app=trucontext-demo
+```
+
+**Auto-scaling with HPA**
+```bash
+# Check HPA status
+kubectl get hpa
+kubectl describe hpa trucontext-demo-hpa
+
+# Monitor auto-scaling events
+kubectl get hpa trucontext-demo-hpa --watch
+```
+
+**Resource Optimization**
+- **CPU**: Start with 250m request, 500m limit; adjust based on metrics
+- **Memory**: Start with 512Mi request, 1Gi limit; monitor for OOM errors
+- **Replicas**: Minimum 3 for high availability, scale based on traffic
+- **Database Connections**: Configure connection pooling in PostgreSQL/Neo4j
+
+**Performance Tuning**
+```yaml
+# Add to deployment for better performance
+env:
+- name: NODE_OPTIONS
+  value: "--max-old-space-size=768"  # Adjust based on memory limits
+```
+
+#### **Production Best Practices**
+
+1. **Security**
+   - Use non-root containers (already configured in Dockerfile)
+   - Enable Pod Security Policies or Pod Security Standards
+   - Rotate secrets regularly
+   - Use network policies to restrict traffic
+   - Enable RBAC for service accounts
+
+2. **Monitoring**
+   - Deploy Prometheus and Grafana for metrics
+   - Configure application performance monitoring (APM)
+   - Set up log aggregation (ELK stack, Loki, CloudWatch)
+   - Create alerts for critical metrics
+
+3. **Backup & Recovery**
+   - Regular database backups (Neo4j, PostgreSQL)
+   - Version control for Kubernetes manifests
+   - Disaster recovery plan and testing
+   - Multi-region deployment for critical workloads
+
+4. **CI/CD Integration**
+   ```bash
+   # Example GitHub Actions workflow
+   # .github/workflows/deploy.yml
+   - name: Deploy to Kubernetes
+     run: |
+       kubectl set image deployment/trucontext-demo \
+         trucontext-demo=your-registry.com/trucontext-demo:${{ github.sha }}
+       kubectl rollout status deployment/trucontext-demo
+   ```
+
+5. **Cost Optimization**
+   - Use cluster autoscaler for node scaling
+   - Implement pod disruption budgets
+   - Use spot/preemptible instances for non-critical workloads
+   - Monitor and optimize resource requests/limits
 
 ## 🔧 Development
 
