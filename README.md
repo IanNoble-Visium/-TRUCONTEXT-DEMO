@@ -164,19 +164,22 @@ Your view component should use `minH="100%"` (not `height="100%"`) to allow cont
 
 Every AI-generated dashboard card includes a convenient copy-to-clipboard feature for the natural language prompt that created it:
 
-**Features:**
+##### Features
+
 - **📝 Dual Icon Display**: Info icon (ℹ️) shows the full prompt in a tooltip, Copy icon (📋) copies it to clipboard
 - **🎨 Visual Design**: Blue info icon for viewing, green copy icon for copying
 - **✅ Success Feedback**: Toast notification confirms successful copy: "Copied to clipboard - Prompt copied successfully"
 - **🔄 Works Everywhere**: Available in both builder mode and saved dashboard views
 
-**How to Use:**
+##### How to Use
+
 1. **View the Prompt**: Hover over the blue info icon (ℹ️) to see the full natural language prompt
 2. **Copy the Prompt**: Click the green copy icon (📋) next to it
 3. **Confirmation**: Success toast appears confirming the copy
 4. **Paste Anywhere**: Use Ctrl+V (or Cmd+V on Mac) to paste the prompt elsewhere
 
-**Use Cases:**
+##### Use Cases
+
 - **Testing**: Copy prompts to test in other AI tools or query builders
 - **Documentation**: Save prompts for documentation or training materials
 - **Sharing**: Share successful prompts with team members via email, chat, or collaboration tools
@@ -184,7 +187,8 @@ Every AI-generated dashboard card includes a convenient copy-to-clipboard featur
 - **Recreation**: Reuse successful prompts to create similar cards in other dashboards
 - **Learning**: Study effective prompt patterns for better AI dashboard generation
 
-**Technical Details:**
+##### Technical Details
+
 - Uses browser's native `navigator.clipboard.writeText()` API
 - Graceful error handling if clipboard access is denied
 - Works across all modern browsers (Chrome, Firefox, Safari, Edge)
@@ -330,10 +334,149 @@ Every AI-generated dashboard card includes a convenient copy-to-clipboard featur
 - **Cloudinary** for cloud-based asset management and icon existence validation
 
 ### **External Integrations**
+
 - **Recraft.ai API** for primary AI-powered icon generation (vector illustrations)
 - **Google Gemini AI** for fallback icon generation and future features
 - **Cloudinary CDN** for optimized media delivery and cloud storage
 - **Vercel** for seamless deployment and hosting
+
+## 📊 Application Architecture & Navigation Flow
+
+This comprehensive architecture diagram visualizes the TruContext Demo application's user interface navigation flow, data architecture, and external integrations. Use this diagram for UI training, onboarding new team members, and understanding the complete application ecosystem.
+
+```mermaid
+graph TB
+    %% Main Entry Point
+    Start([User Access Application]) --> MainApp[Main Application<br/>pages/index.tsx]
+
+    %% View Selection
+    MainApp --> ViewSelector{View Selector}
+
+    %% Dashboard Views
+    ViewSelector -->|Executive| ExecDash[Executive Dashboard<br/>High-level Security Metrics]
+    ViewSelector -->|SOC Executive| SOCDash[SOC Executive Dashboard<br/>Security Operations Center]
+    ViewSelector -->|Threat Analysis| ThreatDash[Threat Path Analysis<br/>Interactive Threat Modeling]
+    ViewSelector -->|Topology| TopologyView[Topology View<br/>Network Graph Visualization]
+    ViewSelector -->|Table| TableView[Table View<br/>Tabular Data Display]
+    ViewSelector -->|Timeline| TimelineView[Timeline View<br/>Chronological Events]
+    ViewSelector -->|Cards| CardsView[Cards View<br/>Card-based Presentation]
+    ViewSelector -->|Analytics| AnalyticsDash[Analytics Dashboard<br/>Advanced Reporting]
+    ViewSelector -->|Geographic Map| GeoMap[Geographic Map<br/>Geospatial Visualization]
+    ViewSelector -->|AI Agents| AIAgents[AI Agents View<br/>Agent Management]
+    ViewSelector -->|AI Dashboards| AIDash[AI Dashboards<br/>AI-Generated Analytics]
+    ViewSelector -->|Icon Management| IconMgmt[Icon Management<br/>SVG Icon System]
+
+    %% AI Dashboard Workflows
+    AIDash --> AIDashCreate{Create Dashboard}
+    AIDashCreate -->|Natural Language| PromptInput[Enter Prompt<br/>Describe Dashboard]
+    AIDashCreate -->|Enhance Prompt| EnhanceAPI[AI Prompt Enhancement<br/>Schema-Aware Rewriting]
+    PromptInput --> GenerateCards[Generate Cards<br/>AI-Powered Creation]
+    EnhanceAPI --> GenerateCards
+    GenerateCards --> CardPreview[Preview Cards<br/>Edit & Customize]
+    CardPreview --> SaveDash[Save Dashboard<br/>PostgreSQL Storage]
+    CardPreview --> CopyPrompt[Copy Prompt<br/>Clipboard Feature]
+
+    %% Icon Management Workflows
+    IconMgmt --> IconActions{Icon Actions}
+    IconActions -->|Generate| AIIconGen[AI Icon Generation<br/>Recraft.ai/Gemini]
+    IconActions -->|Upload| IconUpload[Upload Icons<br/>Drag & Drop]
+    IconActions -->|Manage Mappings| IconMapping[Dynamic Icon Mapping<br/>PostgreSQL Management]
+    IconActions -->|Export/Import| IconBulk[Bulk Operations<br/>ZIP Export/Import]
+
+    %% Geographic Map Workflows
+    GeoMap --> GeoActions{Geographic Actions}
+    GeoActions -->|View Map| LeafletMap[Interactive Map<br/>Leaflet.js]
+    GeoActions -->|Assign Coordinates| CoordWizard[Coordinate Assignment Wizard<br/>Automated Geocoding]
+    CoordWizard --> DualDBUpdate[Dual Database Update<br/>Neo4j + PostgreSQL]
+
+    %% Threat Analysis Workflows
+    ThreatDash --> ThreatActions{Threat Actions}
+    ThreatActions -->|Create Path| ThreatPath[Define Threat Path<br/>Start/End Nodes]
+    ThreatActions -->|Calculate| Neo4jPath[Neo4j Shortest Path<br/>Cypher Query]
+    ThreatActions -->|Visualize| ThreatViz[Threat Visualization<br/>Highlighted Path]
+
+    %% Topology View Workflows
+    TopologyView --> TopoActions{Topology Actions}
+    TopoActions -->|Select Layout| LayoutEngine[Layout Algorithms<br/>CoSE/Hierarchical/Random]
+    TopoActions -->|Edit Properties| PropPanel[Properties Panel<br/>TC_ Custom Properties]
+    TopoActions -->|Group Nodes| GroupOps[Grouping Operations<br/>Collapse/Expand]
+    TopoActions -->|Filter| FilterOps[Filter by Alarms<br/>Threat Paths]
+
+    %% Backend Data Layer
+    ExecDash --> DataLayer[Data Layer<br/>API Routes]
+    SOCDash --> DataLayer
+    ThreatDash --> DataLayer
+    TopologyView --> DataLayer
+    TableView --> DataLayer
+    TimelineView --> DataLayer
+    CardsView --> DataLayer
+    AnalyticsDash --> DataLayer
+    GeoMap --> DataLayer
+    AIAgents --> DataLayer
+    AIDash --> DataLayer
+    IconMgmt --> DataLayer
+
+    %% Database Connections
+    DataLayer --> Neo4jDB[(Neo4j Aura<br/>Graph Database)]
+    DataLayer --> PostgresDB[(PostgreSQL/Neon<br/>Relational Database)]
+
+    %% External API Integrations
+    GenerateCards --> OpenAIAPI[OpenAI API<br/>GPT-4o-mini]
+    EnhanceAPI --> OpenAIAPI
+    AIIconGen --> RecraftAPI[Recraft.ai API<br/>Primary Icon Gen]
+    AIIconGen --> GeminiAPI[Google Gemini API<br/>Fallback Icon Gen]
+    IconUpload --> CloudinaryAPI[Cloudinary CDN<br/>Icon Storage]
+    IconMapping --> CloudinaryAPI
+    CoordWizard --> GeocodingAPI[Geocoding Service<br/>Address → Coordinates]
+
+    %% Data Storage Details
+    Neo4jDB -->|Stores| Neo4jData[Nodes, Edges<br/>Relationships<br/>Geographic Coordinates<br/>TC_ Properties]
+    PostgresDB -->|Stores| PGData[Datasets<br/>AI Dashboards<br/>Icon Mappings<br/>Usage Analytics<br/>Coordinate Backup]
+
+    %% User Interactions
+    SaveDash --> PostgresDB
+    DualDBUpdate --> Neo4jDB
+    DualDBUpdate --> PostgresDB
+    Neo4jPath --> Neo4jDB
+    PropPanel --> Neo4jDB
+    PropPanel --> PostgresDB
+
+    %% Styling
+    classDef viewClass fill:#4299e1,stroke:#2c5282,stroke-width:2px,color:#fff
+    classDef dbClass fill:#48bb78,stroke:#276749,stroke-width:2px,color:#fff
+    classDef apiClass fill:#ed8936,stroke:#9c4221,stroke-width:2px,color:#fff
+    classDef workflowClass fill:#9f7aea,stroke:#553c9a,stroke-width:2px,color:#fff
+    classDef dataClass fill:#38b2ac,stroke:#234e52,stroke-width:2px,color:#fff
+
+    class ExecDash,SOCDash,ThreatDash,TopologyView,TableView,TimelineView,CardsView,AnalyticsDash,GeoMap,AIAgents,AIDash,IconMgmt viewClass
+    class Neo4jDB,PostgresDB dbClass
+    class OpenAIAPI,RecraftAPI,GeminiAPI,CloudinaryAPI,GeocodingAPI apiClass
+    class GenerateCards,AIIconGen,CoordWizard,ThreatPath,LayoutEngine workflowClass
+    class Neo4jData,PGData,DataLayer dataClass
+```
+
+### **Diagram Legend**
+
+- **Blue Nodes**: Dashboard Views and UI Components
+- **Green Nodes**: Database Systems (Neo4j, PostgreSQL)
+- **Orange Nodes**: External API Integrations
+- **Purple Nodes**: Key Workflow Actions
+- **Teal Nodes**: Data Layer and Storage Details
+
+### **Key Navigation Paths**
+
+1. **AI Dashboard Creation**: Main App → AI Dashboards → Enter Prompt → Enhance (Optional) → Generate Cards → Preview → Save
+2. **Icon Management**: Main App → Icon Management → Generate/Upload/Manage → Cloudinary Storage
+3. **Geographic Mapping**: Main App → Geographic Map → Assign Coordinates → Dual Database Update (Neo4j + PostgreSQL)
+4. **Threat Analysis**: Main App → Threat Analysis → Create Path → Neo4j Calculation → Visualize
+5. **Topology Editing**: Main App → Topology View → Select Layout → Edit Properties → Save to Neo4j/PostgreSQL
+
+### **Data Flow Summary**
+
+- **User Input** → **UI Components** → **API Routes** → **Databases/External APIs** → **Response** → **UI Update**
+- **Dual Database Architecture**: Critical data (coordinates, TC_ properties) persists in both Neo4j (primary) and PostgreSQL (backup)
+- **AI Integration**: OpenAI for dashboards, Recraft.ai/Gemini for icons, with automatic fallback mechanisms
+- **Cloud Storage**: Cloudinary CDN for scalable icon storage and delivery
 
 ## 🛠️ Installation & Setup
 
@@ -396,7 +539,7 @@ CLOUDINARY_API_SECRET=your-api-secret
    ```
 
    **🚨 Important for AI Dashboard Generation:**
-   - Get an OpenAI API key at: https://platform.openai.com/api-keys
+   - Get an OpenAI API key at: [OpenAI Platform](https://platform.openai.com/api-keys)
    - Add `OPENAI_API_KEY=your_api_key_here` to your `.env.local` file
    - Optionally set `OPENAI_MODEL=gpt-4o-mini` (default) or another model
    - Without this key, AI dashboard generation will be disabled with helpful error messages
@@ -926,7 +1069,8 @@ kubectl top nodes
 
 #### **Step 6: Access the Application**
 
-**Option 1: LoadBalancer Service**
+##### Option 1: LoadBalancer Service
+
 ```bash
 # Get external IP
 kubectl get service trucontext-demo-service
@@ -935,13 +1079,15 @@ kubectl get service trucontext-demo-service
 # http://<EXTERNAL-IP>
 ```
 
-**Option 2: Ingress**
+##### Option 2: Ingress
+
 ```bash
 # Access via configured domain
 # https://trucontext.yourdomain.com
 ```
 
-**Option 3: Port Forwarding (Development/Testing)**
+##### Option 3: Port Forwarding (Development/Testing)
+
 ```bash
 # Forward local port to service
 kubectl port-forward service/trucontext-demo-service 3000:80
@@ -951,7 +1097,8 @@ kubectl port-forward service/trucontext-demo-service 3000:80
 
 #### **Troubleshooting Common Issues**
 
-**1. Pods Not Starting**
+##### 1. Pods Not Starting
+
 ```bash
 # Check pod events
 kubectl describe pod <pod-name>
@@ -965,7 +1112,8 @@ kubectl logs <pod-name>
 # - Resource limits: Adjust memory/CPU requests
 ```
 
-**2. Service Not Accessible**
+##### 2. Service Not Accessible
+
 ```bash
 # Verify service endpoints
 kubectl get endpoints trucontext-demo-service
@@ -977,7 +1125,8 @@ kubectl get pods --show-labels
 kubectl run -it --rm debug --image=busybox --restart=Never -- wget -O- http://trucontext-demo-service
 ```
 
-**3. Environment Variables Not Loading**
+##### 3. Environment Variables Not Loading
+
 ```bash
 # Verify ConfigMap
 kubectl get configmap trucontext-config -o yaml
@@ -989,7 +1138,8 @@ kubectl get secret trucontext-secrets -o yaml
 kubectl exec <pod-name> -- env | grep NEO4J
 ```
 
-**4. Database Connection Issues**
+##### 4. Database Connection Issues
+
 ```bash
 # Test Neo4j connectivity from pod
 kubectl exec -it <pod-name> -- sh
@@ -1000,7 +1150,8 @@ kubectl exec -it <pod-name> -- sh
 # Inside pod: nc -zv your-postgres-host 5432
 ```
 
-**5. Image Pull Errors**
+##### 5. Image Pull Errors
+
 ```bash
 # Create image pull secret for private registry
 kubectl create secret docker-registry registry-credentials \
@@ -1014,7 +1165,8 @@ kubectl create secret docker-registry registry-credentials \
 
 #### **Scaling Considerations**
 
-**Manual Scaling**
+##### Manual Scaling
+
 ```bash
 # Scale deployment
 kubectl scale deployment trucontext-demo --replicas=5
@@ -1023,7 +1175,8 @@ kubectl scale deployment trucontext-demo --replicas=5
 kubectl get pods -l app=trucontext-demo
 ```
 
-**Auto-scaling with HPA**
+##### Auto-scaling with HPA
+
 ```bash
 # Check HPA status
 kubectl get hpa
@@ -1033,13 +1186,15 @@ kubectl describe hpa trucontext-demo-hpa
 kubectl get hpa trucontext-demo-hpa --watch
 ```
 
-**Resource Optimization**
+##### Resource Optimization
+
 - **CPU**: Start with 250m request, 500m limit; adjust based on metrics
 - **Memory**: Start with 512Mi request, 1Gi limit; monitor for OOM errors
 - **Replicas**: Minimum 3 for high availability, scale based on traffic
 - **Database Connections**: Configure connection pooling in PostgreSQL/Neo4j
 
-**Performance Tuning**
+##### Performance Tuning
+
 ```yaml
 # Add to deployment for better performance
 env:
@@ -1069,6 +1224,7 @@ env:
    - Multi-region deployment for critical workloads
 
 4. **CI/CD Integration**
+
    ```bash
    # Example GitHub Actions workflow
    # .github/workflows/deploy.yml
@@ -1221,7 +1377,8 @@ This project is proprietary software developed for Visium Technologies.
 ## 🆘 Support
 
 For support and questions:
-- **Email**: inoble.ctr@visiumtechnologies.com
+
+- **Email**: [inoble.ctr@visiumtechnologies.com](mailto:inoble.ctr@visiumtechnologies.com)
 - **GitHub Issues**: Create an issue in the repository
 - **Documentation**: Refer to inline code documentation
 
