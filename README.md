@@ -1667,19 +1667,19 @@ graph LR
     end
 
     %% Request Flow
-    Browser -->|1. HTTPS Request<br/>trucontext.yourdomain.com| DNSClient
+    Browser -->|1. HTTPS Request| DNSClient
     DNSClient -->|2. DNS Lookup| DNS
-    DNS -->|3. Return Ingress IP<br/>203.0.113.10| DNSClient
+    DNS -->|3. Return Ingress IP| DNSClient
     DNSClient -->|4. Connect to IP| IngressCtrl
 
     IngressCtrl -->|5. TLS Handshake| TLS
     TLS -->|6. Decrypt HTTPS| Routing
-    Routing -->|7. Match Host/Path<br/>Route to Service| ServiceLB
+    Routing -->|7. Match Host/Path| ServiceLB
 
     ServiceLB -->|8. Check Pod Health| HealthCheck
-    HealthCheck -->|9a. Route to Pod 1<br/>33% traffic| Pod1Process
-    HealthCheck -->|9b. Route to Pod 2<br/>33% traffic| Pod2Process
-    HealthCheck -->|9c. Route to Pod 3<br/>34% traffic| Pod3Process
+    HealthCheck -->|9a. Route to Pod 1| Pod1Process
+    HealthCheck -->|9b. Route to Pod 2| Pod2Process
+    HealthCheck -->|9c. Route to Pod 3| Pod3Process
 
     Pod1Process -->|10. Process Request| Router
     Pod2Process -->|10. Process Request| Router
@@ -1691,18 +1691,18 @@ graph LR
     APIHandler -->|12. Query Data| DataLayer
 
     %% External Service Calls
-    DataLayer -->|13a. Cypher Query<br/>MATCH (n)-[r]->(m)| Neo4jQuery
-    DataLayer -->|13b. SQL Query<br/>SELECT * FROM datasets| PostgresQuery
-    DataLayer -->|13c. Generate Dashboard<br/>POST /v1/chat/completions| OpenAICall
-    DataLayer -->|13d. Generate Icon<br/>POST /v3/images| RecraftCall
-    DataLayer -->|13e. Upload/Fetch Icon<br/>GET/POST /v1_1/| CloudinaryCall
+    DataLayer -->|13a. Cypher Query| Neo4jQuery
+    DataLayer -->|13b. SQL Query| PostgresQuery
+    DataLayer -->|13c. Generate Dashboard| OpenAICall
+    DataLayer -->|13d. Generate Icon| RecraftCall
+    DataLayer -->|13e. Upload/Fetch Icon| CloudinaryCall
 
     %% Response Flow
-    Neo4jQuery -->|14a. Graph Data<br/>Nodes & Edges| DataLayer
-    PostgresQuery -->|14b. Relational Data<br/>Rows & Columns| DataLayer
-    OpenAICall -->|14c. AI Response<br/>Generated Cards| DataLayer
-    RecraftCall -->|14d. Icon Image<br/>SVG/PNG| DataLayer
-    CloudinaryCall -->|14e. Icon URL<br/>CDN Link| DataLayer
+    Neo4jQuery -->|14a. Graph Data| DataLayer
+    PostgresQuery -->|14b. Relational Data| DataLayer
+    OpenAICall -->|14c. AI Response| DataLayer
+    RecraftCall -->|14d. Icon Image| DataLayer
+    CloudinaryCall -->|14e. Icon URL| DataLayer
 
     DataLayer -->|15. Aggregate Data| APIHandler
     APIHandler -->|16. Format Response| JSONResponse
@@ -1717,10 +1717,10 @@ graph LR
 
     ServiceLB -->|19. Forward Response| Routing
     Routing -->|20. Add Headers| TLS
-    TLS -->|21. Encrypt Response<br/>HTTP → HTTPS| IngressCtrl
+    TLS -->|21. Encrypt Response| IngressCtrl
     IngressCtrl -->|22. Send to Client| Browser
 
-    Browser -->|23. Render UI<br/>Display Data| Browser
+    Browser -->|23. Render UI| Browser
 
     %% Optional CDN Path
     Browser -.->|Static Assets Request| CDN
