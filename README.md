@@ -347,63 +347,97 @@ This comprehensive architecture diagram visualizes the TruContext Demo applicati
 ```mermaid
 graph TB
     %% Main Entry Point
-    Start([User Access Application]) --> MainApp[Main Application<br/>pages/index.tsx]
+    Start([User Access Application]) --> MainApp["Main Application
+    pages/index.tsx"]
 
     %% View Selection
     MainApp --> ViewSelector{View Selector}
 
     %% Dashboard Views
-    ViewSelector -->|Executive| ExecDash[Executive Dashboard<br/>High-level Security Metrics]
-    ViewSelector -->|SOC Executive| SOCDash[SOC Executive Dashboard<br/>Security Operations Center]
-    ViewSelector -->|Threat Analysis| ThreatDash[Threat Path Analysis<br/>Interactive Threat Modeling]
-    ViewSelector -->|Topology| TopologyView[Topology View<br/>Network Graph Visualization]
-    ViewSelector -->|Table| TableView[Table View<br/>Tabular Data Display]
-    ViewSelector -->|Timeline| TimelineView[Timeline View<br/>Chronological Events]
-    ViewSelector -->|Cards| CardsView[Cards View<br/>Card-based Presentation]
-    ViewSelector -->|Analytics| AnalyticsDash[Analytics Dashboard<br/>Advanced Reporting]
-    ViewSelector -->|Geographic Map| GeoMap[Geographic Map<br/>Geospatial Visualization]
-    ViewSelector -->|AI Agents| AIAgents[AI Agents View<br/>Agent Management]
-    ViewSelector -->|AI Dashboards| AIDash[AI Dashboards<br/>AI-Generated Analytics]
-    ViewSelector -->|Icon Management| IconMgmt[Icon Management<br/>SVG Icon System]
+    ViewSelector -->|Executive| ExecDash["Executive Dashboard
+    High-level Security Metrics"]
+    ViewSelector -->|SOC Executive| SOCDash["SOC Executive Dashboard
+    Security Operations Center"]
+    ViewSelector -->|Threat Analysis| ThreatDash["Threat Path Analysis
+    Interactive Threat Modeling"]
+    ViewSelector -->|Topology| TopologyView["Topology View
+    Network Graph Visualization"]
+    ViewSelector -->|Table| TableView["Table View
+    Tabular Data Display"]
+    ViewSelector -->|Timeline| TimelineView["Timeline View
+    Chronological Events"]
+    ViewSelector -->|Cards| CardsView["Cards View
+    Card-based Presentation"]
+    ViewSelector -->|Analytics| AnalyticsDash["Analytics Dashboard
+    Advanced Reporting"]
+    ViewSelector -->|Geographic Map| GeoMap["Geographic Map
+    Geospatial Visualization"]
+    ViewSelector -->|AI Agents| AIAgents["AI Agents View
+    Agent Management"]
+    ViewSelector -->|AI Dashboards| AIDash["AI Dashboards
+    AI-Generated Analytics"]
+    ViewSelector -->|Icon Management| IconMgmt["Icon Management
+    SVG Icon System"]
 
     %% AI Dashboard Workflows
     AIDash --> AIDashCreate{Create Dashboard}
-    AIDashCreate -->|Natural Language| PromptInput[Enter Prompt<br/>Describe Dashboard]
-    AIDashCreate -->|Enhance Prompt| EnhanceAPI[AI Prompt Enhancement<br/>Schema-Aware Rewriting]
-    PromptInput --> GenerateCards[Generate Cards<br/>AI-Powered Creation]
+    AIDashCreate -->|Natural Language| PromptInput["Enter Prompt
+    Describe Dashboard"]
+    AIDashCreate -->|Enhance Prompt| EnhanceAPI["AI Prompt Enhancement
+    Schema-Aware Rewriting"]
+    PromptInput --> GenerateCards["Generate Cards
+    AI-Powered Creation"]
     EnhanceAPI --> GenerateCards
-    GenerateCards --> CardPreview[Preview Cards<br/>Edit & Customize]
-    CardPreview --> SaveDash[Save Dashboard<br/>PostgreSQL Storage]
-    CardPreview --> CopyPrompt[Copy Prompt<br/>Clipboard Feature]
+    GenerateCards --> CardPreview["Preview Cards
+    Edit & Customize"]
+    CardPreview --> SaveDash["Save Dashboard
+    PostgreSQL Storage"]
+    CardPreview --> CopyPrompt["Copy Prompt
+    Clipboard Feature"]
 
     %% Icon Management Workflows
     IconMgmt --> IconActions{Icon Actions}
-    IconActions -->|Generate| AIIconGen[AI Icon Generation<br/>Recraft.ai/Gemini]
-    IconActions -->|Upload| IconUpload[Upload Icons<br/>Drag & Drop]
-    IconActions -->|Manage Mappings| IconMapping[Dynamic Icon Mapping<br/>PostgreSQL Management]
-    IconActions -->|Export/Import| IconBulk[Bulk Operations<br/>ZIP Export/Import]
+    IconActions -->|Generate| AIIconGen["AI Icon Generation
+    Recraft.ai/Gemini"]
+    IconActions -->|Upload| IconUpload["Upload Icons
+    Drag & Drop"]
+    IconActions -->|Manage Mappings| IconMapping["Dynamic Icon Mapping
+    PostgreSQL Management"]
+    IconActions -->|Export/Import| IconBulk["Bulk Operations
+    ZIP Export/Import"]
 
     %% Geographic Map Workflows
     GeoMap --> GeoActions{Geographic Actions}
-    GeoActions -->|View Map| LeafletMap[Interactive Map<br/>Leaflet.js]
-    GeoActions -->|Assign Coordinates| CoordWizard[Coordinate Assignment Wizard<br/>Automated Geocoding]
-    CoordWizard --> DualDBUpdate[Dual Database Update<br/>Neo4j + PostgreSQL]
+    GeoActions -->|View Map| LeafletMap["Interactive Map
+    Leaflet.js"]
+    GeoActions -->|Assign Coordinates| CoordWizard["Coordinate Assignment Wizard
+    Automated Geocoding"]
+    CoordWizard --> DualDBUpdate["Dual Database Update
+    Neo4j + PostgreSQL"]
 
     %% Threat Analysis Workflows
     ThreatDash --> ThreatActions{Threat Actions}
-    ThreatActions -->|Create Path| ThreatPath[Define Threat Path<br/>Start/End Nodes]
-    ThreatActions -->|Calculate| Neo4jPath[Neo4j Shortest Path<br/>Cypher Query]
-    ThreatActions -->|Visualize| ThreatViz[Threat Visualization<br/>Highlighted Path]
+    ThreatActions -->|Create Path| ThreatPath["Define Threat Path
+    Start/End Nodes"]
+    ThreatActions -->|Calculate| Neo4jPath["Neo4j Shortest Path
+    Cypher Query"]
+    ThreatActions -->|Visualize| ThreatViz["Threat Visualization
+    Highlighted Path"]
 
     %% Topology View Workflows
     TopologyView --> TopoActions{Topology Actions}
-    TopoActions -->|Select Layout| LayoutEngine[Layout Algorithms<br/>CoSE/Hierarchical/Random]
-    TopoActions -->|Edit Properties| PropPanel[Properties Panel<br/>TC_ Custom Properties]
-    TopoActions -->|Group Nodes| GroupOps[Grouping Operations<br/>Collapse/Expand]
-    TopoActions -->|Filter| FilterOps[Filter by Alarms<br/>Threat Paths]
+    TopoActions -->|Select Layout| LayoutEngine["Layout Algorithms
+    CoSE/Hierarchical/Random"]
+    TopoActions -->|Edit Properties| PropPanel["Properties Panel
+    TC_ Custom Properties"]
+    TopoActions -->|Group Nodes| GroupOps["Grouping Operations
+    Collapse/Expand"]
+    TopoActions -->|Filter| FilterOps["Filter by Alarms
+    Threat Paths"]
 
     %% Backend Data Layer
-    ExecDash --> DataLayer[Data Layer<br/>API Routes]
+    ExecDash --> DataLayer["Data Layer
+    API Routes"]
     SOCDash --> DataLayer
     ThreatDash --> DataLayer
     TopologyView --> DataLayer
@@ -417,21 +451,35 @@ graph TB
     IconMgmt --> DataLayer
 
     %% Database Connections
-    DataLayer --> Neo4jDB[(Neo4j Aura<br/>Graph Database)]
-    DataLayer --> PostgresDB[(PostgreSQL/Neon<br/>Relational Database)]
+    DataLayer --> Neo4jDB[("Neo4j Aura
+    Graph Database")]
+    DataLayer --> PostgresDB[("PostgreSQL/Neon
+    Relational Database")]
 
     %% External API Integrations
-    GenerateCards --> OpenAIAPI[OpenAI API<br/>GPT-4o-mini]
+    GenerateCards --> OpenAIAPI["OpenAI API
+    GPT-4o-mini"]
     EnhanceAPI --> OpenAIAPI
-    AIIconGen --> RecraftAPI[Recraft.ai API<br/>Primary Icon Gen]
-    AIIconGen --> GeminiAPI[Google Gemini API<br/>Fallback Icon Gen]
-    IconUpload --> CloudinaryAPI[Cloudinary CDN<br/>Icon Storage]
+    AIIconGen --> RecraftAPI["Recraft.ai API
+    Primary Icon Gen"]
+    AIIconGen --> GeminiAPI["Google Gemini API
+    Fallback Icon Gen"]
+    IconUpload --> CloudinaryAPI["Cloudinary CDN
+    Icon Storage"]
     IconMapping --> CloudinaryAPI
-    CoordWizard --> GeocodingAPI[Geocoding Service<br/>Address → Coordinates]
+    CoordWizard --> GeocodingAPI["Geocoding Service
+    Address to Coordinates"]
 
     %% Data Storage Details
-    Neo4jDB -->|Stores| Neo4jData[Nodes, Edges<br/>Relationships<br/>Geographic Coordinates<br/>TC_ Properties]
-    PostgresDB -->|Stores| PGData[Datasets<br/>AI Dashboards<br/>Icon Mappings<br/>Usage Analytics<br/>Coordinate Backup]
+    Neo4jDB -->|Stores| Neo4jData["Nodes, Edges
+    Relationships
+    Geographic Coordinates
+    TC_ Properties"]
+    PostgresDB -->|Stores| PGData["Datasets
+    AI Dashboards
+    Icon Mappings
+    Usage Analytics
+    Coordinate Backup"]
 
     %% User Interactions
     SaveDash --> PostgresDB
@@ -1134,67 +1182,121 @@ This diagram visualizes how all Kubernetes components work together in the deplo
 
 ```mermaid
 graph TB
-    subgraph Internet["🌐 Internet"]
+    subgraph Internet["Internet"]
         User([End Users])
-        DNS[DNS Resolution<br/>trucontext.yourdomain.com]
+        DNS["DNS Resolution
+        trucontext.yourdomain.com"]
     end
 
-    subgraph K8sCluster["☸️ Kubernetes Cluster (Production)"]
+    subgraph K8sCluster["Kubernetes Cluster"]
         subgraph Namespace["Namespace: trucontext"]
             subgraph IngressLayer["Ingress Layer"]
-                Ingress[Ingress Controller<br/>NGINX/Traefik<br/>TLS/SSL Termination]
-                IngressRules[Ingress Rules<br/>Host: trucontext.yourdomain.com<br/>Path: /]
+                Ingress["Ingress Controller
+                NGINX/Traefik
+                TLS/SSL Termination"]
+                IngressRules["Ingress Rules
+                Host: trucontext.yourdomain.com
+                Path: /"]
             end
 
             subgraph ServiceLayer["Service Layer"]
-                Service[Service: trucontext-demo-service<br/>Type: LoadBalancer<br/>Port: 80 → 3000<br/>Session Affinity: ClientIP]
-                Endpoints[Service Endpoints<br/>Pod IPs registered]
+                Service["Service: trucontext-demo-service
+                Type: LoadBalancer
+                Port: 80 to 3000
+                Session Affinity: ClientIP"]
+                Endpoints["Service Endpoints
+                Pod IPs registered"]
             end
 
             subgraph DeploymentLayer["Deployment Layer"]
-                Deployment[Deployment: trucontext-demo<br/>Replicas: 3<br/>Strategy: RollingUpdate]
+                Deployment["Deployment: trucontext-demo
+                Replicas: 3
+                Strategy: RollingUpdate"]
 
                 subgraph Pods["Pod Replicas"]
-                    Pod1[Pod 1<br/>trucontext-demo-xxx<br/>Status: Running<br/>IP: 10.244.1.10]
-                    Pod2[Pod 2<br/>trucontext-demo-yyy<br/>Status: Running<br/>IP: 10.244.1.11]
-                    Pod3[Pod 3<br/>trucontext-demo-zzz<br/>Status: Running<br/>IP: 10.244.1.12]
+                    Pod1["Pod 1
+                    trucontext-demo-xxx
+                    Status: Running
+                    IP: 10.244.1.10"]
+                    Pod2["Pod 2
+                    trucontext-demo-yyy
+                    Status: Running
+                    IP: 10.244.1.11"]
+                    Pod3["Pod 3
+                    trucontext-demo-zzz
+                    Status: Running
+                    IP: 10.244.1.12"]
                 end
 
                 subgraph PodDetails["Pod Container Specs"]
-                    Container[Container: trucontext-demo<br/>Image: registry/trucontext:latest<br/>Port: 3000<br/>Resources: 512Mi-1Gi RAM, 250m-500m CPU]
-                    LivenessProbe[Liveness Probe<br/>HTTP GET /api/health<br/>Initial Delay: 30s]
-                    ReadinessProbe[Readiness Probe<br/>HTTP GET /api/health<br/>Initial Delay: 10s]
+                    Container["Container: trucontext-demo
+                    Image: registry/trucontext:latest
+                    Port: 3000
+                    Resources: 512Mi-1Gi RAM"]
+                    LivenessProbe["Liveness Probe
+                    HTTP GET /api/health
+                    Initial Delay: 30s"]
+                    ReadinessProbe["Readiness Probe
+                    HTTP GET /api/health
+                    Initial Delay: 10s"]
                 end
             end
 
             subgraph ConfigLayer["Configuration Layer"]
-                ConfigMap[ConfigMap: trucontext-config<br/>NEO4J_URI, NEO4J_USERNAME<br/>CLOUDINARY_CLOUD_NAME<br/>ICON_GENERATION_API<br/>NODE_ENV]
-                Secret[Secret: trucontext-secrets<br/>🔒 NEO4J_PASSWORD<br/>🔒 POSTGRES_URL<br/>🔒 API Keys<br/>Type: Opaque]
+                ConfigMap["ConfigMap: trucontext-config
+                NEO4J_URI, NEO4J_USERNAME
+                CLOUDINARY_CLOUD_NAME
+                ICON_GENERATION_API
+                NODE_ENV"]
+                Secret["Secret: trucontext-secrets
+                NEO4J_PASSWORD
+                POSTGRES_URL
+                API Keys
+                Type: Opaque"]
             end
 
             subgraph AutoScaling["Auto-scaling Layer"]
-                HPA[HorizontalPodAutoscaler<br/>Min: 3, Max: 10<br/>Target CPU: 70%<br/>Target Memory: 80%]
-                Metrics[Metrics Server<br/>CPU/Memory Usage<br/>Custom Metrics]
+                HPA["HorizontalPodAutoscaler
+                Min: 3, Max: 10
+                Target CPU: 70%
+                Target Memory: 80%"]
+                Metrics["Metrics Server
+                CPU/Memory Usage
+                Custom Metrics"]
             end
         end
     end
 
-    subgraph ExternalServices["☁️ External Services"]
+    subgraph ExternalServices["External Services"]
         subgraph Databases["Databases"]
-            Neo4j[(Neo4j Aura<br/>Graph Database<br/>Nodes, Edges, Relationships)]
-            PostgreSQL[(PostgreSQL/Neon<br/>Relational Database<br/>Datasets, Dashboards, Icons)]
+            Neo4j[("Neo4j Aura
+            Graph Database
+            Nodes, Edges, Relationships")]
+            PostgreSQL[("PostgreSQL/Neon
+            Relational Database
+            Datasets, Dashboards, Icons")]
         end
 
         subgraph APIs["External APIs"]
-            OpenAI[OpenAI API<br/>GPT-4o-mini<br/>Dashboard Generation]
-            Recraft[Recraft.ai API<br/>Icon Generation<br/>Primary]
-            Gemini[Google Gemini API<br/>Icon Generation<br/>Fallback]
-            Cloudinary[Cloudinary CDN<br/>Icon Storage<br/>Media Delivery]
+            OpenAI["OpenAI API
+            GPT-4o-mini
+            Dashboard Generation"]
+            Recraft["Recraft.ai API
+            Icon Generation
+            Primary"]
+            Gemini["Google Gemini API
+            Icon Generation
+            Fallback"]
+            Cloudinary["Cloudinary CDN
+            Icon Storage
+            Media Delivery"]
         end
     end
 
-    subgraph Registry["📦 Container Registry"]
-        DockerRegistry[Docker Hub / ECR / GCR<br/>trucontext-demo:latest<br/>trucontext-demo:v1.0.0]
+    subgraph Registry["Container Registry"]
+        DockerRegistry["Docker Hub / ECR / GCR
+        trucontext-demo:latest
+        trucontext-demo:v1.0.0"]
     end
 
     %% User Flow
@@ -1472,54 +1574,96 @@ This diagram illustrates how user requests flow through the Kubernetes infrastru
 
 ```mermaid
 graph LR
-    subgraph ClientSide["👤 Client Side"]
-        Browser[Web Browser<br/>User Device]
-        DNSClient[DNS Resolver<br/>Local Cache]
+    subgraph ClientSide["Client Side"]
+        Browser["Web Browser
+        User Device"]
+        DNSClient["DNS Resolver
+        Local Cache"]
     end
 
-    subgraph EdgeLayer["🌐 Edge Layer"]
-        DNS[DNS Server<br/>trucontext.yourdomain.com<br/>→ Ingress IP]
-        CDN[CDN/CloudFlare<br/>Optional<br/>Static Assets]
+    subgraph EdgeLayer["Edge Layer"]
+        DNS["DNS Server
+        trucontext.yourdomain.com
+        to Ingress IP"]
+        CDN["CDN/CloudFlare
+        Optional
+        Static Assets"]
     end
 
-    subgraph K8sIngress["☸️ Kubernetes Ingress Layer"]
-        IngressCtrl[Ingress Controller<br/>NGINX/Traefik]
-        TLS[TLS Termination<br/>SSL Certificate<br/>HTTPS → HTTP]
-        Routing[Routing Rules<br/>Host: trucontext.yourdomain.com<br/>Path: / → Service]
+    subgraph K8sIngress["Kubernetes Ingress Layer"]
+        IngressCtrl["Ingress Controller
+        NGINX/Traefik"]
+        TLS["TLS Termination
+        SSL Certificate
+        HTTPS to HTTP"]
+        Routing["Routing Rules
+        Host: trucontext.yourdomain.com
+        Path: / to Service"]
     end
 
-    subgraph K8sService["☸️ Kubernetes Service Layer"]
-        ServiceLB[Service Load Balancer<br/>trucontext-demo-service<br/>Algorithm: Round-robin<br/>Session: ClientIP]
-        HealthCheck{Health Check<br/>Readiness Probe<br/>Only route to healthy Pods}
+    subgraph K8sService["Kubernetes Service Layer"]
+        ServiceLB["Service Load Balancer
+        trucontext-demo-service
+        Algorithm: Round-robin
+        Session: ClientIP"]
+        HealthCheck{"Health Check
+        Readiness Probe
+        Only route to healthy Pods"}
     end
 
-    subgraph K8sPods["☸️ Kubernetes Pod Layer (3 Replicas)"]
-        Pod1Process[Pod 1 Processing<br/>Next.js App<br/>Port 3000]
-        Pod2Process[Pod 2 Processing<br/>Next.js App<br/>Port 3000]
-        Pod3Process[Pod 3 Processing<br/>Next.js App<br/>Port 3000]
+    subgraph K8sPods["Kubernetes Pod Layer"]
+        Pod1Process["Pod 1 Processing
+        Next.js App
+        Port 3000"]
+        Pod2Process["Pod 2 Processing
+        Next.js App
+        Port 3000"]
+        Pod3Process["Pod 3 Processing
+        Next.js App
+        Port 3000"]
     end
 
-    subgraph AppLogic["🔧 Application Logic"]
-        Router[Next.js Router<br/>API Routes<br/>Page Routes]
-        APIHandler[API Handler<br/>/api/graph-data<br/>/api/ai-dashboards<br/>/api/icons]
-        DataLayer[Data Layer<br/>Database Clients<br/>API Clients]
+    subgraph AppLogic["Application Logic"]
+        Router["Next.js Router
+        API Routes
+        Page Routes"]
+        APIHandler["API Handler
+        /api/graph-data
+        /api/ai-dashboards
+        /api/icons"]
+        DataLayer["Data Layer
+        Database Clients
+        API Clients"]
     end
 
-    subgraph ExternalDB["💾 External Databases"]
-        Neo4jQuery[Neo4j Aura<br/>Cypher Queries<br/>Graph Operations]
-        PostgresQuery[PostgreSQL/Neon<br/>SQL Queries<br/>Relational Data]
+    subgraph ExternalDB["External Databases"]
+        Neo4jQuery["Neo4j Aura
+        Cypher Queries
+        Graph Operations"]
+        PostgresQuery["PostgreSQL/Neon
+        SQL Queries
+        Relational Data"]
     end
 
-    subgraph ExternalAPIs["🔌 External APIs"]
-        OpenAICall[OpenAI API<br/>Dashboard Generation<br/>Prompt Enhancement]
-        RecraftCall[Recraft.ai API<br/>Icon Generation<br/>Vector Illustrations]
-        CloudinaryCall[Cloudinary CDN<br/>Icon Storage<br/>Image Delivery]
+    subgraph ExternalAPIs["External APIs"]
+        OpenAICall["OpenAI API
+        Dashboard Generation
+        Prompt Enhancement"]
+        RecraftCall["Recraft.ai API
+        Icon Generation
+        Vector Illustrations"]
+        CloudinaryCall["Cloudinary CDN
+        Icon Storage
+        Image Delivery"]
     end
 
-    subgraph ResponsePath["📤 Response Path"]
-        JSONResponse[JSON Response<br/>Data Payload]
-        HTMLResponse[HTML Response<br/>Server-Side Rendered]
-        StaticAssets[Static Assets<br/>JS, CSS, Images]
+    subgraph ResponsePath["Response Path"]
+        JSONResponse["JSON Response
+        Data Payload"]
+        HTMLResponse["HTML Response
+        Server-Side Rendered"]
+        StaticAssets["Static Assets
+        JS, CSS, Images"]
     end
 
     %% Request Flow
