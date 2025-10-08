@@ -651,6 +651,113 @@ Before deploying to Kubernetes, ensure you have:
 - **Container registry** access (Docker Hub, AWS ECR, Google GCR, Azure ACR, or private registry)
 - **Helm** (optional, for advanced deployments)
 
+#### **Deployment Workflow Overview**
+
+The following diagram illustrates the complete deployment process from building the Docker image to accessing the application in production. This timeline shows the sequential steps and their dependencies.
+
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant Docker as Docker Build
+    participant Registry as Container Registry
+    participant kubectl as kubectl CLI
+    participant K8s as Kubernetes Cluster
+    participant ConfigMap as ConfigMap
+    participant Secret as Secret
+    participant Deploy as Deployment
+    participant Pods as Pods (3 replicas)
+    participant Service as Service
+    participant Ingress as Ingress Controller
+    participant HPA as HorizontalPodAutoscaler
+    participant User as End User
+
+    Note over Dev,Registry: Step 1-2: Build & Push Image
+    Dev->>Docker: docker build -t trucontext-demo:latest
+    Docker-->>Dev: Image built successfully
+    Dev->>Registry: docker push trucontext-demo:latest
+    Registry-->>Dev: Image pushed
+
+    Note over kubectl,K8s: Step 3: Apply Kubernetes Manifests
+    Dev->>kubectl: kubectl apply -f configmap.yaml
+    kubectl->>K8s: Create ConfigMap
+    K8s->>ConfigMap: ConfigMap created
+    ConfigMap-->>kubectl: ✓ Created
+
+    Dev->>kubectl: kubectl apply -f secret.yaml
+    kubectl->>K8s: Create Secret
+    K8s->>Secret: Secret created (encrypted)
+    Secret-->>kubectl: ✓ Created
+
+    Dev->>kubectl: kubectl apply -f deployment.yaml
+    kubectl->>K8s: Create Deployment
+    K8s->>Deploy: Deployment created
+    Deploy->>Registry: Pull image trucontext-demo:latest
+    Registry-->>Deploy: Image pulled
+    Deploy->>Pods: Create 3 replica Pods
+
+    Note over Pods: Pod Initialization
+    Pods->>Pods: Load env from ConfigMap
+    Pods->>Pods: Load secrets from Secret
+    Pods->>Pods: Start Next.js application
+    Pods->>Pods: Execute liveness probe (30s delay)
+    Pods->>Pods: Execute readiness probe (10s delay)
+    Pods-->>Deploy: All Pods ready ✓
+    Deploy-->>kubectl: Deployment ready (3/3)
+
+    Dev->>kubectl: kubectl apply -f service.yaml
+    kubectl->>K8s: Create Service
+    K8s->>Service: Service created (LoadBalancer)
+    Service->>Pods: Register Pod endpoints
+    Pods-->>Service: Endpoints registered
+    Service->>Service: Allocate external IP
+    Service-->>kubectl: ✓ Service ready with external IP
+
+    Dev->>kubectl: kubectl apply -f ingress.yaml
+    kubectl->>K8s: Create Ingress
+    K8s->>Ingress: Ingress created
+    Ingress->>Service: Configure routing rules
+    Service-->>Ingress: Routes configured
+    Ingress->>Ingress: Request TLS certificate
+    Ingress-->>kubectl: ✓ Ingress ready
+
+    Dev->>kubectl: kubectl apply -f hpa.yaml
+    kubectl->>K8s: Create HPA
+    K8s->>HPA: HPA created
+    HPA->>Pods: Monitor CPU/Memory metrics
+    Pods-->>HPA: Metrics collected
+    HPA-->>kubectl: ✓ HPA active (min: 3, max: 10)
+
+    Note over Dev,User: Step 4-6: Verification & Access
+    Dev->>kubectl: kubectl get pods
+    kubectl-->>Dev: 3 Pods running
+    Dev->>kubectl: kubectl get service
+    kubectl-->>Dev: External IP: 203.0.113.10
+    Dev->>kubectl: kubectl get ingress
+    kubectl-->>Dev: Host: trucontext.yourdomain.com
+
+    Note over User,Ingress: Production Access
+    User->>Ingress: HTTPS request to trucontext.yourdomain.com
+    Ingress->>Service: Route to backend service
+    Service->>Pods: Load balance to Pod (round-robin)
+    Pods->>Pods: Process request
+    Pods-->>Service: Response
+    Service-->>Ingress: Response
+    Ingress-->>User: HTTPS response ✓
+```
+
+**Deployment Timeline Summary:**
+
+1. **Build Phase** (5-10 min): Docker image creation and registry push
+2. **Configuration Phase** (1-2 min): ConfigMap and Secret creation
+3. **Deployment Phase** (3-5 min): Pod creation, image pull, initialization
+4. **Health Check Phase** (30-60 sec): Liveness and readiness probes
+5. **Service Phase** (1-2 min): Service creation and endpoint registration
+6. **Ingress Phase** (2-5 min): Ingress configuration and TLS certificate
+7. **Auto-scaling Phase** (30 sec): HPA activation and metric collection
+8. **Verification Phase** (1-2 min): Status checks and testing
+
+**Total Deployment Time**: Approximately 15-30 minutes for initial deployment
+
 #### **Step 1: Create Dockerfile**
 
 Create a `Dockerfile` in the project root:
@@ -1021,6 +1128,163 @@ spec:
         averageUtilization: 80
 ```
 
+#### **Kubernetes Cluster Architecture**
+
+This diagram visualizes how all Kubernetes components work together in the deployed cluster. It shows the relationships between Deployments, Pods, Services, Ingress, ConfigMaps, Secrets, and external dependencies.
+
+```mermaid
+graph TB
+    subgraph Internet["🌐 Internet"]
+        User([End Users])
+        DNS[DNS Resolution<br/>trucontext.yourdomain.com]
+    end
+
+    subgraph K8sCluster["☸️ Kubernetes Cluster (Production)"]
+        subgraph Namespace["Namespace: trucontext"]
+            subgraph IngressLayer["Ingress Layer"]
+                Ingress[Ingress Controller<br/>NGINX/Traefik<br/>TLS/SSL Termination]
+                IngressRules[Ingress Rules<br/>Host: trucontext.yourdomain.com<br/>Path: /]
+            end
+
+            subgraph ServiceLayer["Service Layer"]
+                Service[Service: trucontext-demo-service<br/>Type: LoadBalancer<br/>Port: 80 → 3000<br/>Session Affinity: ClientIP]
+                Endpoints[Service Endpoints<br/>Pod IPs registered]
+            end
+
+            subgraph DeploymentLayer["Deployment Layer"]
+                Deployment[Deployment: trucontext-demo<br/>Replicas: 3<br/>Strategy: RollingUpdate]
+
+                subgraph Pods["Pod Replicas"]
+                    Pod1[Pod 1<br/>trucontext-demo-xxx<br/>Status: Running<br/>IP: 10.244.1.10]
+                    Pod2[Pod 2<br/>trucontext-demo-yyy<br/>Status: Running<br/>IP: 10.244.1.11]
+                    Pod3[Pod 3<br/>trucontext-demo-zzz<br/>Status: Running<br/>IP: 10.244.1.12]
+                end
+
+                subgraph PodDetails["Pod Container Specs"]
+                    Container[Container: trucontext-demo<br/>Image: registry/trucontext:latest<br/>Port: 3000<br/>Resources: 512Mi-1Gi RAM, 250m-500m CPU]
+                    LivenessProbe[Liveness Probe<br/>HTTP GET /api/health<br/>Initial Delay: 30s]
+                    ReadinessProbe[Readiness Probe<br/>HTTP GET /api/health<br/>Initial Delay: 10s]
+                end
+            end
+
+            subgraph ConfigLayer["Configuration Layer"]
+                ConfigMap[ConfigMap: trucontext-config<br/>NEO4J_URI, NEO4J_USERNAME<br/>CLOUDINARY_CLOUD_NAME<br/>ICON_GENERATION_API<br/>NODE_ENV]
+                Secret[Secret: trucontext-secrets<br/>🔒 NEO4J_PASSWORD<br/>🔒 POSTGRES_URL<br/>🔒 API Keys<br/>Type: Opaque]
+            end
+
+            subgraph AutoScaling["Auto-scaling Layer"]
+                HPA[HorizontalPodAutoscaler<br/>Min: 3, Max: 10<br/>Target CPU: 70%<br/>Target Memory: 80%]
+                Metrics[Metrics Server<br/>CPU/Memory Usage<br/>Custom Metrics]
+            end
+        end
+    end
+
+    subgraph ExternalServices["☁️ External Services"]
+        subgraph Databases["Databases"]
+            Neo4j[(Neo4j Aura<br/>Graph Database<br/>Nodes, Edges, Relationships)]
+            PostgreSQL[(PostgreSQL/Neon<br/>Relational Database<br/>Datasets, Dashboards, Icons)]
+        end
+
+        subgraph APIs["External APIs"]
+            OpenAI[OpenAI API<br/>GPT-4o-mini<br/>Dashboard Generation]
+            Recraft[Recraft.ai API<br/>Icon Generation<br/>Primary]
+            Gemini[Google Gemini API<br/>Icon Generation<br/>Fallback]
+            Cloudinary[Cloudinary CDN<br/>Icon Storage<br/>Media Delivery]
+        end
+    end
+
+    subgraph Registry["📦 Container Registry"]
+        DockerRegistry[Docker Hub / ECR / GCR<br/>trucontext-demo:latest<br/>trucontext-demo:v1.0.0]
+    end
+
+    %% User Flow
+    User -->|HTTPS Request| DNS
+    DNS -->|Resolve IP| Ingress
+    Ingress -->|Route by Host/Path| IngressRules
+    IngressRules -->|Forward to Service| Service
+    Service -->|Load Balance| Endpoints
+    Endpoints -->|Round-robin| Pod1
+    Endpoints -->|Round-robin| Pod2
+    Endpoints -->|Round-robin| Pod3
+
+    %% Deployment Flow
+    Deployment -->|Manages| Pod1
+    Deployment -->|Manages| Pod2
+    Deployment -->|Manages| Pod3
+    Pod1 -->|Contains| Container
+    Pod2 -->|Contains| Container
+    Pod3 -->|Contains| Container
+    Container -->|Health Checks| LivenessProbe
+    Container -->|Health Checks| ReadinessProbe
+
+    %% Configuration Flow
+    Pod1 -.->|Load Env Vars| ConfigMap
+    Pod2 -.->|Load Env Vars| ConfigMap
+    Pod3 -.->|Load Env Vars| ConfigMap
+    Pod1 -.->|Load Secrets| Secret
+    Pod2 -.->|Load Secrets| Secret
+    Pod3 -.->|Load Secrets| Secret
+
+    %% Auto-scaling Flow
+    HPA -->|Monitor| Metrics
+    Metrics -->|Collect from| Pod1
+    Metrics -->|Collect from| Pod2
+    Metrics -->|Collect from| Pod3
+    HPA -->|Scale Up/Down| Deployment
+
+    %% External Connections
+    Pod1 -->|Cypher Queries| Neo4j
+    Pod2 -->|Cypher Queries| Neo4j
+    Pod3 -->|Cypher Queries| Neo4j
+    Pod1 -->|SQL Queries| PostgreSQL
+    Pod2 -->|SQL Queries| PostgreSQL
+    Pod3 -->|SQL Queries| PostgreSQL
+    Pod1 -->|API Calls| OpenAI
+    Pod1 -->|API Calls| Recraft
+    Pod1 -->|API Calls| Gemini
+    Pod1 -->|API Calls| Cloudinary
+
+    %% Image Pull
+    Deployment -.->|Pull Image| DockerRegistry
+
+    %% Styling
+    classDef userClass fill:#667eea,stroke:#5a67d8,stroke-width:3px,color:#fff
+    classDef k8sClass fill:#326ce5,stroke:#1a4d8f,stroke-width:2px,color:#fff
+    classDef podClass fill:#48bb78,stroke:#2f855a,stroke-width:2px,color:#fff
+    classDef configClass fill:#ed8936,stroke:#c05621,stroke-width:2px,color:#fff
+    classDef dbClass fill:#9f7aea,stroke:#6b46c1,stroke-width:2px,color:#fff
+    classDef apiClass fill:#f56565,stroke:#c53030,stroke-width:2px,color:#fff
+    classDef registryClass fill:#4299e1,stroke:#2c5282,stroke-width:2px,color:#fff
+
+    class User,DNS userClass
+    class Ingress,IngressRules,Service,Endpoints,Deployment,HPA,Metrics k8sClass
+    class Pod1,Pod2,Pod3,Container,LivenessProbe,ReadinessProbe podClass
+    class ConfigMap,Secret configClass
+    class Neo4j,PostgreSQL dbClass
+    class OpenAI,Recraft,Gemini,Cloudinary apiClass
+    class DockerRegistry registryClass
+```
+
+**Architecture Components Legend:**
+
+- **Purple Nodes**: User access and DNS resolution
+- **Blue Nodes**: Kubernetes resources (Ingress, Service, Deployment, HPA)
+- **Green Nodes**: Pods and container specifications
+- **Orange Nodes**: Configuration resources (ConfigMap, Secret)
+- **Purple Nodes**: Database systems (Neo4j, PostgreSQL)
+- **Red Nodes**: External API integrations
+- **Light Blue Nodes**: Container registry
+
+**Key Architecture Features:**
+
+1. **High Availability**: 3 Pod replicas ensure zero-downtime deployments
+2. **Load Balancing**: Service distributes traffic across healthy Pods
+3. **Auto-scaling**: HPA scales from 3 to 10 Pods based on CPU/Memory
+4. **Health Monitoring**: Liveness and readiness probes ensure Pod health
+5. **Secure Configuration**: Secrets encrypted at rest, ConfigMaps for non-sensitive data
+6. **External Access**: Ingress provides HTTPS termination and domain routing
+7. **Persistent Connections**: Session affinity maintains user sessions
+
 #### **Step 4: Deploy to Kubernetes**
 
 ```bash
@@ -1201,6 +1465,164 @@ env:
 - name: NODE_OPTIONS
   value: "--max-old-space-size=768"  # Adjust based on memory limits
 ```
+
+#### **Production Request Flow**
+
+This diagram illustrates how user requests flow through the Kubernetes infrastructure, from initial DNS resolution through Ingress routing, Service load balancing, Pod processing, and external service interactions. Understanding this flow is critical for debugging production issues and optimizing performance.
+
+```mermaid
+graph LR
+    subgraph ClientSide["👤 Client Side"]
+        Browser[Web Browser<br/>User Device]
+        DNSClient[DNS Resolver<br/>Local Cache]
+    end
+
+    subgraph EdgeLayer["🌐 Edge Layer"]
+        DNS[DNS Server<br/>trucontext.yourdomain.com<br/>→ Ingress IP]
+        CDN[CDN/CloudFlare<br/>Optional<br/>Static Assets]
+    end
+
+    subgraph K8sIngress["☸️ Kubernetes Ingress Layer"]
+        IngressCtrl[Ingress Controller<br/>NGINX/Traefik]
+        TLS[TLS Termination<br/>SSL Certificate<br/>HTTPS → HTTP]
+        Routing[Routing Rules<br/>Host: trucontext.yourdomain.com<br/>Path: / → Service]
+    end
+
+    subgraph K8sService["☸️ Kubernetes Service Layer"]
+        ServiceLB[Service Load Balancer<br/>trucontext-demo-service<br/>Algorithm: Round-robin<br/>Session: ClientIP]
+        HealthCheck{Health Check<br/>Readiness Probe<br/>Only route to healthy Pods}
+    end
+
+    subgraph K8sPods["☸️ Kubernetes Pod Layer (3 Replicas)"]
+        Pod1Process[Pod 1 Processing<br/>Next.js App<br/>Port 3000]
+        Pod2Process[Pod 2 Processing<br/>Next.js App<br/>Port 3000]
+        Pod3Process[Pod 3 Processing<br/>Next.js App<br/>Port 3000]
+    end
+
+    subgraph AppLogic["🔧 Application Logic"]
+        Router[Next.js Router<br/>API Routes<br/>Page Routes]
+        APIHandler[API Handler<br/>/api/graph-data<br/>/api/ai-dashboards<br/>/api/icons]
+        DataLayer[Data Layer<br/>Database Clients<br/>API Clients]
+    end
+
+    subgraph ExternalDB["💾 External Databases"]
+        Neo4jQuery[Neo4j Aura<br/>Cypher Queries<br/>Graph Operations]
+        PostgresQuery[PostgreSQL/Neon<br/>SQL Queries<br/>Relational Data]
+    end
+
+    subgraph ExternalAPIs["🔌 External APIs"]
+        OpenAICall[OpenAI API<br/>Dashboard Generation<br/>Prompt Enhancement]
+        RecraftCall[Recraft.ai API<br/>Icon Generation<br/>Vector Illustrations]
+        CloudinaryCall[Cloudinary CDN<br/>Icon Storage<br/>Image Delivery]
+    end
+
+    subgraph ResponsePath["📤 Response Path"]
+        JSONResponse[JSON Response<br/>Data Payload]
+        HTMLResponse[HTML Response<br/>Server-Side Rendered]
+        StaticAssets[Static Assets<br/>JS, CSS, Images]
+    end
+
+    %% Request Flow
+    Browser -->|1. HTTPS Request<br/>trucontext.yourdomain.com| DNSClient
+    DNSClient -->|2. DNS Lookup| DNS
+    DNS -->|3. Return Ingress IP<br/>203.0.113.10| DNSClient
+    DNSClient -->|4. Connect to IP| IngressCtrl
+
+    IngressCtrl -->|5. TLS Handshake| TLS
+    TLS -->|6. Decrypt HTTPS| Routing
+    Routing -->|7. Match Host/Path<br/>Route to Service| ServiceLB
+
+    ServiceLB -->|8. Check Pod Health| HealthCheck
+    HealthCheck -->|9a. Route to Pod 1<br/>33% traffic| Pod1Process
+    HealthCheck -->|9b. Route to Pod 2<br/>33% traffic| Pod2Process
+    HealthCheck -->|9c. Route to Pod 3<br/>34% traffic| Pod3Process
+
+    Pod1Process -->|10. Process Request| Router
+    Pod2Process -->|10. Process Request| Router
+    Pod3Process -->|10. Process Request| Router
+
+    Router -->|11a. API Request| APIHandler
+    Router -->|11b. Page Request| HTMLResponse
+
+    APIHandler -->|12. Query Data| DataLayer
+
+    %% External Service Calls
+    DataLayer -->|13a. Cypher Query<br/>MATCH (n)-[r]->(m)| Neo4jQuery
+    DataLayer -->|13b. SQL Query<br/>SELECT * FROM datasets| PostgresQuery
+    DataLayer -->|13c. Generate Dashboard<br/>POST /v1/chat/completions| OpenAICall
+    DataLayer -->|13d. Generate Icon<br/>POST /v3/images| RecraftCall
+    DataLayer -->|13e. Upload/Fetch Icon<br/>GET/POST /v1_1/| CloudinaryCall
+
+    %% Response Flow
+    Neo4jQuery -->|14a. Graph Data<br/>Nodes & Edges| DataLayer
+    PostgresQuery -->|14b. Relational Data<br/>Rows & Columns| DataLayer
+    OpenAICall -->|14c. AI Response<br/>Generated Cards| DataLayer
+    RecraftCall -->|14d. Icon Image<br/>SVG/PNG| DataLayer
+    CloudinaryCall -->|14e. Icon URL<br/>CDN Link| DataLayer
+
+    DataLayer -->|15. Aggregate Data| APIHandler
+    APIHandler -->|16. Format Response| JSONResponse
+
+    JSONResponse -->|17. Return to Pod| Pod1Process
+    HTMLResponse -->|17. Return to Pod| Pod2Process
+    StaticAssets -->|17. Return to Pod| Pod3Process
+
+    Pod1Process -->|18. Send Response| ServiceLB
+    Pod2Process -->|18. Send Response| ServiceLB
+    Pod3Process -->|18. Send Response| ServiceLB
+
+    ServiceLB -->|19. Forward Response| Routing
+    Routing -->|20. Add Headers| TLS
+    TLS -->|21. Encrypt Response<br/>HTTP → HTTPS| IngressCtrl
+    IngressCtrl -->|22. Send to Client| Browser
+
+    Browser -->|23. Render UI<br/>Display Data| Browser
+
+    %% Optional CDN Path
+    Browser -.->|Static Assets Request| CDN
+    CDN -.->|Cached Response| Browser
+
+    %% Styling
+    classDef clientClass fill:#667eea,stroke:#5a67d8,stroke-width:2px,color:#fff
+    classDef edgeClass fill:#48bb78,stroke:#2f855a,stroke-width:2px,color:#fff
+    classDef k8sClass fill:#326ce5,stroke:#1a4d8f,stroke-width:2px,color:#fff
+    classDef appClass fill:#ed8936,stroke:#c05621,stroke-width:2px,color:#fff
+    classDef dbClass fill:#9f7aea,stroke:#6b46c1,stroke-width:2px,color:#fff
+    classDef apiClass fill:#f56565,stroke:#c53030,stroke-width:2px,color:#fff
+    classDef responseClass fill:#4299e1,stroke:#2c5282,stroke-width:2px,color:#fff
+
+    class Browser,DNSClient clientClass
+    class DNS,CDN edgeClass
+    class IngressCtrl,TLS,Routing,ServiceLB,HealthCheck,Pod1Process,Pod2Process,Pod3Process k8sClass
+    class Router,APIHandler,DataLayer appClass
+    class Neo4jQuery,PostgresQuery dbClass
+    class OpenAICall,RecraftCall,CloudinaryCall apiClass
+    class JSONResponse,HTMLResponse,StaticAssets responseClass
+```
+
+**Request Flow Summary:**
+
+1. **DNS Resolution** (10-50ms): Browser resolves domain to Ingress IP
+2. **TLS Handshake** (50-200ms): Secure connection establishment
+3. **Ingress Routing** (1-5ms): Route request to appropriate Service
+4. **Service Load Balancing** (1-5ms): Distribute to healthy Pod
+5. **Pod Processing** (50-500ms): Next.js application handles request
+6. **Database Queries** (10-100ms): Neo4j/PostgreSQL data retrieval
+7. **External API Calls** (100-2000ms): OpenAI, Recraft.ai, Cloudinary
+8. **Response Assembly** (10-50ms): Format and aggregate data
+9. **Response Encryption** (5-20ms): TLS encryption for HTTPS
+10. **Client Rendering** (100-1000ms): Browser displays UI
+
+**Total Request Time**: 300ms - 4 seconds (depending on complexity and external API calls)
+
+**Performance Optimization Points:**
+
+- **Caching**: Implement Redis for frequently accessed data
+- **Connection Pooling**: Reuse database connections across requests
+- **CDN**: Serve static assets from edge locations
+- **Compression**: Enable gzip/brotli for response compression
+- **Keep-Alive**: Maintain persistent connections to external services
+- **Horizontal Scaling**: HPA automatically adds Pods under high load
 
 #### **Production Best Practices**
 
